@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="GoDaddy">
+  <rect width="48" height="48" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <circle cx="24" cy="24" r="12.5" fill="#00A4A6"/>
+  <path fill="#FFFFFF" d="M28.8 18.2c-1.1-1.35-2.7-2.1-4.55-2.1-3.55 0-6.2 2.55-6.2 6.2 0 3.55 2.55 6.15 6.15 6.15 1.9 0 3.5-.8 4.55-2.15v1.55h3.05V16.05h-3v2.15zm-4.35 7.85c-2.05 0-3.45-1.5-3.45-3.7s1.4-3.7 3.45-3.7 3.45 1.5 3.45 3.7-1.4 3.7-3.45 3.7z"/>
+</svg>

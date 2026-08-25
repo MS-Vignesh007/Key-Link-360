@@ -1,0 +1,6 @@
+{
+  "name": "KEYLINK360 Marketing Suite",
+  "description": "The ultimate marketing suite for bio pages, smart links, QR codes, tracking pixels, and custom domains.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

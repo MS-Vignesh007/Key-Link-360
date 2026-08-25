@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Porkbun">
+  <rect width="48" height="48" rx="12" fill="#FFF1F2"/>
+  <ellipse cx="24" cy="26" rx="11" ry="9.5" fill="#FB7185"/>
+  <ellipse cx="15.5" cy="18.5" rx="3.2" ry="4" fill="#FB7185"/>
+  <ellipse cx="32.5" cy="18.5" rx="3.2" ry="4" fill="#FB7185"/>
+  <ellipse cx="19.5" cy="25" rx="1.6" ry="2" fill="#111827"/>
+  <ellipse cx="28.5" cy="25" rx="1.6" ry="2" fill="#111827"/>
+  <ellipse cx="24" cy="29.2" rx="2.4" ry="1.6" fill="#F43F5E"/>
+</svg>
