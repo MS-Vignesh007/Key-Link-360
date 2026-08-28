@@ -1,4 +1,5 @@
 import { getSupabase, isSupabaseConfigured } from "../db/supabase";
+import { getDataStoreStatus } from "../db/rootStore";
 import type { QrCodeRecord } from "./repository";
 
 function normalizeCode(code: string): string {
@@ -6,6 +7,17 @@ function normalizeCode(code: string): string {
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9_-]/g, "");
+}
+
+function isSupabaseAvailable(): boolean {
+  if (!isSupabaseConfigured()) return false;
+  try {
+    const status = getDataStoreStatus();
+    if (status.supabaseCooldownUntil) return false;
+  } catch {
+    /* ignore */
+  }
+  return true;
 }
 
 function routeKey(code: string): string {
@@ -25,8 +37,9 @@ type QrRouteValue = {
 
 /** Tiny durable mapping for /q/:code — avoids huge root blob timeouts. */
 export async function upsertQrRouteIndex(row: QrCodeRecord): Promise<boolean> {
+  if (!isSupabaseAvailable()) return false;
   const supabase = getSupabase();
-  if (!supabase || !isSupabaseConfigured()) return false;
+  if (!supabase) return false;
   const publicCode = normalizeCode(row.publicCode || "");
   if (!publicCode || !row.targetUrl) return false;
 
@@ -58,8 +71,9 @@ export async function upsertQrRouteIndex(row: QrCodeRecord): Promise<boolean> {
 }
 
 export async function findQrRouteByPublicCode(code: string): Promise<QrCodeRecord | null> {
+  if (!isSupabaseAvailable()) return null;
   const supabase = getSupabase();
-  if (!supabase || !isSupabaseConfigured()) return null;
+  if (!supabase) return null;
   const publicCode = normalizeCode(code);
   if (!publicCode) return null;
 
@@ -93,8 +107,9 @@ export async function findQrRouteByPublicCode(code: string): Promise<QrCodeRecor
 }
 
 export async function deleteQrRouteIndex(publicCode: string): Promise<void> {
+  if (!isSupabaseAvailable()) return;
   const supabase = getSupabase();
-  if (!supabase || !isSupabaseConfigured()) return;
+  if (!supabase) return;
   const code = normalizeCode(publicCode);
   if (!code) return;
   const { error } = await supabase.from("app_kv").delete().eq("key", routeKey(code));
@@ -103,8 +118,9 @@ export async function deleteQrRouteIndex(publicCode: string): Promise<void> {
 
 /** Optional typed-table upsert when public_code column exists. */
 export async function upsertQrCodeRow(row: QrCodeRecord): Promise<boolean> {
+  if (!isSupabaseAvailable()) return false;
   const supabase = getSupabase();
-  if (!supabase || !isSupabaseConfigured()) return false;
+  if (!supabase) return false;
   const publicCode = normalizeCode(row.publicCode || "");
   const payload: Record<string, unknown> = {
     id: row.id,

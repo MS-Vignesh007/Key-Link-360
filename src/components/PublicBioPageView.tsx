@@ -242,6 +242,16 @@ export default function PublicBioPageView({
   }, [pageId]);
 
   useEffect(() => {
+    const rawTitle = customDetails?.title || pageTitle || "BioLink";
+    const cleanTitle = rawTitle.trim();
+    if (!cleanTitle || cleanTitle.toLowerCase() === "keylink360") {
+      document.title = "KeyLink360";
+    } else {
+      document.title = `${cleanTitle} · KeyLink360`;
+    }
+  }, [customDetails?.title, pageTitle]);
+
+  useEffect(() => {
     if (mode === "live") return;
 
     const handleStorage = (event: StorageEvent) => {

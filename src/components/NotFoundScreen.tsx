@@ -11,7 +11,7 @@ export default function NotFoundScreen({ onNavigate }: NotFoundScreenProps) {
     <PageShell>
       <PageHeader
         title="Page not found"
-        subtitle="This address is not part of KEYLINK360. Use the menu or go back to your dashboard."
+        subtitle="This address is not part of KeyLink360. Use the menu or go back to your dashboard."
       />
       <div className="flex flex-wrap gap-3">
         <button

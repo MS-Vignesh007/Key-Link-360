@@ -14,6 +14,7 @@ import {
   Globe,
   HelpCircle,
   Headphones,
+  ShieldAlert,
   LucideIcon
 } from "lucide-react";
 
@@ -23,6 +24,12 @@ export interface NavItem {
   icon: LucideIcon;
   pro?: boolean;
 }
+
+export const ADMIN_NAV_ITEM: NavItem = {
+  id: ScreenId.SUPER_ADMIN,
+  label: "Control Center",
+  icon: ShieldAlert
+};
 
 export interface NavCategory {
   title: string;
@@ -76,11 +83,27 @@ const SCREEN_TITLES: Partial<Record<ScreenId, string>> = {
   [ScreenId.CUSTOM_DOMAINS]: "Custom Domains",
   [ScreenId.HELP_CENTER]: "Help Center",
   [ScreenId.CONTACT_SUPPORT]: "Contact Support",
-  [ScreenId.ACCOUNT]: "Account"
+  [ScreenId.ACCOUNT]: "Account",
+  [ScreenId.SUPER_ADMIN]: "Control Center"
 };
 
+export const APP_BRAND_NAME = "KeyLink360";
+
 export function getScreenTitle(screen: ScreenId): string {
-  return SCREEN_TITLES[screen] ?? "KEYLINK360";
+  return SCREEN_TITLES[screen] ?? APP_BRAND_NAME;
+}
+
+export function formatDocumentTitle(pageTitle?: string | null): string {
+  const clean = pageTitle?.trim();
+  if (
+    !clean ||
+    clean.toLowerCase() === "keylink360" ||
+    clean.toLowerCase() === "keylink 360" ||
+    clean.toLowerCase() === "keylink-360"
+  ) {
+    return APP_BRAND_NAME;
+  }
+  return `${clean} · ${APP_BRAND_NAME}`;
 }
 
 /** URL path for each app screen (React Router). */
@@ -100,7 +123,8 @@ export const SCREEN_PATHS: Record<ScreenId, string> = {
   [ScreenId.CUSTOM_DOMAINS]: "/custom-domains",
   [ScreenId.HELP_CENTER]: "/help-center",
   [ScreenId.CONTACT_SUPPORT]: "/contact-support",
-  [ScreenId.ACCOUNT]: "/account"
+  [ScreenId.ACCOUNT]: "/account",
+  [ScreenId.SUPER_ADMIN]: "/admin"
 };
 
 /** Authenticated app routes (excludes login). */
@@ -114,7 +138,6 @@ export function screenToPath(screen: ScreenId): string {
 
 export function pathToScreen(pathname: string): ScreenId | null {
   const normalized = pathname.replace(/\/+$/, "") || "/";
-  if (normalized === "/") return ScreenId.DASHBOARD;
 
   for (const [screen, routePath] of Object.entries(SCREEN_PATHS) as Array<[ScreenId, string]>) {
     if (routePath === normalized) return screen;

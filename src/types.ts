@@ -14,12 +14,14 @@ export enum ScreenId {
   CUSTOM_DOMAINS = "CUSTOM_DOMAINS",
   HELP_CENTER = "HELP_CENTER",
   CONTACT_SUPPORT = "CONTACT_SUPPORT",
-  ACCOUNT = "ACCOUNT"
+  ACCOUNT = "ACCOUNT",
+  SUPER_ADMIN = "SUPER_ADMIN"
 }
 
 export interface UserProfile {
   name: string;
   email: string;
+  role?: "MAIN_OWNER" | "SUB_OWNER";
   avatarUrl: string;
   plan: string;
   isVerified: boolean;

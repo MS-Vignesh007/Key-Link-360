@@ -11,6 +11,10 @@ export default function PublicQrScanRedirect() {
   const [message, setMessage] = useState("Opening destination…");
 
   useEffect(() => {
+    document.title = "Opening Link · KeyLink360";
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     const run = async () => {
       const publicCode = String(code || "")

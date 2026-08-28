@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KEYLINK360 — Complete Project Analysis</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 14mm 18mm 14mm;
+    @bottom-center {
+      content: "KEYLINK360 Architecture & Technical Specification · Page " counter(page);
+      font-size: 8pt;
+      color: #64748b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.55;
+    color: #0f172a;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+  .doc-title {
+    font-size: 22pt;
+    font-weight: 900;
+    color: #0284c7;
+    border-bottom: 3px solid #0284c7;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+  .meta-banner {
+    background: #f0f9ff;
+    border-left: 4px solid #0284c7;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 9pt;
+    color: #0369a1;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title {
+    font-size: 13.5pt;
+    font-weight: 800;
+    color: #0f172a;
+    background: #f8fafc;
+    border-left: 4px solid #0284c7;
+    padding: 5px 10px;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    border-radius: 0 4px 4px 0;
+    page-break-after: avoid;
+  }
+  .sub-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  .sub-sub-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #475569;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  .divider {
+    border: 0;
+    height: 1px;
+    background: #e2e8f0;
+    margin: 16px 0;
+  }
+  code {
+    font-family: "JetBrains Mono", "Consolas", "Courier New", monospace;
+    font-size: 8.5pt;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 1.5px 4.5px;
+    border-radius: 3px;
+    border: 1px solid #e2e8f0;
+  }
+  .code-block {
+    background: #090d16;
+    color: #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", "Consolas", "Courier New", monospace;
+    font-size: 8pt;
+    line-height: 1.4;
+    overflow-x: auto;
+    margin: 8px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+  }
+  .code-block code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+  }
+  .table-wrapper {
+    width: 100%;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 5px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #f1f5f9;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  ul.list-item {
+    margin: 2px 0 4px 18px;
+    padding: 0;
+  }
+  ul.list-item li {
+    margin-bottom: 2px;
+  }
+  .numbered-row {
+    display: flex;
+    margin-bottom: 4px;
+    align-items: baseline;
+  }
+  .numbered-row .q-num {
+    font-weight: 800;
+    color: #0284c7;
+    margin-right: 6px;
+    min-width: 22px;
+  }
+  .numbered-row .q-text {
+    flex: 1;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+  .badge-warning {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+  }
+  .badge-info {
+    background: #e0e7ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+  }
+  .badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+</style>
+</head>
+<body>
+<div class="meta-banner">
+  <div>
+    <strong>KEYLINK360 SAAS PLATFORM SPECIFICATION & CODEBASE ANALYSIS</strong><br/>
+    <span>Source Code Inspection & Verification Report · 47 Full Sections</span>
+  </div>
+  <div style="text-align: right; font-weight: 600;">
+    Platform Owner Confidential<br/>
+    React 19 + Express 4 + Supabase
+  </div>
+</div>
+
+<h1 class="doc-title">KEYLINK360 — COMPLETE PROJECT ANALYSIS</h1>
+<hr class="divider"/>
+<h2 class="section-title">1. Executive Summary</h2>
+<p><strong>KEYLINK360</strong> is a full-featured, multi-tenant digital presence and micro-website SaaS platform built with <strong>React 19 + TypeScript + Vite 6 + Tailwind CSS v4</strong> on the frontend, and an <strong>Express 4 + Node.js (TypeScript via <code>tsx</code>)</strong> backend deployed in a hybrid storage architecture (<strong>Local JSON Store <code>data-store.json</code> + Supabase PostgreSQL with KV &amp; Normalized tables</strong>).</p>
+<p>The system allows registered users (<strong>Sub Owners</strong>) to build, host, and publish mobile-first mini-websites and bio-link landing pages, attach custom apex domains and subdomains (via automated Cloudflare for SaaS, Cloudflare OAuth, or manual DNS), generate customizable dynamic QR codes with durable <code>/q/:code</code> redirect matrices, shorten links, manage probabilistic traffic link rotators, capture structured leads with Razorpay pay-on-submit integration, manage WhatsApp marketing assets, and track granular visitor telemetry (devices, OS, browsers, referrer, hostnames).</p>
+<hr class="divider"/>
+<h2 class="section-title">2. Short Introduction</h2>
+<p>KEYLINK360 is an all-in-one digital presence suite designed to replace isolated tools (e.g., Linktree for links, Bitly for URL shortening, QR code generators, Typeform for lead capture, and Carrd for landing pages) into a unified, branded platform where each user owns their own digital hub on custom domains or free platform subdomains.</p>
+<hr class="divider"/>
+<h2 class="section-title">3. Detailed Introduction</h2>
+<p>Based on direct source-code inspection:</p>
+<ul class="list-item"><li><strong>The Platform Engine</strong>: Orchestrated by <code>server.ts</code>, which acts as an Express HTTP server, WebSocket/Vite development middleware in local environments, and an edge router serving both API requests and dynamic hostname resolution for incoming tenant traffic.</li></ul>
+<ul class="list-item"><li><strong>The Client Application</strong>: A responsive Single Page Application (SPA) driven by <code>src/App.tsx</code>, featuring 16 workspace screens (<code>src/navigation.ts</code>), a comprehensive 27-block drag-and-drop page builder (<code>src/components/BioPagesScreen.tsx</code> &amp; <code>src/lib/bioBlocks.ts</code>), and dynamic client/server public renderers (<code>src/components/PublicBioPageView.tsx</code>).</li></ul>
+<ul class="list-item"><li><strong>Multi-Tenant Routing Engine</strong>: Custom domains and platform subdomains resolve dynamically without rebuilding the frontend:</li></ul>
+<p>* Apex &amp; Subdomain traffic (<code>yourbrand.com</code>, <code>shop.yourbrand.com</code>) is intercepted by Express middleware (<code>server.ts:1176-1240</code>) or Cloudflare Workers (<code>workers/custom-domain-proxy.js</code>).</p>
+<p>* The hostname is mapped to a database-backed <code>page_id</code> (<code>server/domains/repository.ts</code>), setting a route cookie and rendering the corresponding public bio page directly under the user&#x27;s custom brand.</p>
+<hr class="divider"/>
+<h2 class="section-title">4. Core Purpose</h2>
+<p>The core purpose of KEYLINK360 is to provide creators, freelancers, small businesses, and agencies with an instant, code-free digital storefront and identity engine. It operationalizes the <strong>Build → Connect → Track → Grow</strong> lifecycle:</p>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Build</strong>: Assemble mobile-first landing pages with 27 interactive block types and 50 industry templates.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Connect</strong>: Link custom domains (<code>yourbrand.com</code>), subdomains (<code>links.yourbrand.com</code>), platform subdomains (<code>user.keylink360.mindflo.today</code>), dynamic QR codes, and WhatsApp channels.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Track</strong>: Collect visit and click telemetry, user-agent parsing, link rotator distribution stats, and QR scan metrics.</span></div>
+<div class="numbered-row"><span class="q-num">4.</span><span class="q-text"><strong>Grow</strong>: Capture contact leads, process Razorpay transactions, and retarget audiences across advertising networks.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">5. Problem Being Solved</h2>
+<div class="table-wrapper"><table>
+<thead><tr><th>Problem in Market</th><th>Fragmented Legacy Approach</th><th>KEYLINK360 Codebase Solution</th></tr></thead><tbody>
+<tr><td><strong>Tool Sprawl</strong></td><td>Paying for 5 separate SaaS tools (Linktree + Bitly + QR Tiger + Typeform + Carrd)</td><td>All 5 modules integrated in one dashboard (<code>src/App.tsx</code>) with zero context switching.</td></tr>
+<tr><td><strong>Weak Branding</strong></td><td>Rigid <code>linktr.ee/username</code> URLs that dilute business credibility</td><td>Full Custom Domain engine (<code>server/domains/</code>) supporting Root Domains (A records) and Subdomains (CNAMEs).</td></tr>
+<tr><td><strong>Broken Physical QR Codes</strong></td><td>Static QR codes printed on physical brochures break whenever the URL changes</td><td>Smart QR matrix (<code>server/qrCodes/repository.ts</code>) where the matrix URL <code>/q/:code</code> stays permanent while the destination can be updated infinitely.</td></tr>
+<tr><td><strong>Unmonetized Lead Capture</strong></td><td>Contact forms that require separate webhook integrations to collect payments</td><td>Built-in Razorpay checkout (<code>server/payments/</code> &amp; <code>src/lib/razorpayCheckout.ts</code>) that collects payment upon form submission before creating verified leads and showing Thank You pages.</td></tr>
+<tr><td><strong>A/B Testing Complexity</strong></td><td>Expensive enterprise traffic rotators</td><td>Integrated Link Rotator (<code>server/linkRotators/</code>) with probabilistic percentage-based traffic splitting.</td></tr>
+</tbody></table></div>
+<hr class="divider"/>
+<h2 class="section-title">6. Main Owner Model</h2>
+<h3 class="sub-title">Conceptual Hierarchy</h3>
+<pre class="code-block"><code>KEYLINK360 SaaS Platform
+    │
+    ├── Main Owner (Platform Super-Admin / Operator)
+    │      ├── Controls Server Infrastructure (Express / Railway / Docker)
+    │      ├── Controls Primary Domain &amp; Cloudflare for SaaS Zone (mindflo.today)
+    │      ├── Controls Database Backend (Supabase PostgreSQL / Root KV)
+    │      └── Configures Global Secrets (AUTH_SECRET, SMTP, Cloudflare OAuth, Razorpay)
+    │
+    └── KEYLINK360 Sub Owners (Registered Users)
+           ├── Account: keylink360@gmail.com (Demo) or Newly Registered User
+           ├── Digital Assets: Bio Pages, Mini Websites, Short Links, Rotators, QR Codes
+           └── Connected Custom Domains &amp; DNS Provider OAuth Connections</code></pre>
+<h3 class="sub-title">Reality in Code</h3>
+<ul class="list-item"><li><strong>Tenant Isolation</strong>: Resources in the database have an <code>owner_user_id</code> column (<code>supabase/schema.sql</code>).</li></ul>
+<ul class="list-item"><li><strong>Platform Configuration</strong>: Managed strictly through environment variables (<code>.env.example</code>) and server startup hooks (<code>server.ts:1303-1312</code>).</li></ul>
+<ul class="list-item"><li><strong>Main Owner Admin Dashboard</strong>: <strong>NOT FOUND / NOT IMPLEMENTED IN UI</strong>. The platform currently lacks a dedicated <code>/admin</code> UI for the Main Owner to view all platform users, suspend accounts, view global revenue, or set tenant quotas. The database stores records, and syncs normalized tables, but no multi-tenant super-admin panel exists in <code>src/components/</code>.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">7. Sub Owner Model</h2>
+<p>In KEYLINK360, every registered user is a <strong>Sub Owner</strong>. Upon registration (<code>server/auth/routes.ts:150-320</code>), a user account is created with <code>plan: &quot;Free Plan&quot;</code> and assigned a unique UUID.</p>
+<h3 class="sub-title">Capabilities of a Sub Owner (Verified in Code):</h3>
+<ul class="list-item"><li><strong>Own Profile</strong>: Update name, business/company name, phone, country, avatar (<code>PATCH /api/auth/profile</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Bio Pages / Mini Websites</strong>: Create unlimited pages, customize designs, drag-and-drop blocks, save drafts, publish live (<code>/api/pages</code>, <code>/api/page/:id</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Short Links</strong>: Generate custom slug URLs under the platform or user&#x27;s connected domain (<code>/api/short-links</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Link Rotators</strong>: Create split-traffic A/B tests (<code>/api/link-rotators</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Smart QR Codes</strong>: Generate customized branded vector QR codes with dynamic destination updates (<code>/api/qr-codes</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Leads &amp; CRM</strong>: View, tag, export, and manage contacts submitted via bio forms (<code>/api/contacts</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Custom Domains</strong>: Connect apex domains and subdomains with automated or manual DNS verification (<code>/api/domains</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Platform Subdomain</strong>: Claim free branded address (<code>{slug}.keylink360.mindflo.today</code>) (<code>/api/platform-subdomains</code>).</li></ul>
+<ul class="list-item"><li><strong>Own Media Assets</strong>: Upload and manage media assets stored via Base64/Data URLs (<code>/api/workspace/import</code>).</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">8. User / Visitor Model</h2>
+<pre class="code-block"><code>Visitor (End User / Customer)
+    │
+    ├── Accesses Sub Owner&#x27;s URL (e.g., https://johnsmith.com or https://keylink360.mindflo.today/?previewPageId=...)
+    │
+    ├── Triggers Telemetry: /api/track (Records Visit Event, Device, OS, Browser, Hostname)
+    │
+    ├── Interacts with Page:
+    │     ├── Clicks Socials / External Links (Triggers Click Event)
+    │     ├── Submits Contact / Smart Form (Sends POST to /api/leads)
+    │     ├── Pays via Razorpay Modal (Verifies HMAC-SHA256 signature -&gt; POST /api/payments/verify-order)
+    │     ├── Downloads vCard Contact (.vcf) directly into phone contacts
+    │     ├── Plays Interactive Link Spin (Receives coupon code)
+    │     └── Opens Google Maps navigation
+    │
+    └── Scans Physical QR Code: Hits /q/:code -&gt; Increments Scan Counter -&gt; 302 Redirects to Live Target</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">9. Target Users &amp; Implementation Matrix</h2>
+<div class="table-wrapper"><table>
+<thead><tr><th>Target User Category</th><th>Why KEYLINK360 is Useful</th><th>Supporting Code Features</th><th>Actual Status</th><th>Evidence in Codebase</th></tr></thead><tbody>
+<tr><td><strong>Freelancers &amp; Developers</strong></td><td>Showcase portfolios, share GitHub/LinkedIn, provide downloadable vCards, book calls.</td><td>Header, Text, Button, Socials, vCard, PDF, Testimonials, Form blocks.</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/lib/bioBlocks.ts:289-317</code>, <code>src/lib/systemTemplates.ts:240-340</code></td></tr>
+<tr><td><strong>Small Businesses &amp; Shops</strong></td><td>Showcase physical locations, product catalogs, phone/WhatsApp CTA, collect leads.</td><td>Shop block, Map block (Google Maps embed), Call block (<code>tel:</code>), Call-to-action buttons.</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/lib/bioBlocks.ts:211-250, 634-744, 762-770</code>, <code>src/components/bio/blockViews.tsx:375-470</code></td></tr>
+<tr><td><strong>Creators &amp; Influencers</strong></td><td>Aggregate social profiles, YouTube video previews, Spotify/SoundCloud music, tip jar.</td><td>Video block (auto YouTube thumbnail), Music embed, Socials row, Tip Jar (Coffee/PayPal).</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/lib/bioBlocks.ts:13-64, 251-258, 583-622</code>, <code>src/components/bio/SocialLinksRow.tsx</code></td></tr>
+<tr><td><strong>E-Commerce &amp; Marketers</strong></td><td>Traffic rotation (A/B testing), smart coupons, countdown flash sales, lead generation.</td><td>Link Rotator, Countdown block, Coupon block, Link Spin wheel, Short links.</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/linkRotators/</code>, <code>src/lib/bioBlocks.ts:133-177, 203-240</code>, <code>server/shortLinks/</code></td></tr>
+<tr><td><strong>Agencies &amp; Organizations</strong></td><td>Manage multiple bio pages under different custom client domains.</td><td>Multi-page CRUD, Custom Domains wizard with Cloudflare OAuth &amp; automated DNS.</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/components/CustomDomainsScreen.tsx</code>, <code>server/domains/</code></td></tr>
+<tr><td><strong>Consultants &amp; Service Providers</strong></td><td>Charge consultation fees upfront before receiving lead inquiries.</td><td>Razorpay payment integration on form submit + custom Thank You page.</td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/payments/routes.ts</code>, <code>src/components/bio/FormPaymentCheckout.tsx</code></td></tr>
+</tbody></table></div>
+<hr class="divider"/>
+<h2 class="section-title">10. Core Features</h2>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Cyberpunk &amp; Clean Hybrid Theme Studio</strong>: 12 custom color palettes (<code>dark</code>, <code>light</code>, <code>midnight</code>, <code>ocean</code>, <code>rose</code>, <code>forest</code>, <code>sunset</code>, <code>lavender</code>, <code>slate</code>, <code>gold</code>, <code>coral</code>, <code>arctic</code>).</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Cover Photo Studio</strong>: Fine-grained image customization (fit: cover/contain/fill, zoom 50–200%, focus points, custom px height, padding, horizontal/vertical margins).</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>50 Built-In System Templates</strong>: Curated templates across 12 business categories (<code>src/lib/systemTemplates.ts</code>).</span></div>
+<div class="numbered-row"><span class="q-num">4.</span><span class="q-text"><strong>27 Interactive Page Blocks</strong>: Full coverage of widgets from dynamic forms to gamified spin wheels.</span></div>
+<div class="numbered-row"><span class="q-num">5.</span><span class="q-text"><strong>Durable Smart QR Engine</strong>: Center brand logos, custom colors, rounded/square/compact dots, high-res PNG/SVG/PDF export, and permanent short codes (<code>/q/:code</code>).</span></div>
+<div class="numbered-row"><span class="q-num">6.</span><span class="q-text"><strong>Smart Short Links</strong>: Custom slugs, UTM tracking, device and browser breakdown, and traffic retargeting metadata.</span></div>
+<div class="numbered-row"><span class="q-num">7.</span><span class="q-text"><strong>Probabilistic Link Rotator</strong>: Dynamic weighted percentage distribution across multiple target URLs with 5-second anti-fraud IP deduplication.</span></div>
+<div class="numbered-row"><span class="q-num">8.</span><span class="q-text"><strong>Automated &amp; Manual Custom Domains</strong>: Dual-track DNS engine supporting automated Cloudflare OAuth CNAME creation and manual A/CNAME record setup for GoDaddy, Namecheap, Hostinger, etc.</span></div>
+<div class="numbered-row"><span class="q-num">9.</span><span class="q-text"><strong>Free Platform Subdomains</strong>: Instantly claimable <code>{slug}.keylink360.mindflo.today</code> addresses.</span></div>
+<div class="numbered-row"><span class="q-num">10.</span><span class="q-text"><strong>Integrated CRM &amp; Lead Engine</strong>: Dynamic form field builder, auto-tagging, masked contact privacy, CSV export, and manual contact addition.</span></div>
+<div class="numbered-row"><span class="q-num">11.</span><span class="q-text"><strong>Razorpay Monetization</strong>: End-to-end checkout on public forms with cryptographic webhook/signature validation.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">11. Technology Stack</h2>
+<h3 class="sub-title">Frontend Stack</h3>
+<ul class="list-item"><li><strong>Framework</strong>: React 19.0.1 (<code>package.json:29</code>)</li></ul>
+<ul class="list-item"><li><strong>Language</strong>: TypeScript 5.8.2 (<code>package.json:34</code>)</li></ul>
+<ul class="list-item"><li><strong>Build Tool</strong>: Vite 6.2.3 (<code>package.json:35</code>)</li></ul>
+<ul class="list-item"><li><strong>Routing</strong>: React Router DOM v7.18.1 (<code>package.json:31</code>)</li></ul>
+<ul class="list-item"><li><strong>Styling</strong>: Tailwind CSS v4.1.14 (<code>@tailwindcss/vite: 4.1.14</code>, <code>src/index.css</code>)</li></ul>
+<ul class="list-item"><li><strong>Icons</strong>: Lucide React v0.546.0 (<code>package.json:25</code>)</li></ul>
+<ul class="list-item"><li><strong>Animations</strong>: Motion (Framer Motion) v12.23.24 (<code>package.json:26</code>)</li></ul>
+<ul class="list-item"><li><strong>QR Generation</strong>: Canvas QR renderer &amp; <code>api.qrserver.com</code> fallback (<code>src/lib/qrCodes.ts</code>, <code>src/lib/qrExport.ts</code>)</li></ul>
+<ul class="list-item"><li><strong>Payment SDK</strong>: Razorpay Standard Checkout Script (<code>https://checkout.razorpay.com/v1/checkout.js</code> loaded dynamically in <code>src/lib/razorpayCheckout.ts</code>)</li></ul>
+<h3 class="sub-title">Backend Stack</h3>
+<ul class="list-item"><li><strong>Runtime</strong>: Node.js (v20+ recommended, types <code>@types/node: ^22.14.0</code>)</li></ul>
+<ul class="list-item"><li><strong>Execution</strong>: <code>tsx</code> (TypeScript Execute) for development (<code>npm run dev -&gt; tsx server.ts</code>), <code>esbuild</code> for production bundling (<code>dist/server.cjs</code>)</li></ul>
+<ul class="list-item"><li><strong>Web Framework</strong>: Express 4.21.2 (<code>package.json:24</code>)</li></ul>
+<ul class="list-item"><li><strong>Middleware</strong>: <code>cookie-parser: ^1.4.7</code>, <code>express.json({ limit: &quot;10mb&quot; })</code>, custom CORS handler (<code>server.ts:78-124</code>)</li></ul>
+<ul class="list-item"><li><strong>Cryptography</strong>: Node.js native <code>node:crypto</code> (<code>scryptSync</code>, <code>createHmac</code>, <code>timingSafeEqual</code>, <code>randomBytes</code>)</li></ul>
+<ul class="list-item"><li><strong>Email Client</strong>: Nodemailer 9.0.3 (<code>package.json:27</code>)</li></ul>
+<ul class="list-item"><li><strong>Database Client</strong>: <code>@supabase/supabase-js: ^2.110.2</code> (<code>package.json:17</code>)</li></ul>
+<ul class="list-item"><li><strong>Payment Gateway</strong>: Razorpay Node SDK 2.9.8 (<code>package.json:28</code>)</li></ul>
+<h3 class="sub-title">Infrastructure &amp; External Services</h3>
+<ul class="list-item"><li><strong>Containerization</strong>: <code>Dockerfile</code> (Node 20-alpine multi-stage build, <code>railway.json</code>)</li></ul>
+<ul class="list-item"><li><strong>Edge Proxy</strong>: Cloudflare for SaaS + Cloudflare Worker (<code>workers/custom-domain-proxy.js</code>)</li></ul>
+<ul class="list-item"><li><strong>Database</strong>: Supabase PostgreSQL (or local <code>data-store.json</code> filesystem fallback)</li></ul>
+<ul class="list-item"><li><strong>DNS Providers</strong>: Cloudflare API v4, Cloudflare OAuth PKCE, GoDaddy, Hostinger, Namecheap, Porkbun, Squarespace</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">12. Frontend Architecture</h2>
+<h3 class="sub-title">Structure &amp; Layout</h3>
+<p>The application is governed by <code>src/App.tsx</code>, which manages workspace state and mounts either:</p>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Unauthenticated Shell</strong>: Cyberpunk glowing <code>LoginScreen.tsx</code> with tabs for Sign In, Create Account, Forgot Password, OTP Reset, and Email Verification.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Authenticated SaaS Shell</strong>: <code>Sidebar.tsx</code> + <code>MobileNavDrawer.tsx</code> + <code>Header.tsx</code> + Scrollable Main Content Area + <code>Footer.tsx</code> + <code>PublishModal.tsx</code>.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Public Dynamic Surface</strong>: When <code>isBrandedHost</code> is true or <code>?previewPageId=</code> is present, the app bypasses the workspace shell completely and renders <code>PublicBioPageView.tsx</code> in isolation.</span></div>
+<pre class="code-block"><code>src/
+├── components/
+│   ├── bio/                   # 11 Modular builder widgets &amp; renderers
+│   │   ├── BlockRenderer.tsx       # Memoized switch-case block dispatcher
+│   │   ├── blockViews.tsx          # 27 Block UI components
+│   │   ├── CoverPhotoControls.tsx  # Granular cover styling sliders
+│   │   ├── FormFieldsEditor.tsx    # Drag-and-drop form field builder
+│   │   ├── FormPaymentCheckout.tsx # Razorpay embedded payment modal
+│   │   ├── ThankYouPageView.tsx    # Post-submission 2nd page
+│   │   └── ...
+│   ├── customDomains/         # 11 Components for domain wizard &amp; DNS guides
+│   │   ├── ConnectDomainWizard.tsx # Multi-step connect dialog
+│   │   ├── DnsRecordsTable.tsx     # Copyable A/CNAME record table
+│   │   ├── PlatformSubdomainClaimModal.tsx
+│   │   └── ...
+│   ├── BioPagesScreen.tsx     # Full page builder (editor + phone preview)
+│   ├── DashboardScreen.tsx    # Analytics dashboard &amp; telemetry feed
+│   ├── ContactsScreen.tsx     # CRM table, search, tag filters, CSV export
+│   ├── LinksScreen.tsx        # Short links manager &amp; analytics modal
+│   ├── LinkRotatorScreen.tsx  # Probabilistic rotator manager
+│   ├── QRCodesScreen.tsx      # Vector QR studio &amp; design controls
+│   ├── WhatsAppScreen.tsx     # WhatsApp broadcasts &amp; template manager
+│   ├── TemplatesScreen.tsx    # 50-template visual gallery
+│   ├── PixelsScreen.tsx       # Tracking pixels manager
+│   ├── MediaLibraryScreen.tsx # Media file browser &amp; data URL uploader
+│   ├── IntegrationsScreen.tsx # 3rd party tool integrations &amp; voting
+│   └── AccountScreen.tsx      # Profile, password, sessions, plan view
+├── lib/                       # API clients and utilities (27 files)
+├── storage/                   # Local caching &amp; sync helpers (4 files)
+└── types.ts                   # Master TypeScript contracts (499 lines)</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">13. Backend Architecture</h2>
+<p>The backend is built in Express 4 with modular route controllers and repository services:</p>
+<pre class="code-block"><code>server/
+├── auth/                      # Authentication, sessions, crypto, mailer
+│   ├── crypto.ts              # scryptSync password hashing &amp; HS256 JWT tokens
+│   ├── mail.ts                # Nodemailer SMTP transporter &amp; dev fallback
+│   ├── routes.ts              # /api/auth endpoints (register, login, refresh, me)
+│   ├── store.ts               # In-memory &amp; Supabase auth cache
+│   └── validation.ts          # Email normalization, password strength validator
+├── db/                        # Database connectivity &amp; sync engine
+│   ├── rootStore.ts           # Hybrid memory/file/Supabase KV manager
+│   ├── supabase.ts            # Supabase client singleton
+│   └── syncNormalized.ts      # Bi-directional sync from root blob -&gt; 20 SQL tables
+├── domains/                   # Custom domain verification &amp; Cloudflare engine
+│   ├── cloudflare/            # Cloudflare API v4 DNS, Zone &amp; Token services
+│   ├── providers/             # Cloudflare OAuth, token vault, registry
+│   ├── dns.ts                 # Node.js native dns.promises lookup engine
+│   ├── hostname.ts            # Apex/subdomain detection &amp; target resolution
+│   ├── originHostRewrite.ts   # Cloudflare Origin Rule automation
+│   ├── repository.ts          # custom_domains CRUD &amp; logging
+│   ├── routes.ts              # /api/domains endpoints
+│   └── sslPoller.ts           # Background SSL verification polling loop
+├── platformSubdomains/        # Free platform subdomains engine
+├── linkRotators/              # Link rotator repository, slug &amp; click guard
+├── shortLinks/                # Short links repository, slug &amp; redirect engine
+├── qrCodes/                   # QR code repository &amp; scan tracking
+├── payments/                  # Razorpay checkout order creation &amp; verification
+├── pages/                     # Bio page documents &amp; metadata store
+└── leads.ts                   # Form payload parsing, tagging, and contact upsert</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">14. Database Architecture</h2>
+<h3 class="sub-title">Hybrid Dual-Tier Persistence Model</h3>
+<p>The database architecture uses a <strong>resilient hybrid pattern</strong>:</p>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Tier 1 (In-Memory + Disk Debounce)</strong>: All mutations immediately update an in-memory store and are debounced to <code>data-store.json</code> (400ms buffer in <code>server/db/rootStore.ts:12</code>).</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Tier 2 (Supabase <code>app_kv</code> Blob)</strong>: The entire workspace root is persisted to the PostgreSQL table <code>app_kv</code> (key = <code>&#x27;root&#x27;</code>). If Supabase fails, a <strong>circuit breaker</strong> opens for 5 minutes (<code>SUPABASE_COOLDOWN_MS = 300,000ms</code>), falling back to local file storage seamlessly without crashing the server.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Tier 3 (Normalized Relational Tables)</strong>: A background sync queue (<code>server/db/syncNormalized.ts</code>) mirrors the JSON blob into 20+ typed SQL tables:</span></div>
+<pre class="code-block"><code>erDiagram
+    auth_users ||--o{ auth_sessions : has
+    auth_users ||--o{ bio_pages : owns
+    auth_users ||--o{ custom_domains : owns
+    auth_users ||--o{ platform_subdomains : owns
+    auth_users ||--o{ contacts : owns
+    auth_users ||--o{ smart_links : owns
+    auth_users ||--o{ qr_codes : owns
+    auth_users ||--o{ dns_provider_connections : owns
+    
+    bio_pages ||--|| bio_page_documents : contains
+    bio_pages ||--o{ custom_domains : routed_by
+    bio_pages ||--o{ platform_subdomains : routed_by
+    bio_pages ||--o{ tracking_events : generates</code></pre>
+<h3 class="sub-title">Key Relational Tables (<code>supabase/schema.sql</code>):</h3>
+<ul class="list-item"><li><code>auth_users</code>: User identity, password salt/hash, plan, verification state, login attempts.</li></ul>
+<ul class="list-item"><li><code>auth_sessions</code>: Active refresh tokens, IP, user-agent, expiry.</li></ul>
+<ul class="list-item"><li><code>bio_pages</code>: Page high-level metadata (title, slug, status, view counter, owner ID).</li></ul>
+<ul class="list-item"><li><code>bio_page_documents</code>: JSON block tree (<code>blocks</code>) and configuration (<code>details</code>).</li></ul>
+<ul class="list-item"><li><code>custom_domains</code>: Hostname, type (<code>A</code>/<code>CNAME</code>), DNS target, verification status, Cloudflare provider ID, SSL status.</li></ul>
+<ul class="list-item"><li><code>platform_subdomains</code>: Subdomain slug (<code>user</code>), mapped <code>page_id</code>, status.</li></ul>
+<ul class="list-item"><li><code>contacts</code>: Captured form leads, phone, email, source domain, template ID, tags.</li></ul>
+<ul class="list-item"><li><code>smart_links</code>: Short link slugs, target URLs, click metrics, retargeting pixels.</li></ul>
+<ul class="list-item"><li><code>qr_codes</code>: QR metadata, <code>public_code</code>, permanent <code>scan_url</code>, destination URL, total scans, unique scanners.</li></ul>
+<ul class="list-item"><li><code>tracking_events</code>: Atomic telemetry events (<code>visit</code>, <code>click</code>, <code>register</code>) with device, OS, browser, domain, port.</li></ul>
+<ul class="list-item"><li><code>dns_provider_connections</code>: Encrypted customer OAuth access/refresh tokens (<code>supabase/cloudflare-oauth-multitenant-migration.sql</code>).</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">15. Authentication</h2>
+<ul class="list-item"><li><strong>Mechanism</strong>: Dual Bearer JWT + HTTP-Only Cookie strategy (<code>server/auth/crypto.ts</code>, <code>server/auth/routes.ts</code>).</li></ul>
+<ul class="list-item"><li><strong>Password Security</strong>: Salted <code>scryptSync</code> with 16-byte random salt, 64-byte key length, and constant-time <code>timingSafeEqual</code> comparison (<code>server/auth/crypto.ts:28-43</code>).</li></ul>
+<ul class="list-item"><li><strong>Tokens</strong>:</li></ul>
+<p>* <strong>Access Token</strong>: Short-lived (15 minutes) signed with <code>HS256</code> using <code>AUTH_SECRET</code>.</p>
+<p>* <strong>Refresh Token</strong>: Long-lived (7 days normal, 30 days if &quot;Remember Me&quot; is checked) stored hashed (<code>sha256</code>) in database.</p>
+<ul class="list-item"><li><strong>Brute-Force Protection</strong>: Account locks for 15 minutes after 5 consecutive failed login attempts (<code>MAX_LOGIN_ATTEMPTS = 5</code>, <code>LOCK_MS = 900,000</code>).</li></ul>
+<ul class="list-item"><li><strong>Email Verification</strong>: Tokenized 24-hour verification links (<code>sendVerificationEmail</code> in <code>server/auth/mail.ts</code>).</li></ul>
+<ul class="list-item"><li><strong>Password Reset</strong>: 6-digit OTP + secure reset token with 15-minute validity (<code>sendPasswordResetOtp</code>).</li></ul>
+<ul class="list-item"><li><strong>Demo Account</strong>: Seeded automatically (<code>keylink360@gmail.com</code> / <code>keyslink3601234</code>) when <code>AUTH_SEED_DEMO=&quot;true&quot;</code>.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">16. Authorization &amp; Tenant Isolation</h2>
+<h3 class="sub-title">How Tenant Isolation Works</h3>
+<ul class="list-item"><li><strong>Middleware</strong>: <code>requireAuth</code> (<code>server/auth/routes.ts</code>) validates the <code>Authorization: Bearer &lt;token&gt;</code> header or <code>key_access</code> cookie, resolving <code>req.authUser = { id, email, plan }</code>.</li></ul>
+<ul class="list-item"><li><strong>Resource Ownership</strong>:</li></ul>
+<p>* <strong>Pages</strong>: <code>GET /api/pages</code> filters by <code>page.ownerUserId === req.authUser.id</code>. <code>POST /api/page/:id</code> rejects requests if the page does not belong to the user.</p>
+<p>* <strong>Domains</strong>: <code>GET /api/domains</code> calls <code>listDomains(req.authUser.id)</code>. Domain deletion and DNS editing require <code>req.authUser.id</code> ownership match.</p>
+<p>* <strong>Platform Subdomains</strong>: Enforces unique composite key <code>(owner_user_id, page_id)</code> and rejects modifications by other users.</p>
+<p>* <strong>Contacts</strong>: <code>GET /api/contacts</code> only returns leads where <code>ownerUserId === req.authUser.id</code>.</p>
+<h3 class="sub-title">Identified Authorization Vulnerabilities / Exceptions in Code:</h3>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>QR Code Listing Leak</strong>: In <code>server.ts:229</code>, <code>GET /api/qr-codes</code> calls <code>listQrCodes()</code> which returns <strong>all QR codes in the system</strong> instead of filtering by <code>req.authUser.id</code>.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>QR Code Deletion</strong>: <code>DELETE /api/qr-codes/:id</code> does not verify if the deleting user owns that specific QR code.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Analytics Events</strong>: <code>GET /api/analytics</code> in <code>server.ts:1107</code> returns aggregate metrics for all tracking events across the whole system rather than scoped to the requesting user&#x27;s pages.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">17. Page / Bio Website System</h2>
+<p>The page builder is a full-featured micro-website constructor:</p>
+<ul class="list-item"><li><strong>Creation &amp; Management</strong>: Users can create unlimited pages (<code>src/components/BioPagesScreen.tsx</code>), clone existing pages, delete pages, and switch between <code>Draft</code>, <code>Paused</code>, and <code>Live</code> statuses.</li></ul>
+<ul class="list-item"><li><strong>Editing Architecture</strong>: Edits update local component state and autosave to <code>bio_page_drafts</code> (<code>/api/drafts</code>) for cross-device hydration.</li></ul>
+<ul class="list-item"><li><strong>Publishing Engine</strong>: Clicking &quot;Publish&quot; commits blocks and details to <code>/api/page/:id</code>, updates the page status to <code>Live</code>, and writes public cache keys (<code>src/storage/bioBuilderStorage.ts</code>).</li></ul>
+<ul class="list-item"><li><strong>Public Page Resolution</strong>: Unauthenticated visitors loading <code>/api/page/:id</code> are rejected with <code>404 (PAGE_NOT_PUBLISHED)</code> if the page is in <code>Draft</code> or <code>Paused</code> mode, ensuring unpublished drafts are never exposed publicly.</li></ul>
+<ul class="list-item"><li><strong>Second-Page Thank You Flow</strong>: Bio pages feature an integrated &quot;Thank You Page&quot; (<code>ThankYouPageView.tsx</code>) that acts as a dedicated post-submission screen with customizable emojis, titles, messages, and custom thank-you blocks.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">18. Links System (Smart Short Links)</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>server/shortLinks/routes.ts</code> &amp; <code>src/components/LinksScreen.tsx</code>.</li></ul>
+<ul class="list-item"><li><strong>Slug Management</strong>: Auto-generated 6-character nanoid slugs (<code>generateShortLinkSlug</code>) or custom alphanumeric slugs validated against reserved platform keywords.</li></ul>
+<ul class="list-item"><li><strong>Domain Binding</strong>: A short link can be assigned to either the platform hostname (<code>keylink360.mindflo.today</code>) or any of the user&#x27;s verified custom domains (<code>hostDomain</code>).</li></ul>
+<ul class="list-item"><li><strong>Redirect Execution</strong>: <code>GET /l/:slug</code> resolves the destination URL and serves an HTML/JS <code>window.location.replace</code> redirect page (<code>buildShortLinkRedirectHtml</code>), preventing custom-domain edge proxy CSS breakage.</li></ul>
+<ul class="list-item"><li><strong>Analytics</strong>: Tracks total clicks, today/week/month breakdowns, device distribution (Mobile, Desktop, Tablet), and daily click velocity charts (<code>server/shortLinks/analytics.ts</code>).</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">19. QR System (Smart Dynamic QR Codes)</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>server/qrCodes/repository.ts</code> &amp; <code>src/components/QRCodesScreen.tsx</code>.</li></ul>
+<ul class="list-item"><li><strong>Permanent Matrix Architecture</strong>: When a QR code is generated, the matrix encodes a fixed platform redirect URL: <code>https://keylink360.mindflo.today/q/:publicCode</code>.</li></ul>
+<ul class="list-item"><li><strong>Dynamic Target Re-linking</strong>: Sub Owners can edit the destination URL at any time in the dashboard. The physical printed QR code continues to point to <code>/q/:code</code>, which reads the latest <code>targetUrl</code> on the fly and 302-redirects the mobile visitor.</li></ul>
+<ul class="list-item"><li><strong>Custom Styling</strong>:</li></ul>
+<p>* Dot Patterns: <code>rounded</code>, <code>square</code>, <code>compact</code>.</p>
+<p>* Brand Logos: Center emblem overlay supporting preset icons (<code>WhatsApp</code>, <code>Star</code>, <code>Link</code>, <code>Profile Avatar</code>) or custom uploaded brand marks (<code>designLogoUrl</code>).</p>
+<p>* Color Picker: Custom hex brand colors.</p>
+<ul class="list-item"><li><strong>Exporting</strong>: Client-side high-resolution rendering to PNG, vector SVG, and printable PDF formats (<code>src/lib/qrExport.ts</code>).</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">20. Leads System (Integrated CRM)</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>server/leads.ts</code> &amp; <code>src/components/ContactsScreen.tsx</code>.</li></ul>
+<ul class="list-item"><li><strong>Ingestion Flow</strong>:</li></ul>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text">Visitor fills out a dynamic <code>Smart Form</code> or <code>Form</code> block on a public bio page.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text">Frontend sends <code>POST /api/leads</code> with all key-value field pairs.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><code>buildLeadContact()</code> extracts and normalizes <code>name</code>, <code>email</code>, <code>phone</code>, <code>message</code>, and custom fields.</span></div>
+<div class="numbered-row"><span class="q-num">4.</span><span class="q-text">Automatically stamps metadata: <code>sourceDomain</code> (e.g. <code>shop.mybrand.com</code>), <code>pageTitle</code>, <code>templateName</code>, <code>blockLabel</code>, and <code>ownerUserId</code>.</span></div>
+<div class="numbered-row"><span class="q-num">5.</span><span class="q-text">Privacy Masking: Computes <code>maskedEmail</code> (<code>j••••@gmail.com</code>) and <code>maskedPhone</code> (<code>•••••• 4321</code>) for secure display.</span></div>
+<ul class="list-item"><li><strong>Dashboard Capabilities</strong>:</li></ul>
+<p>* Contact search across all fields.</p>
+<p>* Tag management (e.g. <code>VIP</code>, <code>Lead</code>, <code>Razorpay Paid</code>).</p>
+<p>* CSV export formatted for import into external CRMs.</p>
+<p>* Manual lead creation/editing.</p>
+<hr class="divider"/>
+<h2 class="section-title">21. WhatsApp System</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>src/components/WhatsAppScreen.tsx</code> &amp; <code>server/db/syncNormalized.ts</code>.</li></ul>
+<ul class="list-item"><li><strong>Current Implementation</strong>:</li></ul>
+<p>* Sub Owners can draft and organize WhatsApp marketing campaigns and broadcast message templates in the dashboard.</p>
+<p>* Campaign metrics (Recipients count, Open Rate %, Status: <code>Draft</code>/<code>Active</code>/<code>Sent</code>) are managed and saved in the user&#x27;s workspace collections.</p>
+<ul class="list-item"><li><strong>Integration Reality</strong>:</li></ul>
+<p>* <strong>Direct Meta Cloud API integration is NOT in the backend</strong>.</p>
+<p>* The &quot;Manage Connection&quot; modal links out to an external provider portal (&quot;WOO Chat&quot; at <code>https://woochat.esowolf.in/login</code>).</p>
+<p>* On the public bio pages, the WhatsApp block generates instant <code>https://wa.me/{phone}?text={encoded_message}</code> deep links that launch the visitor&#x27;s native WhatsApp application directly.</p>
+<hr class="divider"/>
+<h2 class="section-title">22. Analytics System</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>server.ts:784-829</code> (<code>/api/track</code>) &amp; <code>src/components/DashboardScreen.tsx</code>.</li></ul>
+<ul class="list-item"><li><strong>Telemetry Data Points Captured</strong>:</li></ul>
+<p>* <code>eventType</code>: <code>&quot;visit&quot;</code> (page view), <code>&quot;click&quot;</code> (link/button interaction), <code>&quot;register&quot;</code> (form lead submission).</p>
+<p>* <code>device</code>: Desktop, Mobile, Tablet (parsed from User-Agent via regex).</p>
+<p>* <code>os</code>: Windows, macOS, iOS, Android, Linux.</p>
+<p>* <code>browser</code>: Chrome, Safari, Firefox, Edge, Opera.</p>
+<p>* <code>domain</code>: The host on which the event occurred.</p>
+<p>* <code>port</code>: Client connection port and host port mapping.</p>
+<p>* <code>timestamp</code>: ISO-8601 UTC timestamp.</p>
+<ul class="list-item"><li><strong>Dashboard Visualization</strong>:</li></ul>
+<p>* 7-day click distribution bar chart.</p>
+<p>* Time range filters: <code>7D</code>, <code>30D</code>, <code>90D</code>, <code>All</code>.</p>
+<p>* Real-time activity log displaying recent visitor interactions.</p>
+<hr class="divider"/>
+<h2 class="section-title">23. Tracking System (Pixels &amp; Retargeting)</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>src/components/PixelsScreen.tsx</code> &amp; <code>supabase/schema.sql</code>.</li></ul>
+<ul class="list-item"><li><strong>Supported Pixel Profiles in UI</strong>:</li></ul>
+<p>* Facebook Pixel (Format: Numeric ID)</p>
+<p>* Google Analytics Tag (Format: <code>G-</code>, <code>AW-</code>, <code>UA-</code>, <code>GT-</code>)</p>
+<p>* TikTok Pixel (Format: Alphanumeric)</p>
+<p>* Pinterest Tag (Format: Numeric)</p>
+<ul class="list-item"><li><strong>Status</strong>: <strong><span class="badge badge-warning"><span class="badge badge-warning">Partial</span>ly Implemented</span></strong>.</li></ul>
+<p>* Pixels are validated and stored in the database (<code>tracking_pixels</code>).</p>
+<p>* Short links support storing retargeting tags (<code>retargeting: [&quot;fb&quot;, &quot;google&quot;, &quot;tiktok&quot;, &quot;snapchat&quot;]</code>).</p>
+<p>* <strong>Missing in Code</strong>: Automatic runtime script injection (<code>&lt;script&gt;</code> tags) for Facebook Pixel or Google Tag Manager into <code>PublicBioPageView.tsx</code> DOM is not currently wired up.</p>
+<hr class="divider"/>
+<h2 class="section-title">24. Media System (Media Library)</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>src/components/MediaLibraryScreen.tsx</code> &amp; <code>supabase/schema.sql</code>.</li></ul>
+<ul class="list-item"><li><strong>Capabilities</strong>:</li></ul>
+<p>* Supports image types: PNG, JPEG, JPG, GIF, WebP (up to 5MB).</p>
+<p>* Image dimension extraction (<code>Image.naturalWidth × Image.naturalHeight</code>).</p>
+<p>* File search, type filtering (<code>image</code>, <code>video</code>, <code>document</code>, <code>archive</code>), copy URL, and deletion.</p>
+<ul class="list-item"><li><strong>Storage Reality</strong>:</li></ul>
+<p>* Files uploaded via the browser are read into <strong>Base64 Data URLs</strong> via <code>FileReader.readAsDataURL()</code>.</p>
+<p>* Records are stored in <code>media_files</code> table / JSON blob.</p>
+<p>* <strong><span class="badge badge-danger">Not Found</span></strong>: Dedicated S3, Cloudflare R2, or Google Cloud Storage bucket direct upload service.</p>
+<hr class="divider"/>
+<h2 class="section-title">25. Template System</h2>
+<ul class="list-item"><li><strong>Controller</strong>: <code>src/lib/systemTemplates.ts</code> &amp; <code>src/components/TemplatesScreen.tsx</code>.</li></ul>
+<ul class="list-item"><li><strong>Catalog Size</strong>: <strong>50 pre-built system templates</strong> + 1 &quot;Start from Scratch&quot; blank canvas.</li></ul>
+<ul class="list-item"><li><strong>Categories</strong>: E-commerce, Link in Bio, Professional, Personal, Freelancer, Launch, Portfolio, Industry, Real Estate, Restaurants, Agency, Business.</li></ul>
+<ul class="list-item"><li><strong>Instantiation Flow</strong>:</li></ul>
+<p>* Clicking &quot;Use Template&quot; in <code>TemplatesScreen.tsx</code> clones the template&#x27;s block structure and theme styles (<code>cloneBlocks()</code>).</p>
+<p>* Instantiates a new page in <code>BioPagesScreen.tsx</code> with <code>isUncommitted: true</code> until saved or published.</p>
+<p>* Sub Owners can also save their own custom-built pages as reusable private templates (<code>/api/templates</code>).</p>
+<hr class="divider"/>
+<h2 class="section-title">26. Custom Domain System</h2>
+<pre class="code-block"><code>Sub Owner
+    │
+    ├── 1. Opens Connect Domain Wizard (src/components/customDomains/ConnectDomainWizard.tsx)
+    │
+    ├── 2. Enters Domain Name (e.g. &quot;mybrand.com&quot; or &quot;links.mybrand.com&quot;)
+    │
+    ├── 3. DNS Analysis (/api/domains/analyze):
+    │        ├── Detects Root vs Subdomain
+    │        └── Performs DNS NS lookup to identify registrar (Cloudflare, GoDaddy, Namecheap, etc.)
+    │
+    ├── 4. Selects Method:
+    │        ├── Path A (Cloudflare One-Click): OAuth flow -&gt; creates CNAME automatically with gray cloud
+    │        └── Path B (Manual DNS): Displays copyable A record (@ -&gt; 69.46.46.90) or CNAME (prefix -&gt; keylink360.mindflo.today)
+    │
+    ├── 5. Sub Owner selects mapped Bio Page (&quot;Which published page should open on this address?&quot;)
+    │
+    ├── 6. Test Connection (/api/domains/:id/test-connection):
+    │        ├── Verifies DNS resolution via Node.js dns.promises
+    │        └── Verifies HTTP reachability (/api/health)
+    │
+    └── 7. Status transitions: Pending DNS -&gt; DNS Verified -&gt; Provisioning SSL -&gt; Verified (LIVE)</code></pre>
+<h3 class="sub-title">Domain Architecture Rules (<code>docs/custom-domain-dns-rules.md</code>):</h3>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Root / Apex Domain (<code>yourbrand.com</code>)</strong>:</span></div>
+<p>* Record Type: <code>A</code></p>
+<p>* Host / Name: <code>@</code></p>
+<p>* Target: <code>CUSTOM_DOMAIN_A_TARGET</code> (default <code>69.46.46.90</code>)</p>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Subdomain (<code>bio.yourbrand.com</code>, <code>shop.yourbrand.com</code>)</strong>:</span></div>
+<p>* Record Type: <code>CNAME</code></p>
+<p>* Host / Name: Prefix only (<code>bio</code>, <code>shop</code>)</p>
+<p>* Target: <code>CUSTOM_DOMAIN_CNAME_TARGET</code> (default <code>keylink360.mindflo.today</code>)</p>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Subdomain A-Record Guard</strong>: The system strictly prevents users from adding A records for subdomains (<code>isWrongSubdomainARecordMessage</code> in <code>server/domains/routes.ts:214</code>).</span></div>
+<hr class="divider"/>
+<h2 class="section-title">27. Cloudflare / DNS Architecture</h2>
+<pre class="code-block"><code>Customer Browser (https://shop.customer.com)
+       │
+       ▼
+   DNS CNAME (shop -&gt; keylink360.mindflo.today)
+       │
+       ▼
+Cloudflare for SaaS (SSL for customer.com on platform zone mindflo.today)
+       │
+       ▼
+Cloudflare Origin Rule / Cloudflare Worker (workers/custom-domain-proxy.js)
+   - Rewrites Host header -&gt; keylink360.mindflo.today
+   - Injects X-Forwarded-Host: shop.customer.com
+   - Injects key-customer-host: shop.customer.com
+       │
+       ▼
+Railway / Production Node.js Server (Express app on port 3000)
+   - Express middleware detects non-platform hostname
+   - Queries findRoutableDomainByHostname(&quot;shop.customer.com&quot;)
+   - Locates target pageId
+   - Sets cookie keys_routed_page = pageId
+   - Serves Single Page App (SPA) index.html
+       │
+       ▼
+React Client (src/App.tsx)
+   - Detects isBrandedHost = true
+   - Calls resolveBrandedDomain(&quot;shop.customer.com&quot;)
+   - Renders &lt;PublicBioPageView pageId={pageId} mode=&quot;live&quot; /&gt;</code></pre>
+<h3 class="sub-title">Verification Regarding Cloudflare $0.18 Fee:</h3>
+<ul class="list-item"><li><strong>The $0.18 Cloudflare Custom Hostname charge is NOT found / NOT implemented anywhere in the code</strong>.</li></ul>
+<ul class="list-item"><li>No billing logic, metering, or fee deductions exist in the codebase for Cloudflare domain provisioning.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">28. Multi-Domain Architecture</h2>
+<ul class="list-item"><li><strong>1:1 Page-to-Domain Mapping</strong>: One bio page is bound to exactly one active custom domain (<code>server/domains/routes.ts:854</code>).</li></ul>
+<ul class="list-item"><li><strong>Multi-Domain Support Per User</strong>: A single Sub Owner can connect <strong>multiple domains and subdomains</strong> across their account, provided each points to a distinct bio page:</li></ul>
+<p>* <code>example.com</code> → Page A (Main Brand)</p>
+<p>* <code>links.example.com</code> → Page B (Bio Link)</p>
+<p>* <code>shop.example.com</code> → Page C (Product Catalog)</p>
+<ul class="list-item"><li><strong>Domain Limit Enforcement</strong>: <strong>None currently in code</strong>. Users on the <code>&quot;Free Plan&quot;</code> can technically create and connect multiple domains without a software limit check.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">29. Complete User Workflow</h2>
+<pre class="code-block"><code>flowchart TD
+    A[Discover KEYLINK360] --&gt; B[Register Account /api/auth/register]
+    B --&gt; C[Verify Email / OTP]
+    C --&gt; D[Access Dashboard]
+    D --&gt; E[Choose System Template / Scratch]
+    E --&gt; F[Customize in Builder 27 Blocks + Themes]
+    F --&gt; G[Save Draft /api/drafts]
+    G --&gt; H[Publish Live /api/page/:id]
+    H --&gt; I{Choose Connection Method}
+    I --&gt;|Custom Domain| J[Connect Domain Wizard &amp; Add DNS]
+    I --&gt;|Free Subdomain| K[Claim {slug}.keylink360.mindflo.today]
+    I --&gt;|Smart QR| L[Generate Branded Vector QR Code]
+    I --&gt;|Short Link| M[Create /l/:slug with UTM Tags]
+    J --&gt; N[Share Public URL / QR with Audience]
+    K --&gt; N
+    L --&gt; N
+    M --&gt; N
+    N --&gt; O[Visitors Interact &amp; Submit Leads / Pay INR]
+    O --&gt; P[Sub Owner Views Realtime Analytics &amp; CRM Leads]</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">30. Visitor Workflow</h2>
+<pre class="code-block"><code>flowchart TD
+    V[Visitor opens URL / Scans QR] --&gt; R{Request Route}
+    R --&gt;|/q/:code| Q[Record Scan -&gt; Redirect to Target]
+    R --&gt;|/l/:slug| S[Record Click -&gt; JS Redirect to Target]
+    R --&gt;|/r/:slug| T[Calculate Probability -&gt; Redirect to Winner]
+    R --&gt;|Custom Domain / Subdomain| P[Render PublicBioPageView]
+    
+    P --&gt; T1[Trigger /api/track &#x27;visit&#x27;]
+    P --&gt; ACT{Visitor Action}
+    ACT --&gt;|Click Link/Social| T2[Trigger /api/track &#x27;click&#x27;]
+    ACT --&gt;|Submit Form| FORM[POST /api/leads]
+    FORM --&gt; PAY{Payment Enabled?}
+    PAY --&gt;|Yes| RAZOR[Open Razorpay Modal -&gt; Verify HMAC -&gt; Show Thank You]
+    PAY --&gt;|No| THANKS[Show Thank You Page View]</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">31. Technical Data Flow</h2>
+<pre class="code-block"><code>sequenceDiagram
+    autonumber
+    actor Visitor
+    participant Browser as Client Browser
+    participant Edge as Cloudflare / DNS
+    participant Server as Express Server (server.ts)
+    participant DB as PostgreSQL (Supabase / RootStore)
+    actor Owner as Sub Owner
+
+    Visitor-&gt;&gt;Edge: GET https://shop.mybrand.com
+    Edge-&gt;&gt;Server: Forward request with X-Forwarded-Host: shop.mybrand.com
+    Server-&gt;&gt;DB: findRoutableDomainByHostname(&quot;shop.mybrand.com&quot;)
+    DB--&gt;&gt;Server: Return domain record (pageId = &quot;page_123&quot;)
+    Server--&gt;&gt;Browser: Serve index.html with routing cookie
+    Browser-&gt;&gt;Server: GET /api/public/custom-domain/shop.mybrand.com
+    Server--&gt;&gt;Browser: Return { pageId: &quot;page_123&quot;, title: &quot;My Shop&quot; }
+    Browser-&gt;&gt;Server: GET /api/page/page_123
+    Server--&gt;&gt;Browser: Return block list &amp; theme details
+    Browser-&gt;&gt;Visitor: Render interactive bio storefront
+    Browser-&gt;&gt;Server: POST /api/track (visit event, UA device, browser)
+    Server-&gt;&gt;DB: Append to tracking_events table
+    Owner-&gt;&gt;Server: GET /api/dashboard (fetches real-time metrics)
+    Server--&gt;&gt;Owner: Render visitor graphs &amp; lead alerts</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">32. Live Production Benefits</h2>
+<p>When deployed in production, KEYLINK360 functions as a self-contained digital ecosystem requiring zero manual DNS provisioning or server reboots when new users connect domains.</p>
+<hr class="divider"/>
+<h2 class="section-title">33. Sub Owner Benefits</h2>
+<ul class="list-item"><li><strong>Single Centralized Digital Home</strong>: One URL aggregates website, portfolio, shop, social links, location, and documents.</li></ul>
+<ul class="list-item"><li><strong>100% Brand Independence</strong>: Custom domain support eliminates third-party platform branding (<code>yourbrand.com</code>).</li></ul>
+<ul class="list-item"><li><strong>Instant Monetization</strong>: Sell digital goods, services, or consultation appointments using built-in Razorpay checkout without configuring complex merchant gateways.</li></ul>
+<ul class="list-item"><li><strong>Bulletproof Physical Marketing</strong>: Print Smart QR codes on merchandise, business cards, and banners once; change where they redirect anytime from the dashboard.</li></ul>
+<ul class="list-item"><li><strong>Lead Ownership</strong>: Direct capture of visitor emails and phone numbers into an exportable CRM.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">34. Sub Owner Customer (Visitor) Benefits</h2>
+<ul class="list-item"><li><strong>Instant Load Times</strong>: Lightweight client-rendered bundle with zero bloated scripts.</li></ul>
+<ul class="list-item"><li><strong>Zero Friction Actions</strong>: Direct click-to-call (<code>tel:</code>), instant WhatsApp messaging (<code>wa.me</code>), one-tap Google Maps directions, and 1-click vCard contact card saving to mobile address books.</li></ul>
+<ul class="list-item"><li><strong>Secure Payments</strong>: Trusted Razorpay checkout modal with UPI, Credit Cards, NetBanking, and Wallets.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">35. KEYLINK360 Main Owner Benefits</h2>
+<ul class="list-item"><li><strong>High-Margin SaaS Architecture</strong>: Single codebase and single Node.js runtime serves unlimited tenant websites using dynamic hostname rewriting.</li></ul>
+<ul class="list-item"><li><strong>Zero-Cost Scaling for Subdomains</strong>: Platform subdomains (<code>*.keylink360.mindflo.today</code>) leverage a single wildcard DNS entry (<code>server/platformSubdomains/ensureWildcardDns.ts</code>).</li></ul>
+<ul class="list-item"><li><strong>Sticky Multi-Product Lock-in</strong>: Users who host their domains, short links, QR codes, and forms on the platform face high switching costs, driving retention.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">36. Real-World Use Cases</h2>
+<h3 class="sub-title">Real-World Example A: Freelance Designer</h3>
+<ul class="list-item"><li><strong>URL</strong>: <code>alexdesigns.dev</code> (Connected via Custom Domains CNAME)</li></ul>
+<ul class="list-item"><li><strong>Blocks Used</strong>: Header, Bio, Gallery (Dribbble snapshots), Button (Figma portfolio), Testimonials (Client quotes), Smart Form (Project inquiries with dynamic budget select), vCard.</li></ul>
+<ul class="list-item"><li><strong>Outcome</strong>: Potential clients view portfolio, download contact info to mobile, and submit structured project inquiries that land in Alex&#x27;s Contacts tab.</li></ul>
+<h3 class="sub-title">Real-World Example B: Local Specialty Restaurant</h3>
+<ul class="list-item"><li><strong>URL</strong>: <code>tasteofmadras.in</code> (Connected via Root Domain A record)</li></ul>
+<ul class="list-item"><li><strong>Blocks Used</strong>: Header, Cover Photo, Banner (&quot;Sunday Brunch 20% Off&quot;), PDF (Downloadable Menu), Map (Marina Beach Google Maps embed with 1-tap navigation), Call (&quot;Call for Reservations&quot;), WhatsApp (&quot;Order via WhatsApp&quot;).</li></ul>
+<ul class="list-item"><li><strong>Outcome</strong>: Diners find the location, view the menu, and call or message the restaurant directly without intermediate platform commission fees.</li></ul>
+<h3 class="sub-title">Real-World Example C: Content Creator / Influencer</h3>
+<ul class="list-item"><li><strong>URL</strong>: <code>priya.keylink360.mindflo.today</code> (Free Platform Subdomain)</li></ul>
+<ul class="list-item"><li><strong>Blocks Used</strong>: Video (Latest YouTube vlog with live player), Music (Spotify track), Socials row (Instagram, YouTube, TikTok), Link Spin (Interactive discount wheel for sponsor merch), Tip Jar (Buy me a coffee).</li></ul>
+<ul class="list-item"><li><strong>Outcome</strong>: Unified link-in-bio across all social media bios driving sponsor sales and fan engagement.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">37. Business Model Analysis</h2>
+<h3 class="sub-title">Monetization Tiers (Conceptual vs <span class="badge badge-success">Implemented</span>)</h3>
+<pre class="code-block"><code>[Free Tier]
+  - 1-3 Bio Pages
+  - Free Platform Subdomain ({user}.keylink360.mindflo.today)
+  - Standard Analytics
+  - Standard QR Codes
+
+[Pro / Creator Tier] (Paid Monthly/Annual)
+  - Unlimited Bio Pages
+  - 1-5 Custom Domains (yourbrand.com)
+  - Razorpay Form Payments Enabled
+  - Custom QR Branding (Center Logo Uploads)
+  - Link Rotator with Unlimited Split Destinations
+
+[Agency / Business Tier] (High-Ticket Paid)
+  - 25+ Custom Domains
+  - Priority SSL Provisioning
+  - Multi-user Team Workspaces
+  - Full Tracking Pixel Ingestion</code></pre>
+<h3 class="sub-title">Reality in Code:</h3>
+<ul class="list-item"><li><strong>Billing System Status</strong>: <strong><span class="badge badge-warning"><span class="badge badge-warning">Partial</span>ly Implemented</span></strong>.</li></ul>
+<ul class="list-item"><li><code>Razorpay</code> SDK is integrated for <strong>Sub Owners collecting payments on their bio pages</strong> (<code>server/payments/</code>).</li></ul>
+<ul class="list-item"><li><strong>SaaS Subscription Billing for the Platform Itself</strong> (e.g. charging Sub Owners $9/month to use KEYLINK360 Pro) is <strong>NOT implemented</strong>. All users are assigned <code>&quot;Free Plan&quot;</code> upon registration (<code>server/auth/store.ts:77</code>), and plan upgrade buttons in the UI trigger informative modals rather than automated recurring subscription checkouts.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">38. Security Analysis</h2>
+<div class="table-wrapper"><table>
+<thead><tr><th>Security Domain</th><th>Implementation in Codebase</th><th>Security Assessment</th></tr></thead><tbody>
+<tr><td><strong>Password Storage</strong></td><td><code>scryptSync</code> + 16-byte random salt + 64-byte key + <code>timingSafeEqual</code></td><td><strong>Strong</strong> (Industry standard against rainbow table &amp; timing attacks)</td></tr>
+<tr><td><strong>Session Security</strong></td><td>JWT HS256 (15 min) + Refresh token (7-30 days) + HttpOnly cookies</td><td><strong>Strong</strong></td></tr>
+<tr><td><strong>Cross-Site Request Forgery (CSRF)</strong></td><td><code>assertSameOrigin</code> validation on state-changing API endpoints (<code>server/auth/routes.ts:95</code>) + Bearer token enforcement on domain mutations</td><td><strong>Strong</strong></td></tr>
+<tr><td><strong>Cross-Site Scripting (XSS)</strong></td><td>React JSX auto-escaping for DOM nodes; external URLs sanitized with <code>normalizeExternalUrl</code></td><td><strong>Good</strong></td></tr>
+<tr><td><strong>Rate Limiting</strong></td><td>Memory-based sliding window rate limiter on auth, QR scans, and public lookups (<code>server/auth/store.ts:384</code>, <code>server/domains/rateLimit.ts</code>)</td><td><strong>Good</strong> (Should move to Redis in distributed multi-instance setup)</td></tr>
+<tr><td><strong>Secret Management</strong></td><td><code>process.env</code> validation; production throws error if <code>AUTH_SECRET</code> is weak or missing (<code>server/auth/crypto.ts:8</code>)</td><td><strong>Strong</strong></td></tr>
+<tr><td><strong>Payment Verification</strong></td><td>Cryptographic HMAC-SHA256 signature verification on Razorpay callbacks (<code>server/payments/razorpayClient.ts:50</code>)</td><td><strong>Strong</strong></td></tr>
+<tr><td><strong>Tenant QR Isolation</strong></td><td><code>listQrCodes()</code> lacks user-scoping filter</td><td><strong>Identified Security Flaw (Fix Required)</strong></td></tr>
+</tbody></table></div>
+<hr class="divider"/>
+<h2 class="section-title">39. Scalability Analysis</h2>
+<h3 class="sub-title">Current Capacity &amp; Bottlenecks</h3>
+<pre class="code-block"><code>1 to 500 Concurrent Users:
+  - System operates smoothly with current in-memory store + Supabase background sync.
+  - Sub-second page loads; instant redirects on /q/:code and /l/:slug.
+
+1,000 to 5,000 Concurrent Users:
+  - In-memory JS cache (memory: Record&lt;string, unknown&gt;) in rootStore.ts will grow to several hundred MBs.
+  - JSON serialization on data-store.json could block the single-threaded Node.js event loop during heavy writes.
+
+10,000+ Users (Enterprise Scale):
+  - Bottleneck: The monolithic app_kv &#x27;root&#x27; JSON blob in Supabase cannot be concurrently updated by multiple load-balanced Railway instances without write conflicts.
+  - Requirement: Fully switch to direct SQL queries against the 20 normalized tables and replace in-memory rate limiting with Redis.</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">40. Current Implementation Status Overview</h2>
+<pre class="code-block"><code>Architecture:              Good (Solid hybrid Node/Express + React 19 structure)
+Frontend:                  Strong (Clean UI, Cyberpunk styling, responsive 27 blocks)
+Backend:                   Good (Comprehensive REST routes, DNS verification, crypto auth)
+Database:                  Good (Dual KV + 20 normalized tables with migration scripts)
+Authentication:            Strong (Scrypt password hashing, JWT, OTP, session tokens)
+Authorization:             Partial (User ownership enforced on pages/domains; leaking in QR/analytics)
+Page Builder / Studio:     Strong (27 interactive block types, themes, cover controls)
+Short Links:               Strong (Slugs, UTMs, device breakdown, JS redirect)
+Link Rotator:              Strong (Probabilistic weight distribution, anti-fraud IP dedupe)
+Smart QR Codes:            Strong (Vector studio, center logo, dynamic matrix redirect)
+Leads &amp; CRM:               Strong (Dynamic forms, auto-tagging, masked privacy, CSV export)
+Custom Domains:            Strong (Automated Cloudflare for SaaS, OAuth, manual DNS guides)
+Payments (Razorpay):       Strong (Public form pay-on-submit, HMAC verification)
+WhatsApp Integration:      Partial (Template/campaign UI exists; links to WOO Chat; no direct Meta API)
+Tracking Pixels:           Partial (Config stored; script tags not injected into public DOM)
+SaaS Platform Billing:     Planned (No recurring Stripe/Razorpay subscription engine for platform tiers)</code></pre>
+<hr class="divider"/>
+<h2 class="section-title">41. Implemented vs <span class="badge badge-warning">Partial</span> vs Planned vs Not Found</h2>
+<div class="table-wrapper"><table>
+<thead><tr><th>Feature Area</th><th>Status</th><th>Evidence / File Reference</th></tr></thead><tbody>
+<tr><td><strong>User Registration &amp; Login</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/auth/routes.ts</code>, <code>src/components/LoginScreen.tsx</code></td></tr>
+<tr><td><strong>Password Reset via OTP</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/auth/routes.ts:600-750</code>, <code>server/auth/mail.ts</code></td></tr>
+<tr><td><strong>Email Verification</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/auth/routes.ts:800-900</code>, <code>server/auth/mail.ts</code></td></tr>
+<tr><td><strong>27 Page Builder Blocks</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/lib/bioBlocks.ts:1-938</code>, <code>src/components/bio/blockViews.tsx</code></td></tr>
+<tr><td><strong>50 System Templates</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/lib/systemTemplates.ts:1-1123</code></td></tr>
+<tr><td><strong>Thank You Page Builder</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>src/components/bio/ThankYouPageView.tsx</code></td></tr>
+<tr><td><strong>Razorpay Public Form Pay</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/payments/routes.ts</code>, <code>src/lib/razorpayCheckout.ts</code></td></tr>
+<tr><td><strong>Custom Domains (A &amp; CNAME)</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/domains/</code>, <code>src/components/customDomains/</code></td></tr>
+<tr><td><strong>Cloudflare for SaaS Engine</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/domains/cloudflare.ts</code>, <code>server/domains/originHostRewrite.ts</code></td></tr>
+<tr><td><strong>Cloudflare Customer OAuth</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/domains/providers/cloudflareOAuth.ts</code></td></tr>
+<tr><td><strong>Dynamic Smart QR Codes</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/qrCodes/repository.ts</code>, <code>src/lib/qrExport.ts</code></td></tr>
+<tr><td><strong>Short Links &amp; Rotators</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/shortLinks/</code>, <code>server/linkRotators/</code></td></tr>
+<tr><td><strong>Lead Capture &amp; CRM</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/leads.ts</code>, <code>src/components/ContactsScreen.tsx</code></td></tr>
+<tr><td><strong>Free Platform Subdomains</strong></td><td><strong><span class="badge badge-success">Implemented</span></strong></td><td><code>server/platformSubdomains/</code></td></tr>
+<tr><td><strong>Tracking Pixels DOM Injection</strong></td><td><strong><span class="badge badge-warning">Partial</span></strong></td><td>UI exists in <code>PixelsScreen.tsx</code>; scripts not injected into <code>PublicBioPageView.tsx</code></td></tr>
+<tr><td><strong>WhatsApp Direct Cloud API</strong></td><td><strong><span class="badge badge-warning">Partial</span></strong></td><td>Campaign manager exists in <code>WhatsAppScreen.tsx</code>; no direct Meta webhook</td></tr>
+<tr><td><strong>Media Cloud Storage (S3/R2)</strong></td><td><strong><span class="badge badge-warning">Partial</span></strong></td><td>Base64 Data URL store in <code>MediaLibraryScreen.tsx</code>; no S3 bucket integration</td></tr>
+<tr><td><strong>SaaS Subscription Billing</strong></td><td><strong><span class="badge badge-info">Planned</span></strong></td><td>Plans defined in <code>UserProfile</code>; no billing checkout for platform plans</td></tr>
+<tr><td><strong>Super-Admin Management UI</strong></td><td><strong><span class="badge badge-danger">Not Found</span></strong></td><td>No <code>/admin</code> panel to manage all platform users</td></tr>
+<tr><td><strong>Cloudflare $0.18 Domain Fee</strong></td><td><strong><span class="badge badge-danger">Not Found</span></strong></td><td>No code or configuration references a $0.18 fee</td></tr>
+<tr><td><strong>Gemini AI Features</strong></td><td><strong><span class="badge badge-danger">Not Found</span></strong></td><td>Package <code>@google/genai</code> is in <code>package.json</code>, but unused in source code</td></tr>
+</tbody></table></div>
+<hr class="divider"/>
+<h2 class="section-title">42. Production Readiness</h2>
+<h3 class="sub-title">What is Production-Ready Now:</h3>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Core Bio Page Builder &amp; Mobile Rendering</strong>: Fully operational, fast, and responsive across all device breakpoints.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Custom Domain Engine</strong>: Fully configured for production deployments with Cloudflare for SaaS and Railway Origin Host Rewriting.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Smart Dynamic QR Codes</strong>: Permanent <code>/q/:code</code> redirects work reliably.</span></div>
+<div class="numbered-row"><span class="q-num">4.</span><span class="q-text"><strong>Short Links &amp; Traffic Rotator</strong>: High performance, bot-filtered, and redirect-safe.</span></div>
+<div class="numbered-row"><span class="q-num">5.</span><span class="q-text"><strong>Form Lead Capture &amp; Razorpay Payments</strong>: Cryptographically sound and fully wired to the CRM table.</span></div>
+<h3 class="sub-title">What Must Be Addressed Before Mass Public Launch:</h3>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Scope QR Codes &amp; Analytics to Authenticated User ID</strong>: Fix <code>listQrCodes()</code> and <code>/api/analytics</code> endpoints in <code>server.ts</code> to prevent cross-tenant data visibility.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>SMTP Configuration</strong>: Ensure real SMTP credentials (<code>SMTP_HOST</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>) are populated in production so verification emails and OTPs are delivered to real inboxes.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>Direct SQL Queries for High Concurrency</strong>: Ensure <code>npm run migrate:supabase</code> has been executed to migrate off the single JSON file to Postgres tables.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">43. Technical Risks</h2>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>File-Store Race Conditions Under Multi-Instance Deployment</strong>: If Railway runs multiple replica containers, <code>data-store.json</code> on local container disks will desynchronize. <strong>Solution</strong>: Configure <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> so Supabase is the single source of truth.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Memory Leaks from Large Base64 Media</strong>: Uploading multiple 5MB images as Base64 strings directly into the JSON store inflates memory usage. <strong>Solution</strong>: Implement Cloudflare R2 or AWS S3 direct pre-signed URL uploads.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>In-Memory Rate Limiter Resetting on Server Restart</strong>: <code>auth_rate_limits</code> stored in memory resets whenever the server restarts.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">44. Business / Product Risks</h2>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Abuse &amp; Phishing Risk</strong>: Open registration with custom domain mapping could allow malicious actors to host phishing or scam pages under custom domains. <strong>Mitigation</strong>: Implement automated URL scanning and domain abuse reporting tools.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Monetization Leakage</strong>: Because user domain limits and page creation limits are currently unenforced in code, users can utilize unlimited resources without upgrading to paid plans.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">45. Missing Features (Gap Analysis)</h2>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text"><strong>Super-Admin Platform Control Center</strong>: Global overview of total registered users, active custom domains, system bandwidth, and server logs.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text"><strong>Automated Platform Subscription Billing</strong>: Recurring subscription checkout (via Stripe or Razorpay Subscriptions) to automatically upgrade users from <code>Free Plan</code> to <code>Pro</code> / <code>Agency</code>.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text"><strong>S3 / Cloudflare R2 Object Storage</strong>: Direct bucket image/video file hosting instead of Base64 strings.</span></div>
+<div class="numbered-row"><span class="q-num">4.</span><span class="q-text"><strong>Native Meta WhatsApp Cloud API Gateway</strong>: Direct template messaging and automated auto-responders without external tool redirection.</span></div>
+<div class="numbered-row"><span class="q-num">5.</span><span class="q-text"><strong>Runtime Pixel Tag Injection</strong>: Dynamic rendering of <code>&lt;script&gt;</code> tags for Facebook Pixel and Google Analytics on public pages.</span></div>
+<div class="numbered-row"><span class="q-num">6.</span><span class="q-text"><strong>Gemini AI Integration</strong>: Utilizing the imported <code>@google/genai</code> dependency to offer AI copy generation for bios, headlines, and SEO meta tags.</span></div>
+<hr class="divider"/>
+<h2 class="section-title">46. Direct Answers to the 45 Core Project Questions</h2>
+<h3 class="sub-title">1. What is KEYLINK360?</h3>
+<p>KEYLINK360 is an all-in-one digital presence and micro-landing page SaaS platform that enables users to create customizable mobile-first websites, connect custom root/subdomains, create dynamic QR codes, shorten URLs, rotate traffic, capture leads, and collect payments.</p>
+<h3 class="sub-title">2. Why does KEYLINK360 exist?</h3>
+<p>To eliminate tool fragmentation and high monthly software costs by consolidating 5+ digital marketing tools into a single, unified, custom-branded ecosystem.</p>
+<h3 class="sub-title">3. What problem does it solve?</h3>
+<p>It solves brand dilution, tool sprawl, broken physical QR codes, unmonetized lead forms, and complicated DNS setup for non-technical creators and businesses.</p>
+<h3 class="sub-title">4. Who is the main owner?</h3>
+<p>The platform operator who hosts the backend on Railway/Docker, controls the primary domain (<code>mindflo.today</code>), manages the master Cloudflare for SaaS zone, and holds platform database access.</p>
+<h3 class="sub-title">5. Who are KEYLINK360 Sub Owners?</h3>
+<p>The registered platform users (creators, freelancers, businesses, agencies) who build and manage their own digital presence inside KEYLINK360 accounts.</p>
+<h3 class="sub-title">6. Who are the Sub Owners&#x27; users/visitors?</h3>
+<p>The end-user audience, clients, and customers who navigate to the Sub Owners&#x27; published bio pages, scan their QR codes, or click their short links.</p>
+<h3 class="sub-title">7. What can a Sub Owner create?</h3>
+<p>Bio pages, mini websites, thank-you pages, custom dynamic forms, short links, link rotators, dynamic vector QR codes, contact lead lists, WhatsApp campaign drafts, and custom domain connections.</p>
+<h3 class="sub-title">8. How many pages can a Sub Owner create?</h3>
+<p><strong>Unlimited in the current code</strong>. There is no server-side or client-side cap restricting the number of pages a user can create.</p>
+<h3 class="sub-title">9. Can a Sub Owner publish pages?</h3>
+<p><strong>Yes</strong>. Clicking &quot;Publish&quot; commits the draft blocks to the live database (<code>/api/page/:id</code>) and transitions status to <code>&quot;Live&quot;</code>.</p>
+<h3 class="sub-title">10. Can a Sub Owner edit pages after publishing?</h3>
+<p><strong>Yes</strong>. The editor allows real-time edits, previewing, and re-publishing at any time without changing the live URL.</p>
+<h3 class="sub-title">11. Can a Sub Owner use a custom domain?</h3>
+<p><strong>Yes</strong>. Both Root / Apex domains (e.g. <code>mybrand.com</code>) and Subdomains (e.g. <code>bio.mybrand.com</code>) are fully supported.</p>
+<h3 class="sub-title">12. Can a Sub Owner connect multiple domains?</h3>
+<p><strong>Yes</strong>. A Sub Owner can connect multiple custom domains/subdomains, mapping each one to a distinct bio page.</p>
+<h3 class="sub-title">13. Can a Sub Owner use subdomains?</h3>
+<p><strong>Yes</strong>. Subdomains on custom domains (<code>sub.brand.com</code>) and free platform subdomains (<code>user.keylink360.mindflo.today</code>) are both supported.</p>
+<h3 class="sub-title">14. How does DNS work?</h3>
+<ul class="list-item"><li>Root domains point an <strong>A record</strong> (<code>@</code>) to the platform IP (<code>69.46.46.90</code>).</li></ul>
+<ul class="list-item"><li>Subdomains point a <strong>CNAME record</strong> to <code>keylink360.mindflo.today</code>.</li></ul>
+<ul class="list-item"><li>Node.js <code>dns.promises</code> verifies DNS records on the backend.</li></ul>
+<h3 class="sub-title">15. How does Cloudflare fit into the architecture?</h3>
+<ul class="list-item"><li><strong>Platform Zone</strong>: Cloudflare for SaaS issues automated SSL certificates for all incoming custom hostnames.</li></ul>
+<ul class="list-item"><li><strong>Customer Zone</strong>: Cloudflare OAuth allows one-click automatic CNAME creation with gray-cloud (DNS-only) mode.</li></ul>
+<ul class="list-item"><li><strong>Edge Routing</strong>: Cloudflare Workers / Origin Rules rewrite incoming host headers to <code>keylink360.mindflo.today</code> while preserving the customer host in <code>X-Forwarded-Host</code>.</li></ul>
+<h3 class="sub-title">16. How do other domain providers fit?</h3>
+<p>Providers like GoDaddy, Namecheap, Hostinger, and Porkbun are detected via nameserver lookups; the UI presents exact copyable DNS records and registrar-specific step-by-step guides.</p>
+<h3 class="sub-title">17. What happens when a visitor opens a custom domain?</h3>
+<div class="numbered-row"><span class="q-num">1.</span><span class="q-text">Request hits Cloudflare -&gt; Origin Rule rewrites Host header -&gt; Reaches Express server.</span></div>
+<div class="numbered-row"><span class="q-num">2.</span><span class="q-text">Server matches <code>X-Forwarded-Host</code> against <code>custom_domains</code> database -&gt; Finds <code>pageId</code>.</span></div>
+<div class="numbered-row"><span class="q-num">3.</span><span class="q-text">Server responds with SPA -&gt; Client fetches page content -&gt; Displays the live bio storefront.</span></div>
+<h3 class="sub-title">18. What data is collected?</h3>
+<p>Page visit events, link click events, form lead entries, user-agent details (Device type, OS, Browser), request domain, client port, and timestamp.</p>
+<h3 class="sub-title">19. What analytics are available?</h3>
+<p>Total views, total clicks, total form registrations, 7-day click trend graphs, device breakdown charts, and real-time visitor activity feeds.</p>
+<h3 class="sub-title">20. How does a Sub Owner benefit?</h3>
+<p>Professional branded digital identity, higher conversion rates, instant payment collection, zero coding required, and complete lead ownership.</p>
+<h3 class="sub-title">21. How does the Sub Owner&#x27;s customer benefit?</h3>
+<p>Mobile-optimized, fast-loading interface with direct 1-tap WhatsApp chat, phone calling, directions, menu/brochure downloads, and secure checkout.</p>
+<h3 class="sub-title">22. How does KEYLINK360 benefit?</h3>
+<p>Scalable multi-tenant recurring SaaS model with low marginal server cost per tenant and high customer retention.</p>
+<h3 class="sub-title">23. What technologies are used?</h3>
+<p>React 19, TypeScript, Vite 6, Tailwind CSS v4, Express 4, Node.js, Supabase PostgreSQL, Cloudflare for SaaS, Nodemailer, and Razorpay.</p>
+<h3 class="sub-title">24. What is the frontend architecture?</h3>
+<p>Single Page Application (SPA) driven by React Router DOM v7, modular screen components, centralized workspace state, and an isolated public page renderer.</p>
+<h3 class="sub-title">25. What is the backend architecture?</h3>
+<p>Express REST API server with crypto auth controllers, domain lifecycle resolvers, dynamic redirect handlers, and background SSL polling loops.</p>
+<h3 class="sub-title">26. What is the database architecture?</h3>
+<p>Hybrid store with memory caching, local file debounce (<code>data-store.json</code>), Supabase key-value storage (<code>app_kv</code>), and background sync to 20 normalized SQL tables.</p>
+<h3 class="sub-title">27. What APIs exist?</h3>
+<p><code>/api/auth/<em></code>, <code>/api/pages/</em></code>, <code>/api/domains/<em></code>, <code>/api/platform-subdomains/</em></code>, <code>/api/short-links/<em></code>, <code>/api/link-rotators/</em></code>, <code>/api/qr-codes/<em></code>, <code>/api/contacts/</em></code>, <code>/api/payments/*</code>, <code>/api/track</code>, <code>/api/leads</code>, <code>/api/health</code>.</p>
+<h3 class="sub-title">28. What authentication system exists?</h3>
+<p>Custom Scrypt password hashing with unique salts, HS256 Access JWTs, database-stored Refresh tokens, password reset OTPs, and email verification tokens.</p>
+<h3 class="sub-title">29. What modules exist?</h3>
+<p>Dashboard, Bio Pages Builder, Contacts CRM, WhatsApp Manager, Short Links, Link Rotator, Smart QR Codes, Templates Gallery, Integrations, Pixels, Media Library, Custom Domains, Help Center, Contact Support, and Account Settings.</p>
+<h3 class="sub-title">30. What modules are incomplete?</h3>
+<ul class="list-item"><li><strong>WhatsApp</strong>: Has campaign UI but lacks Meta Cloud API webhook gateway.</li></ul>
+<ul class="list-item"><li><strong>Pixels</strong>: Has ID storage but lacks runtime script tag DOM injection.</li></ul>
+<ul class="list-item"><li><strong>Media Library</strong>: Uses Base64 data URLs rather than S3 bucket storage.</li></ul>
+<h3 class="sub-title">31. What is production-ready?</h3>
+<p>Bio Page builder, Custom Domains engine, Smart QR redirects, Short links, Link rotators, CRM Lead capture, and Razorpay form checkout.</p>
+<h3 class="sub-title">32. What is not production-ready?</h3>
+<p>Global SaaS plan billing subscription automation, Super-admin management console, and multi-instance distributed rate limiting.</p>
+<h3 class="sub-title">33. What is missing?</h3>
+<p>Super-admin control panel, native S3/R2 storage driver, and automated platform tier subscription billing.</p>
+<h3 class="sub-title">34. What is only conceptual?</h3>
+<p>Automated tier limits (e.g. enforcing &quot;Only 1 domain for Free Plan&quot;), direct WhatsApp API dispatching, and AI-powered copy generation.</p>
+<h3 class="sub-title">35. What are the biggest technical risks?</h3>
+<p>Cross-instance file desynchronization if run in clustered containers without Supabase configured; JSON store serialization lag under thousands of simultaneous writes.</p>
+<h3 class="sub-title">36. What are the biggest business/product risks?</h3>
+<p>Phishing/abuse by unverified signups hosting malicious sites under custom domains; revenue leakage due to unenforced plan limits.</p>
+<h3 class="sub-title">37. What would happen if 1,000 users joined?</h3>
+<p>The system would handle the traffic smoothly on a single 2GB/2vCPU Railway container backed by Supabase.</p>
+<h3 class="sub-title">38. What would happen if 10,000 users joined?</h3>
+<p>The <code>app_kv</code> single-blob JSON synchronization would experience lock contention; migrating all API routes to execute direct SQL queries against the 20 normalized tables would be required.</p>
+<h3 class="sub-title">39. What would happen if users created thousands of pages?</h3>
+<p>The database will easily store them across <code>bio_pages</code> and <code>bio_page_documents</code>; public pages will continue to load rapidly via cached API responses.</p>
+<h3 class="sub-title">40. What would happen if users connected thousands of domains?</h3>
+<p>Cloudflare for SaaS handles thousands of custom hostnames with automated SSL certificates; Express routes them with sub-millisecond hostname lookups.</p>
+<h3 class="sub-title">41. What are the current scalability limitations?</h3>
+<p>Single-threaded JSON file persistence and in-memory rate limiting / session stores.</p>
+<h3 class="sub-title">42. What are the current security concerns?</h3>
+<p><code>GET /api/qr-codes</code> returns all system QR codes (needs user ID scoping), and tracking events endpoint lacks tenant isolation.</p>
+<h3 class="sub-title">43. What are the current deployment dependencies?</h3>
+<p>Node.js runtime, environment variables (<code>AUTH_SECRET</code>, <code>SUPABASE_URL</code>, <code>CLOUDFLARE_*</code>), and Docker/Railway container engine.</p>
+<h3 class="sub-title">44. What external services does KEYLINK360 depend on?</h3>
+<p>Supabase (PostgreSQL), Cloudflare (SSL &amp; Edge DNS), Razorpay (Payments), and Nodemailer/SMTP provider (Emails).</p>
+<h3 class="sub-title">45. What happens if an external service fails?</h3>
+<ul class="list-item"><li>If Supabase fails: The built-in circuit breaker opens and falls back to local <code>data-store.json</code> without crashing.</li></ul>
+<ul class="list-item"><li>If Cloudflare fails: Custom domain SSL provisioning pauses, but existing DNS and platform subdomains continue resolving.</li></ul>
+<ul class="list-item"><li>If SMTP fails: In development, OTP and verification tokens are returned directly in API responses so development is never blocked.</li></ul>
+<hr class="divider"/>
+<h2 class="section-title">47. Final Conclusion</h2>
+<p><strong>KEYLINK360</strong> is a sophisticated, highly capable, and aesthetically refined digital presence SaaS application. Its core engines—specifically the <strong>27-block bio page builder</strong>, the <strong>automated Cloudflare for SaaS custom domain pipeline</strong>, the <strong>dynamic permanent-matrix Smart QR system</strong>, and the <strong>Razorpay pay-on-submit lead capture flow</strong>—are fully built, functional, and production-grade.</p>
+<p>The architectural foundation is robust. By completing the remaining integration points (scoping QR queries by user ID, hooking up automated SaaS subscription billing, and wiring direct S3 bucket storage), KEYLINK360 is positioned to operate as a high-margin, scalable competitor to existing market solutions like Linktree, Bitly, and Carrd.</p>
+
+</body>
+</html>

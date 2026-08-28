@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import KeyLogo3D from "./KeyLogo3D";
-import { ScreenId } from "../types";
+import { ScreenId, UserProfile } from "../types";
 import { SidebarNav } from "./Sidebar";
 
 interface MobileNavDrawerProps {
@@ -9,13 +9,15 @@ interface MobileNavDrawerProps {
   onClose: () => void;
   currentScreen: ScreenId;
   onScreenChange: (screen: ScreenId) => void;
+  user?: UserProfile | null;
 }
 
 export default function MobileNavDrawer({
   isOpen,
   onClose,
   currentScreen,
-  onScreenChange
+  onScreenChange,
+  user
 }: MobileNavDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -107,6 +109,7 @@ export default function MobileNavDrawer({
             isCollapsed={false}
             showBrand={false}
             showCollapse={false}
+            user={user}
           />
         </div>
       </div>

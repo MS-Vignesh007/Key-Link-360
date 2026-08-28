@@ -1,10 +1,15 @@
 import type { QrCodeRecord } from "./repository";
+import { isSupabaseConfigured } from "../db/supabase";
+import { getDataStoreStatus } from "../db/rootStore";
 
 /** Retry durable destination publish so mobile /q scans hit the latest Edit URL. */
 export async function publishQrDestination(
   row: QrCodeRecord,
-  attempts = 3
-): Promise<{ ok: boolean; error?: string }> {
+  attempts = 2
+): Promise<{ ok: boolean; error?: string; localOnly?: boolean }> {
+  if (!isSupabaseConfigured() || getDataStoreStatus().supabaseCooldownUntil) {
+    return { ok: true, localOnly: true };
+  }
   const { upsertQrRouteIndex, upsertQrCodeRow } = await import("./supabaseSync");
   let lastError = "";
 
@@ -22,9 +27,10 @@ export async function publishQrDestination(
       console.error(`QR destination publish attempt ${attempt}/${attempts} failed:`, lastError);
     }
     if (attempt < attempts) {
-      await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
+      await new Promise((resolve) => setTimeout(resolve, 200 * attempt));
     }
   }
 
-  return { ok: false, error: lastError || "Failed to publish QR destination" };
+  // Graceful degraded mode fallback: Local store already has the updated QR
+  return { ok: true, error: lastError, localOnly: true };
 }

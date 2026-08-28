@@ -8,7 +8,7 @@ import {
   CheckCircle,
   Building2,
   Phone,
-  Globe2,
+  Globe2, QrCode,
   User,
   Cpu,
   Zap,
@@ -40,6 +40,7 @@ import {
   verifyResetOtpRequest
 } from "../lib/authApi";
 import KeyLogo3D from "./KeyLogo3D";
+import WelcomeModal from "./WelcomeModal";
 
 type AuthView =
   | "login"
@@ -126,7 +127,16 @@ export default function LoginScreen({
   initialView = "login",
   initialVerifyToken = ""
 }: LoginScreenProps) {
-  const [view, setView] = useState<AuthView>(initialView);
+  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const modeParam = searchParams.get("mode") || searchParams.get("view");
+  const handleParam = searchParams.get("handle") || "";
+
+  const [view, setView] = useState<AuthView>(() => {
+    if (initialVerifyToken) return "verify";
+    if (modeParam === "register" || modeParam === "signup") return "register";
+    if (modeParam === "reset" || modeParam === "forgot") return "reset";
+    return initialView;
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -143,12 +153,13 @@ export default function LoginScreen({
   const [config, setConfig] = useState<AuthConfig | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [previewMode, setPreviewMode] = useState(isAuthPreviewForced() && !isAuthPreviewDisabled());
+  const [welcomeUser, setWelcomeUser] = useState<AuthUser | null>(null);
   const autoVerifyDone = useRef(false);
 
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(handleParam);
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [businessName, setBusinessName] = useState("");
+  const [businessName, setBusinessName] = useState(handleParam);
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("United States");
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -219,7 +230,7 @@ export default function LoginScreen({
     }
     const timer = window.setTimeout(() => {
       passwordStrengthRequest(password)
-        .then((res) => setPasswordStrength(res.score))
+        .then((res) => setPasswordStrength(res.strength))
         .catch(() => {
           if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
             setPasswordStrength("strong");
@@ -250,7 +261,7 @@ export default function LoginScreen({
 
   const finishLogin = (user: AuthUser, accessToken: string, refreshToken: string, remember: boolean) => {
     saveAuthSession(user, { accessToken, refreshToken }, remember);
-    onLoginSuccess(user);
+    setWelcomeUser(user);
   };
 
   const finishPreviewLogin = (
@@ -262,8 +273,8 @@ export default function LoginScreen({
       email: input?.email,
       name: input?.name
     });
-    const session = enterPreviewSession(user, rememberMe);
-    onLoginSuccess(session.user);
+    enterPreviewSession(user, rememberMe);
+    setWelcomeUser(user);
   };
 
   const handleAutoFillDemo = () => {
@@ -411,6 +422,21 @@ export default function LoginScreen({
 
       setView("register-success");
     } catch (err) {
+      const apiErr = err as AuthApiError;
+      if (
+        !isAuthPreviewDisabled() &&
+        (apiErr.status === 404 ||
+          apiErr.code === "NETWORK_ERROR" ||
+          apiErr.code === "REQUEST_FAILED" ||
+          apiErr.message === "Request failed.")
+      ) {
+        setPreviewMode(true);
+        finishPreviewLogin("password", {
+          email: trimmedEmail,
+          name: `${firstName} ${lastName}`.trim() || trimmedEmail.split("@")[0]
+        });
+        return;
+      }
       setError((err as AuthApiError).message || "Unable to complete registration.");
     } finally {
       setLoading(false);
@@ -605,22 +631,127 @@ export default function LoginScreen({
       </div>
     ) : null;
 
+  if (welcomeUser) {
+    return (
+      <WelcomeModal
+        user={welcomeUser}
+        onContinue={() => {
+          onLoginSuccess(welcomeUser);
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="key-auth-canvas flex-1 w-full min-h-full overflow-y-auto flex flex-col items-center justify-start pt-2 sm:pt-4 pb-24 sm:pb-32 px-4 sm:px-6 select-none">
+    <div 
+      style={{ marginTop: "0.7px" }} 
+      className="key-auth-canvas min-h-screen w-full flex items-center justify-center py-6 px-3 sm:px-6 select-none relative overflow-x-hidden"
+    >
       <div className="key-auth-orb key-auth-orb--1" aria-hidden />
       <div className="key-auth-orb key-auth-orb--2" aria-hidden />
       <div className="key-auth-orb key-auth-orb--3" aria-hidden />
       <div className="key-auth-grid" aria-hidden />
-      <div className="key-cyber-scanline" aria-hidden />
-
-      <div
-        style={{ marginTop: "0.5px" }}
-        className="w-full max-w-[500px] key-cyber-panel p-6 sm:p-8 relative z-10 mt-[0.5px] mb-auto shrink-0 animate-in fade-in zoom-in-95 duration-300"
+      
+      {/* Top-Left Back to Home Button */}
+      <a
+        href="/"
+        className="fixed top-4 left-4 sm:top-5 sm:left-6 z-40 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-cyan-300 text-xs font-semibold border border-slate-700/80 backdrop-blur-xl shadow-lg transition-all group cursor-pointer"
       >
-        <div className="key-cyber-bracket-tl" aria-hidden />
-        <div className="key-cyber-bracket-tr" aria-hidden />
-        <div className="key-cyber-bracket-bl" aria-hidden />
-        <div className="key-cyber-bracket-br" aria-hidden />
+        <ArrowLeft className="w-3.5 h-3.5 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
+        <span>Back to Home</span>
+      </a>
+
+      {/* 2-Column Balanced Responsive Grid */}
+      <div 
+        style={{ marginTop: "0.7px" }}
+        className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center justify-center relative z-10 my-auto"
+      >
+        
+        {/* ================= LEFT SIDE: ULTRA-CRISP HD BRAND SHOWCASE ================= */}
+        <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 select-none pr-0 lg:pr-2">
+          
+          {/* OG Brand Logo (100% untouched original file) */}
+          <div className="flex items-center justify-center">
+            <img
+              src="/vickys-link-og.png"
+              alt="Vickys Link 360 Infinity Logo"
+              className="w-56 sm:w-64 lg:w-72 h-auto object-contain"
+            />
+          </div>
+
+          {/* Inspiring Brand Typography */}
+          <div className="space-y-1.5">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+              The Infinity Key to Your{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400 drop-shadow-[0_0_25px_rgba(0,240,255,0.45)]">
+                Digital Success.
+              </span>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-md leading-relaxed font-normal">
+              Step into your unified growth command center. Build high-converting mobile bio pages, dynamic QR codes, traffic rotators, and direct UPI collections.
+            </p>
+          </div>
+
+          {/* Sub-Title Title Placed Below Paragraph */}
+          <div className="pt-1 w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>THE NEXT-GEN BIO & REVENUE PLATFORM</span>
+            </div>
+          </div>
+
+          {/* 4 Feature Highlights in 2x2 Compact Grid */}
+          <div className="grid grid-cols-2 gap-2.5 w-full max-w-md text-left pt-0.5">
+            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 backdrop-blur-md flex items-start gap-2 shadow-sm">
+              <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-tight">Instant UPI Payments</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Direct Razorpay settlements</p>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 backdrop-blur-md flex items-start gap-2 shadow-sm">
+              <QrCode className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-tight">Dynamic Vector QR</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Zero-reprint link updates</p>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 backdrop-blur-md flex items-start gap-2 shadow-sm">
+              <Globe2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-tight">Custom Domain + SSL</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Your branded dot-com</p>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 backdrop-blur-md flex items-start gap-2 shadow-sm">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-tight">Traffic Rotators</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Real-time A/B split testing</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Compact Social Proof Badge */}
+          <div className="pt-0.5 flex items-center justify-center lg:justify-start gap-1.5 text-[11px] font-medium text-slate-400">
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span>Trusted by 10,000+ creators and sellers worldwide</span>
+          </div>
+        </div>
+
+        {/* ================= RIGHT SIDE: COMPACT AUTH FORM BOX ================= */}
+        <div className="lg:col-span-6 flex justify-center lg:justify-end w-full">
+          <div
+            style={{ marginTop: "0.7px" }}
+            className="w-full max-w-[450px] key-cyber-panel p-5 sm:p-7 relative z-10 shrink-0 animate-in fade-in duration-200"
+          >
+            <div className="key-cyber-bracket-tl" aria-hidden />
+            <div className="key-cyber-bracket-tr" aria-hidden />
+            <div className="key-cyber-bracket-bl" aria-hidden />
+            <div className="key-cyber-bracket-br" aria-hidden />
 
         {/* 3D Transparent Logo & Premium Brand Title */}
         <div className="flex flex-col items-center text-center mb-0">
@@ -630,11 +761,10 @@ export default function LoginScreen({
             <KeyLogo3D size="lg" variant="full" />
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black font-sans tracking-tight uppercase select-none leading-none">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans tracking-tight select-none leading-none">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-400 drop-shadow-[0_0_20px_rgba(0,240,255,0.45)]">
-              KEYLINK
+              KeyLink
             </span>
-            <span className="text-cyan-400 mx-0.5 drop-shadow-[0_0_12px_rgba(0,240,255,0.8)]">-</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 drop-shadow-[0_0_20px_rgba(99,102,241,0.55)]">
               360
             </span>
@@ -1263,6 +1393,8 @@ export default function LoginScreen({
             </button>
           </div>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,7 @@ import Header from "./components/Header";
 import LoginScreen from "./components/LoginScreen";
 import LoggedInLoginPrompt from "./components/LoggedInLoginPrompt";
 import NotFoundScreen from "./components/NotFoundScreen";
+import LandingPage from "./components/LandingPage";
 import {
   AuthUser,
   clearAuthSession,
@@ -68,6 +69,7 @@ import CustomDomainsScreen from "./components/CustomDomainsScreen";
 import HelpCenterScreen from "./components/HelpCenterScreen";
 import ContactSupportScreen from "./components/ContactSupportScreen";
 import AccountScreen from "./components/AccountScreen";
+import SuperAdminScreen from "./components/SuperAdminScreen";
 import PublicBioPageView from "./components/PublicBioPageView";
 import PublishModal from "./components/PublishModal";
 import {
@@ -107,7 +109,7 @@ import {
 import { getPublishSettings, persistPublishSettings, PRIMARY_DOMAIN } from "./storage/publishStorage";
 import { AppTheme, getStoredTheme, saveTheme } from "./lib/themeStorage";
 import { getBlankTemplate, resolveSystemTemplate } from "./lib/systemTemplates";
-import { APP_ROUTE_ENTRIES, pathToScreen, screenToPath } from "./navigation";
+import { APP_ROUTE_ENTRIES, formatDocumentTitle, getScreenTitle, pathToScreen, screenToPath } from "./navigation";
 import {
   buildFixedQrScanUrl,
   buildQrImageUrl,
@@ -213,9 +215,14 @@ export default function App() {
     };
   }, [isBrandedHost]);
 
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getAccessToken() && getStoredAuthUser()));
+  const [authBootstrapping, setAuthBootstrapping] = useState(() => Boolean(getAccessToken()));
+  const [idleTimeoutMs, setIdleTimeoutMs] = useState(1000 * 60 * 30);
+
   const currentScreen = React.useMemo(
-    () => pathToScreen(location.pathname) ?? ScreenId.DASHBOARD,
-    [location.pathname]
+    () => pathToScreen(location.pathname) ?? (isLoggedIn ? ScreenId.DASHBOARD : ScreenId.LOGIN),
+    [location.pathname, isLoggedIn]
   );
   const editPageIdFromUrl = searchParams.get("edit");
   const mainScrollRef = React.useRef<HTMLElement>(null);
@@ -230,11 +237,6 @@ export default function App() {
   React.useEffect(() => {
     resetMainScroll();
   }, [location.pathname, resetMainScroll]);
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getAccessToken() && getStoredAuthUser()));
-  const [authBootstrapping, setAuthBootstrapping] = useState(() => Boolean(getAccessToken()));
-  const [idleTimeoutMs, setIdleTimeoutMs] = useState(1000 * 60 * 30);
   const authVerifyToken = React.useMemo(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("verifyToken") || params.get("token") || "";
@@ -260,6 +262,50 @@ export default function App() {
   });
   const [isPagesSyncReady, setIsPagesSyncReady] = useState(false);
   const [workspaceHydrated, setWorkspaceHydrated] = useState(false);
+
+  // Dynamic Browser Tab Document Title sync across all pages & states
+  React.useEffect(() => {
+    if (isBrandedHost) {
+      const title = brandedPageMeta?.title || "KeyLink360";
+      document.title = formatDocumentTitle(title);
+      return;
+    }
+
+    if (previewPageId) {
+      const pageToPreview = pages.find((p) => p.id === previewPageId);
+      const title = pageToPreview?.title || "BioLink";
+      document.title = formatDocumentTitle(title);
+      return;
+    }
+
+    if (!isLoggedIn) {
+      if (location.pathname === "/login") {
+        document.title = formatDocumentTitle("Sign In");
+      } else {
+        document.title = "KeyLink360";
+      }
+      return;
+    }
+
+    if (currentScreen === ScreenId.BIO_PAGES && editPageIdFromUrl) {
+      const editingPage = pages.find((p) => p.id === editPageIdFromUrl);
+      if (editingPage?.title) {
+        document.title = formatDocumentTitle(`Editing ${editingPage.title}`);
+        return;
+      }
+    }
+
+    const screenTitle = getScreenTitle(currentScreen);
+    document.title = formatDocumentTitle(screenTitle);
+  }, [
+    isBrandedHost,
+    brandedPageMeta?.title,
+    previewPageId,
+    pages,
+    isLoggedIn,
+    currentScreen,
+    editPageIdFromUrl
+  ]);
 
   // Server state and sync for pages list & analytics metrics
   const [serverMetrics, setServerMetrics] = useState<{
@@ -367,14 +413,47 @@ export default function App() {
     const isPublicQrPath = /^\/q\/[^/]+\/?$/i.test(location.pathname);
     if (isPublicQrPath) return;
 
+    const isPublicPath =
+      location.pathname === "/" ||
+      location.pathname === "/home" ||
+      location.pathname === screenToPath(ScreenId.LOGIN) ||
+      location.pathname.startsWith("/login");
+
     if (!isLoggedIn) {
-      if (location.pathname !== screenToPath(ScreenId.LOGIN)) {
+      if (!isPublicPath) {
         navigate(screenToPath(ScreenId.LOGIN), { replace: true });
       }
-    } else if (location.pathname === "/" || location.pathname.replace(/\/+$/, "") === "") {
+    } else if (location.pathname === "/" || location.pathname === "/home") {
       navigate(screenToPath(ScreenId.DASHBOARD), { replace: true });
     }
   }, [authBootstrapping, isBrandedHost, isLoggedIn, location.pathname, navigate, previewPageId]);
+
+  // CRM Hard Refresh Limit Rule (>5 full refreshes in CRM resets session & sends user to Home page)
+  React.useEffect(() => {
+    const isPublicPath =
+      location.pathname === "/" ||
+      location.pathname === "/home" ||
+      location.pathname === screenToPath(ScreenId.LOGIN) ||
+      location.pathname.startsWith("/login");
+
+    if (!isPublicPath && (isLoggedIn || Boolean(getAccessToken()))) {
+      const raw = sessionStorage.getItem("keylink_crm_hard_refresh_count");
+      const count = raw ? parseInt(raw, 10) : 0;
+      const next = count + 1;
+
+      if (next > 5) {
+        sessionStorage.removeItem("keylink_crm_hard_refresh_count");
+        clearAuthSession("silent");
+        setIsLoggedIn(false);
+        setWorkspaceHydrated(false);
+        navigate("/", { replace: true });
+        return;
+      }
+      sessionStorage.setItem("keylink_crm_hard_refresh_count", String(next));
+    } else if (isPublicPath) {
+      sessionStorage.removeItem("keylink_crm_hard_refresh_count");
+    }
+  }, []);
 
   React.useEffect(() => {
     if (isLoggedIn) {
@@ -886,7 +965,7 @@ export default function App() {
           <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center text-sm text-slate-600">
             <div>
               <h1 className="text-lg font-bold text-slate-900">Page not published</h1>
-              <p className="mt-2">This bio page is still a draft. Publish it in KEYLINK360 to go live.</p>
+              <p className="mt-2">This bio page is still a draft. Publish it in KeyLink360 to go live.</p>
             </div>
           </div>
         );
@@ -907,7 +986,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center text-sm text-slate-600">
         <div>
           <h1 className="text-lg font-bold text-slate-900">Domain not connected</h1>
-          <p className="mt-2">This hostname is not verified in KEYLINK360.</p>
+          <p className="mt-2">This hostname is not verified in KeyLink360.</p>
         </div>
       </div>
     );
@@ -942,6 +1021,7 @@ export default function App() {
       mfaEnabled: authUser.mfaEnabled
     }));
     setIsLoggedIn(true);
+    sessionStorage.removeItem("keylink_crm_hard_refresh_count");
     navigate(screenToPath(ScreenId.DASHBOARD), { replace: true });
     if (window.location.search.includes("verifyToken") || window.location.search.includes("token=")) {
       window.history.replaceState({}, "", screenToPath(ScreenId.DASHBOARD));
@@ -2104,6 +2184,13 @@ export default function App() {
             onNavigate={handleScreenChange}
           />
         );
+      case ScreenId.SUPER_ADMIN:
+        return (
+          <SuperAdminScreen
+            user={user}
+            onNavigate={handleScreenChange}
+          />
+        );
       default:
         return <NotFoundScreen onNavigate={handleScreenChange} />;
     }
@@ -2120,11 +2207,33 @@ export default function App() {
     );
   }
 
+  const isPublicLandingPage = location.pathname === "/" || location.pathname === "/home";
+
+  if (isPublicLandingPage) {
+    return (
+      <div className="min-h-screen w-full flex flex-col font-sans antialiased bg-[#05070d]">
+        <LandingPage
+          onGetStarted={() => {
+            const target = document.getElementById("pricing");
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth" });
+            } else {
+              navigate(isLoggedIn ? "/dashboard" : "/login?mode=register");
+            }
+          }}
+          onSignIn={() => navigate(isLoggedIn ? "/dashboard" : "/login")}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`h-screen max-h-[100dvh] w-full overflow-hidden flex font-sans antialiased ${
-        isLoggedIn ? `key-app-shell key-theme-${uiTheme}` : "bg-[#12151f]"
-      }`}
+      className={
+        isLoggedIn
+          ? `h-screen max-h-[100dvh] w-full overflow-hidden flex font-sans antialiased key-app-shell key-theme-${uiTheme}`
+          : "min-h-screen w-full flex flex-col font-sans antialiased bg-[#05070d]"
+      }
     >
       {isLoggedIn && (
         <div className="key-bg-clouds" aria-hidden>
@@ -2141,10 +2250,11 @@ export default function App() {
           onScreenChange={handleScreenChange}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
+          user={user}
         />
       )}
 
-      <div className="flex-1 flex flex-col min-w-0 w-full h-full min-h-0 overflow-hidden">
+      <div className={isLoggedIn ? "flex-1 flex flex-col min-w-0 w-full h-screen overflow-hidden" : "flex-1 w-full min-h-screen flex flex-col"}>
         {isLoggedIn && (
           <Header
             currentScreen={currentScreen}
@@ -2164,14 +2274,36 @@ export default function App() {
 
         <main
           ref={mainScrollRef}
-          className={`min-w-0 no-scrollbar ${
-            isLoggedIn ? "key-main-scroll" : "flex-1 h-full min-h-0 overflow-y-auto"
-          }`}
+          id="key-main-scroll-container"
+          className={
+            isLoggedIn
+              ? "flex-1 min-h-0 w-full overflow-y-scroll overflow-x-hidden key-main-scroll focus:outline-none"
+              : "min-w-0 w-full flex-1"
+          }
+          style={isLoggedIn ? { overflowY: "scroll", WebkitOverflowScrolling: "touch" } : undefined}
         >
-          <div className={isLoggedIn ? "key-main-scroll__content" : "min-h-full w-full flex flex-col"}>
+          <div className={isLoggedIn ? "key-main-scroll__content w-full min-h-full pb-28" : "w-full min-h-screen flex flex-col"}>
             {!isLoggedIn ? (
               <Routes>
                 <Route path="/q/:code" element={<PublicQrScanRedirect />} />
+                <Route
+                  path="/"
+                  element={
+                    <LandingPage
+                      onGetStarted={() => navigate("/login?mode=register")}
+                      onSignIn={() => navigate(screenToPath(ScreenId.LOGIN))}
+                    />
+                  }
+                />
+                <Route
+                  path="/home"
+                  element={
+                    <LandingPage
+                      onGetStarted={() => navigate("/login?mode=register")}
+                      onSignIn={() => navigate(screenToPath(ScreenId.LOGIN))}
+                    />
+                  }
+                />
                 <Route
                   path={screenToPath(ScreenId.LOGIN)}
                   element={
@@ -2182,7 +2314,7 @@ export default function App() {
                     />
                   }
                 />
-                <Route path="*" element={<Navigate to={screenToPath(ScreenId.LOGIN)} replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             ) : (
               <Routes>
@@ -2192,7 +2324,15 @@ export default function App() {
                     <Route path={path} element={renderScreenElement(screen)} />
                   </React.Fragment>
                 ))}
-                <Route path="/" element={<Navigate to={screenToPath(ScreenId.DASHBOARD)} replace />} />
+                <Route
+                  path="/"
+                  element={
+                    <LandingPage
+                      onGetStarted={() => navigate("/dashboard")}
+                      onSignIn={() => navigate("/dashboard")}
+                    />
+                  }
+                />
                 <Route
                   path={screenToPath(ScreenId.LOGIN)}
                   element={
@@ -2228,7 +2368,7 @@ export default function App() {
                       : "Checking Server"}
                 </span>
               </div>
-              <div>KEYLINK360 © 2026</div>
+              <div>KeyLink360 © 2026</div>
             </footer>
           )}
         </main>
@@ -2240,6 +2380,7 @@ export default function App() {
           onClose={() => setIsMobileNavOpen(false)}
           currentScreen={currentScreen}
           onScreenChange={handleScreenChange}
+          user={user}
         />
       )}
 

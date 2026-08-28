@@ -2,7 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { ScreenId } from "../types";
 import { User, ChevronLeft, ChevronRight } from "lucide-react";
-import { NAV_CATEGORIES, NavItem, screenToPath } from "../navigation";
+import { NAV_CATEGORIES, NavItem, ADMIN_NAV_ITEM, screenToPath } from "../navigation";
+import { UserProfile, ScreenId } from "../types";
 import KeyLogo3D from "./KeyLogo3D";
 
 interface SidebarProps {
@@ -10,6 +11,7 @@ interface SidebarProps {
   onScreenChange: (screen: ScreenId) => void;
   isCollapsed: boolean;
   setIsCollapsed: (val: boolean) => void;
+  user?: UserProfile | null;
 }
 
 interface SidebarNavProps {
@@ -20,6 +22,7 @@ interface SidebarNavProps {
   showCollapse?: boolean;
   showBrand?: boolean;
   onNavigate?: () => void;
+  user?: UserProfile | null;
 }
 
 export function SidebarNav({
@@ -29,7 +32,8 @@ export function SidebarNav({
   setIsCollapsed,
   showCollapse = true,
   showBrand = true,
-  onNavigate
+  onNavigate,
+  user
 }: SidebarNavProps) {
   const handleAccountClick = () => {
     onNavigate?.();
@@ -76,6 +80,17 @@ export function SidebarNav({
       )}
 
       <div className="key-sidebar-nav__scroll">
+        {user?.role === "MAIN_OWNER" && (
+          <div className="mb-3">
+            {!isCollapsed && (
+              <p className="key-sidebar-category text-amber-400 font-bold flex items-center gap-1.5">
+                Platform Owner
+              </p>
+            )}
+            <div className="key-sidebar-nav-items">{renderItem(ADMIN_NAV_ITEM)}</div>
+          </div>
+        )}
+
         {NAV_CATEGORIES.map((category) => (
           <div key={category.title}>
             {!isCollapsed && (
@@ -132,7 +147,8 @@ export default function Sidebar({
   currentScreen,
   onScreenChange,
   isCollapsed,
-  setIsCollapsed
+  setIsCollapsed,
+  user
 }: SidebarProps) {
   return (
     <aside
@@ -147,6 +163,7 @@ export default function Sidebar({
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         showCollapse
+        user={user}
       />
     </aside>
   );

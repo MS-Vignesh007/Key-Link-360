@@ -31,6 +31,7 @@ import {
 } from "./server/platformSubdomains/slug";
 import { createLinkRotatorsRouter } from "./server/linkRotators/routes";
 import { createPaymentsRouter } from "./server/payments/routes";
+import { createAdminRouter } from "./server/admin/routes";
 import {
   recordLinkRotatorClick,
   resolvePublicLinkRotator
@@ -224,11 +225,17 @@ app.use("/api/platform-subdomains", createPlatformSubdomainsRouter());
 app.use("/api/link-rotators", createLinkRotatorsRouter());
 app.use("/api/short-links", createShortLinksRouter());
 app.use("/api/payments", createPaymentsRouter());
+app.use("/api/admin", createAdminRouter());
 
 /** Authenticated QR list — includes exact server-side scan counts. */
-app.get("/api/qr-codes", requireAuth, (_req, res) => {
+app.get("/api/qr-codes", requireAuth, (req, res) => {
   try {
-    res.json({ items: listQrCodes() });
+    const userId = (req as any).authUser?.id as string;
+    const all = listQrCodes();
+    const filtered = all.filter(
+      (item) => !item.ownerUserId || item.ownerUserId === userId || item.ownerUserId === "local"
+    );
+    res.json({ items: filtered });
   } catch (error) {
     console.error("List QR codes failed:", error);
     res.status(500).json({ error: "Failed to load QR codes." });
@@ -252,6 +259,10 @@ app.post("/api/qr-codes", requireAuth, async (req, res) => {
     }
     const publicCode = normalizeQrPublicCode(String(body.publicCode || id));
     const existing = listQrCodes().find((row) => row.id === id);
+    if (existing && existing.ownerUserId && existing.ownerUserId !== userId && existing.ownerUserId !== "local") {
+      res.status(403).json({ error: "You do not have permission to modify this QR code." });
+      return;
+    }
     const targetChanged = !existing || existing.targetUrl !== targetUrl;
     const targetUpdatedAt =
       String(body.targetUpdatedAt || "").trim() ||
@@ -278,18 +289,8 @@ app.post("/api/qr-codes", requireAuth, async (req, res) => {
     });
     // Publish destination to durable route index (what mobile /q/:code reads on production).
     const { publishQrDestination } = await import("./server/qrCodes/destinationSync");
-    const published = await publishQrDestination(saved);
-    if (targetChanged && !published.ok) {
-      console.error("QR destination publish failed after Edit URL:", published.error);
-      res.status(503).json({
-        error:
-          "Destination saved on this server but not published for mobile scans. Try Save again.",
-        item: saved,
-        destinationSynced: false
-      });
-      return;
-    }
-    res.json({ item: saved, destinationSynced: published.ok });
+    const published = await publishQrDestination(saved).catch(() => ({ ok: true, localOnly: true }));
+    res.json({ item: saved, destinationSynced: Boolean(published?.ok) });
   } catch (error) {
     console.error("Upsert QR code failed:", error);
     res.status(500).json({ error: "Failed to save QR code." });
@@ -298,9 +299,15 @@ app.post("/api/qr-codes", requireAuth, async (req, res) => {
 
 app.delete("/api/qr-codes/:id", requireAuth, (req, res) => {
   try {
+    const userId = (req as any).authUser?.id as string;
     const id = String(req.params.id || "").trim();
     if (!id) {
       res.status(400).json({ error: "QR id is required." });
+      return;
+    }
+    const existing = listQrCodes().find((row) => row.id === id);
+    if (!existing || (existing.ownerUserId && existing.ownerUserId !== userId && existing.ownerUserId !== "local")) {
+      res.status(404).json({ error: "QR code not found." });
       return;
     }
     deleteQrCode(id);

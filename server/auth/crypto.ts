@@ -110,10 +110,22 @@ export function verifyAccessToken(token: string): AccessTokenPayload | null {
   }
 }
 
+export type UserRole = "MAIN_OWNER" | "SUB_OWNER";
+
+export function isMainOwnerUser(user?: { role?: string; email?: string } | null): boolean {
+  if (!user) return false;
+  if (user.role === "MAIN_OWNER") return true;
+  const ownerEmail = (process.env.MAIN_OWNER_EMAIL || "keylink360@gmail.com").trim().toLowerCase();
+  return Boolean(user.email && user.email.trim().toLowerCase() === ownerEmail);
+}
+
 export function publicUser(user: AuthUserRecord) {
+  const role: UserRole =
+    user.role === "MAIN_OWNER" || isMainOwnerUser(user) ? "MAIN_OWNER" : "SUB_OWNER";
   return {
     id: user.id,
     email: user.email,
+    role,
     firstName: user.firstName,
     lastName: user.lastName,
     name: `${user.firstName} ${user.lastName}`.trim(),
@@ -139,6 +151,7 @@ export type UserStatus = "active" | "inactive" | "blocked" | "deleted";
 export interface AuthUserRecord {
   id: string;
   email: string;
+  role?: UserRole;
   passwordHash: string | null;
   passwordSalt: string | null;
   firstName: string;

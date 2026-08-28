@@ -1,18 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-/* Full-screen app Ã¢ÂÂ no page-level scrollbar */
+/* Flexible viewport layout with natural window scroll for public landing */
 html,
 body,
 #root {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--key-bg-deep);
+}
+
+/* Restrict overflow ONLY when authenticated inside the dashboard shell */
+html:has(.key-app-shell),
+body:has(.key-app-shell) {
   height: 100%;
   max-height: 100dvh;
-  width: 100%;
   overflow: hidden;
-  overscroll-behavior: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  background-color: var(--key-bg-deep);
 }
 
 html::-webkit-scrollbar,
@@ -3676,21 +3679,47 @@ body::-webkit-scrollbar,
 }
 
 .key-main-scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  /* Sticky footer: short pages pin footer to viewport bottom; tall pages keep it after content. */
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(0, 240, 255, 0.45) rgba(6, 10, 20, 0.5) !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: auto !important;
+  scroll-behavior: smooth !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.key-main-scroll::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+  display: block !important;
+}
+
+.key-main-scroll::-webkit-scrollbar-track {
+  background: rgba(4, 7, 16, 0.7) !important;
+}
+
+.key-main-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.45) !important;
+  border-radius: 9999px !important;
+  border: 2px solid rgba(4, 7, 16, 0.8) !important;
+}
+
+.key-main-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.85) !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
 }
 
 .key-main-scroll__content {
-  flex: 1 0 auto;
-  min-height: 0;
-  width: 100%;
-  padding-bottom: 2rem;
+  width: 100% !important;
+  min-height: max-content !important;
+  padding-bottom: 6rem !important;
+  display: block !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {

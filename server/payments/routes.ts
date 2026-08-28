@@ -132,6 +132,13 @@ async function finalizePaidOrder(input: {
 export function createPaymentsRouter() {
   const router = Router();
 
+  router.get("/config", (_req: Request, res: Response) => {
+    res.json({
+      configured: isRazorpayConfigured(),
+      keyId: getRazorpayKeyId() || null
+    });
+  });
+
   /** Starts Razorpay order only — does NOT create a paid order/contact. */
   router.post("/razorpay/create-order", async (req: Request, res: Response) => {
     try {

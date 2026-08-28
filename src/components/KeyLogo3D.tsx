@@ -32,7 +32,7 @@ export default function KeyLogo3D({
     return (
       <div className={`flex flex-col items-center justify-center select-none ${className}`}>
         <img
-          src="/logo.png"
+          src="/vickys-link-og.png"
           alt="KEYLINK360"
           className={`${fullHeight} object-contain drop-shadow-[0_12px_28px_rgba(0,240,255,0.4)] transition-transform duration-300 hover:scale-105`}
           draggable={false}
@@ -54,12 +54,12 @@ export default function KeyLogo3D({
       {showLabel && (
         <div className="flex flex-col leading-none">
           <span
-            className={`font-sans font-black tracking-tight text-white uppercase drop-shadow-md ${text}`}
+            className={`font-sans font-black tracking-tight text-white drop-shadow-md ${text}`}
             style={{
               letterSpacing: "-0.02em"
             }}
           >
-            KEYLINK<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">360</span>
+            KeyLink<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">360</span>
           </span>
         </div>
       )}

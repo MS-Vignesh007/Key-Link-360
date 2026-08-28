@@ -136,6 +136,12 @@ function mergeAuthUsers(existing: AuthUserRecord[], incoming: AuthUserRecord[]):
 /** Pull users from normalized auth_users when root.auth.users was wiped/empty on a host. */
 export async function hydrateAuthUsersFromSupabase(): Promise<number> {
   if (!isSupabaseConfigured()) return 0;
+  try {
+    const { getDataStoreStatus } = await import("../db/rootStore");
+    if (getDataStoreStatus().supabaseCooldownUntil) return 0;
+  } catch {
+    /* ignore */
+  }
   const supabase = getSupabase();
   if (!supabase) return 0;
 
@@ -190,6 +196,12 @@ export async function fetchAuthUserByEmailFromSupabase(
   email: string
 ): Promise<AuthUserRecord | null> {
   if (!isSupabaseConfigured()) return null;
+  try {
+    const { getDataStoreStatus } = await import("../db/rootStore");
+    if (getDataStoreStatus().supabaseCooldownUntil) return null;
+  } catch {
+    /* ignore */
+  }
   const supabase = getSupabase();
   if (!supabase) return null;
   const normalized = email.trim().toLowerCase();
@@ -255,6 +267,10 @@ function seedDemoUser(store: AuthStoreShape): boolean {
       existing.failedLoginAttempts = 0;
       mutated = true;
     }
+    if (existing.role !== "MAIN_OWNER") {
+      existing.role = "MAIN_OWNER";
+      mutated = true;
+    }
     if (mutated) existing.updatedAt = now;
     return mutated;
   }
@@ -263,6 +279,7 @@ function seedDemoUser(store: AuthStoreShape): boolean {
   const demo: AuthUserRecord = {
     id: "user_demo_keylink360",
     email,
+    role: "MAIN_OWNER",
     passwordHash: hash,
     passwordSalt: salt,
     firstName: "KEYLINK",

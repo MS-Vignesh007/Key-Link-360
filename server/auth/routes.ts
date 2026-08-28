@@ -214,6 +214,19 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
   next();
 }
 
+export function requireMainOwner(req: AuthedRequest, res: Response, next: NextFunction) {
+  requireAuth(req, res, () => {
+    if (!req.authUser || req.authUser.role !== "MAIN_OWNER") {
+      res.status(403).json({
+        error: "Access denied. Main Owner privileges required.",
+        code: "FORBIDDEN_NOT_MAIN_OWNER"
+      });
+      return;
+    }
+    next();
+  });
+}
+
 function assertAccountLoginable(
   user: AuthUserRecord
 ): { ok: true } | { ok: false; status: number; error: string; code: string } {
@@ -346,6 +359,7 @@ export function createAuthRouter() {
         phone: String(body.phone).trim(),
         country: String(body.country).trim(),
         avatarUrl: defaultAvatarUrlForEmail(email),
+        role: "SUB_OWNER",
         plan: "Free Plan",
         isVerified: !verificationRequired,
         emailVerified: !verificationRequired,
