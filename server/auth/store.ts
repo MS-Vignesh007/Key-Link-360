@@ -368,6 +368,9 @@ export function audit(
   userId: string | null,
   meta: Record<string, unknown> = {}
 ) {
+  if (!Array.isArray(store.auditLogs)) {
+    store.auditLogs = [];
+  }
   store.auditLogs.unshift({
     id: createId("audit"),
     userId,

@@ -756,6 +756,9 @@ export function createAuthRouter() {
       if (user && user.status !== "deleted") {
         otp = randomOtp();
         const resetToken = randomToken(32);
+        if (!Array.isArray(store.passwordResetTokens)) {
+          store.passwordResetTokens = [];
+        }
         // Clear any old active reset tokens for this email to avoid stale collision
         store.passwordResetTokens = store.passwordResetTokens.filter(
           (item) => item.email !== email || item.usedAt !== null
@@ -771,9 +774,18 @@ export function createAuthRouter() {
           expiresAt: new Date(Date.now() + RESET_TTL_MS).toISOString(),
           usedAt: null
         });
-        audit(store, "user.forgot_password", user.id, {});
-        const mailResult = await sendPasswordResetOtp(email, otp);
-        emailDelivered = mailResult.delivered;
+        try {
+          audit(store, "user.forgot_password", user.id, {});
+        } catch (auditErr) {
+          console.error("audit log error:", auditErr);
+        }
+        try {
+          const mailResult = await sendPasswordResetOtp(email, otp);
+          emailDelivered = Boolean(mailResult?.delivered);
+        } catch (mailErr) {
+          console.error("sendPasswordResetOtp error:", mailErr);
+          emailDelivered = false;
+        }
       }
 
       writeAuthStore(store);
@@ -809,7 +821,8 @@ export function createAuthRouter() {
         return;
       }
 
-      const record = store.passwordResetTokens.find(
+      const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
+      const record = tokens.find(
         (item) =>
           item.email === email &&
           !item.usedAt &&
@@ -857,7 +870,8 @@ export function createAuthRouter() {
         return;
       }
 
-      const record = store.passwordResetTokens.find(
+      const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
+      const record = tokens.find(
         (item) =>
           item.email === email &&
           !item.usedAt &&
@@ -882,10 +896,16 @@ export function createAuthRouter() {
       user.lockedUntil = null;
       user.updatedAt = new Date().toISOString();
       record.usedAt = new Date().toISOString();
-      store.sessions = store.sessions.map((session) =>
-        session.userId === user.id ? { ...session, revokedAt: new Date().toISOString() } : session
-      );
-      audit(store, "user.reset_password", user.id, {});
+      if (Array.isArray(store.sessions)) {
+        store.sessions = store.sessions.map((session) =>
+          session.userId === user.id ? { ...session, revokedAt: new Date().toISOString() } : session
+        );
+      }
+      try {
+        audit(store, "user.reset_password", user.id, {});
+      } catch (auditErr) {
+        console.error("audit log error:", auditErr);
+      }
       writeAuthStore(store);
       void flushRootStore().catch((err) => console.error("flush after reset-password:", err));
 
