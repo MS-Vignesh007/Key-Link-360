@@ -29,6 +29,7 @@ async function customerCloudflareRequest<T>(
 ): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
+    signal: init.signal || AbortSignal.timeout(3000),
     headers: {
       Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json",

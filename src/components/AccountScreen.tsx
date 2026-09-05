@@ -24,6 +24,7 @@ import {
 import PageShell from "./layout/PageShell";
 import type { AppTheme } from "../lib/themeStorage";
 import { KEYS_AVATAR_PRESETS } from "../lib/avatarPresets";
+import BillingPlanSection from "./billing/BillingPlanSection";
 
 interface AccountScreenProps {
   user: UserProfile;
@@ -384,6 +385,8 @@ export default function AccountScreen({
             </button>
           )}
         </div>
+
+        <BillingPlanSection />
 
         <div className="key-section-card p-4 sm:p-6 space-y-6">
           <h3 className="font-display font-bold text-base flex items-center gap-2">

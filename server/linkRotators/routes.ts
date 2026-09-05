@@ -22,6 +22,7 @@ import {
 import { generateRotatorSlug, normalizeRotatorSlug, validateRotatorSlug } from "./slug";
 import type { LinkRotatorRecord, LinkRotatorStatus } from "./types";
 import { normalizeDestinations } from "./validation";
+import { checkResourceQuota } from "../billing/quotaGuard";
 
 type AuthedRequest = Request & {
   authUser?: { id: string; email: string };
@@ -199,6 +200,16 @@ export function createLinkRotatorsRouter() {
 
   router.post("/", async (req: AuthedRequest, res: Response) => {
     try {
+      const quota = checkResourceQuota(req.authUser!.id, "rotators", 1);
+      if (!quota.allowed) {
+        res.status(403).json({
+          error: quota.error,
+          code: "QUOTA_EXCEEDED",
+          quota
+        });
+        return;
+      }
+
       const name = String(req.body?.name || "").trim();
       const description = String(req.body?.description || "").trim();
       const status = parseStatus(req.body?.status);

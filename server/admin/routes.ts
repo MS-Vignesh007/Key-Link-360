@@ -8,6 +8,11 @@ import { resolveCustomDomainATarget, resolveCnameTarget } from "../domains/hostn
 import { isRazorpayConfigured, getRazorpayKeyId } from "../payments/razorpayClient";
 import { isSmtpConfigured } from "../auth/mail";
 import type { UserStatus } from "../auth/crypto";
+import {
+  listAllSubscriptions,
+  listAllBillingHistory,
+  getUserSubscriptionSummary
+} from "../billing/repository";
 
 type AuthedAdminRequest = Request & {
   authUser?: { id: string; email: string; role: string; plan?: string };
@@ -77,9 +82,24 @@ export function createAdminRouter() {
         .filter((p) => p.status === "paid")
         .reduce((sum, p) => sum + (Number(p.amountInr) || 0), 0);
 
+      const allSubs = listAllSubscriptions();
+      const allBilling = listAllBillingHistory();
+      const totalProUsers = users.filter((u) => u.plan && u.plan.toLowerCase().includes("pro")).length;
+      const totalFreeUsers = totalUsers - totalProUsers;
+      const activeSubsCount = allSubs.filter((s) => s.status === "ACTIVE").length;
+      const subscriptionRevenueInr = allBilling
+        .filter((b) => b.status === "paid")
+        .reduce((sum, b) => sum + (Number(b.amountInr) || 0), 0);
+
       res.json({
         metrics: {
           users: { total: totalUsers, active: activeUsers, inactive: inactiveUsers, blocked: blockedUsers, new7d: newUsers7d },
+          subscriptions: {
+            totalFree: totalFreeUsers,
+            totalPro: totalProUsers,
+            activeSubscriptions: activeSubsCount,
+            revenueInr: subscriptionRevenueInr
+          },
           pages: { total: totalPages, live: livePages, draft: draftPages, totalViews },
           domains: { total: totalDomains, connected: connectedDomains, platformSubdomains: totalPlatformSubdomains },
           qrCodes: { total: totalQrCodes, active: activeQrCodes, totalScans: totalQrScans },
@@ -237,7 +257,8 @@ export function createAdminRouter() {
         shortLinks: shortLinks.map((l) => ({ id: l.id, title: l.title, slug: l.slug, destinationUrl: l.destinationUrl, clicks: l.totalClicks, status: l.status })),
         rotators: rotators.map((r) => ({ id: r.id, name: r.name, slug: r.slug, destinationsCount: r.destinations?.length || 0, status: r.status })),
         domains: domains.map((d) => ({ id: d.id, domainName: d.domainName, pageId: d.pageId, status: d.status, type: d.type })),
-        contactsCount: contacts.length
+        contactsCount: contacts.length,
+        subscription: getUserSubscriptionSummary(id)
       });
     } catch (error) {
       console.error("Admin user detail failed:", error);

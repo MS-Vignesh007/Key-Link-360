@@ -1,5 +1,9 @@
 import { getSupabase } from "../db/supabase";
-import { resolveRoutableHostnameAlias, getCustomDomainKind } from "./hostname";
+import { getRootStore, setRootStore, flushRootStore } from "../db/rootStore";
+import {
+  getCustomDomainKind,
+  resolveRoutableHostnameAlias
+} from "./hostname";
 
 export type DomainStatus =
   | "Pending DNS"
@@ -17,16 +21,16 @@ export type CustomDomainRecord = {
   dnsTarget: string;
   dnsVerifiedAt: string | null;
   provider: "cloudflare" | "manual";
-  providerHostnameId: string | null;
-  providerStatus: string;
-  sslStatus: string;
-  ownershipVerification: Record<string, unknown> | null;
-  lastCheckedAt: string | null;
-  errorMessage: string | null;
-  dnsProviderId: string | null;
-  providerConnected: boolean;
-  providerAccountId: string | null;
-  dnsLastVerified: string | null;
+  providerHostnameId?: string | null;
+  providerStatus?: string | null;
+  sslStatus?: string | null;
+  ownershipVerification?: Record<string, unknown> | null;
+  lastCheckedAt?: string | null;
+  errorMessage?: string | null;
+  dnsProviderId?: string | null;
+  providerConnected?: boolean;
+  providerAccountId?: string | null;
+  dnsLastVerified?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -40,12 +44,12 @@ type DomainRow = {
   dns_target: string;
   dns_verified_at: string | null;
   provider: "cloudflare" | "manual";
-  provider_hostname_id: string | null;
-  provider_status: string;
-  ssl_status: string;
-  ownership_verification: Record<string, unknown> | null;
-  last_checked_at: string | null;
-  error_message: string | null;
+  provider_hostname_id?: string | null;
+  provider_status?: string | null;
+  ssl_status?: string | null;
+  ownership_verification?: Record<string, unknown> | null;
+  last_checked_at?: string | null;
+  error_message?: string | null;
   dns_provider_id?: string | null;
   provider_connected?: boolean | null;
   provider_account_id?: string | null;
@@ -54,10 +58,23 @@ type DomainRow = {
   updated_at: string;
 };
 
-function db() {
-  const supabase = getSupabase();
-  if (!supabase) throw new Error("Supabase is not configured.");
-  return supabase;
+function getLocalDomains(): CustomDomainRecord[] {
+  const store = getRootStore();
+  return (Array.isArray(store["custom_domains"]) ? store["custom_domains"] : []) as CustomDomainRecord[];
+}
+
+function saveLocalDomains(domains: CustomDomainRecord[]): void {
+  const store = getRootStore();
+  store["custom_domains"] = domains;
+  setRootStore(store);
+  void flushRootStore();
+}
+
+function withTimeout<T>(promise: Promise<T>, ms = 1200): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+  ]);
 }
 
 function mapRow(row: DomainRow): CustomDomainRecord {
@@ -85,119 +102,152 @@ function mapRow(row: DomainRow): CustomDomainRecord {
   };
 }
 
+export const ROUTABLE_DOMAIN_STATUSES: DomainStatus[] = ["Verified", "DNS Verified"];
+
 export async function listDomains(ownerUserId: string): Promise<CustomDomainRecord[]> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("owner_user_id", ownerUserId)
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return ((data || []) as DomainRow[]).map(mapRow);
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data, error } = await withTimeout(
+        supabase
+          .from("custom_domains")
+          .select("*")
+          .eq("owner_user_id", ownerUserId)
+          .order("created_at", { ascending: false })
+      );
+      if (!error && data) {
+        return (data as DomainRow[]).map(mapRow);
+      }
+    }
+  } catch {
+    // fallback to local rootStore
+  }
+  return getLocalDomains().filter((d) => d.ownerUserId === ownerUserId);
 }
 
 export async function findDomainById(
   id: string,
   ownerUserId: string
 ): Promise<CustomDomainRecord | null> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("id", id)
-    .eq("owner_user_id", ownerUserId)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  return data ? mapRow(data as DomainRow) : null;
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data, error } = await withTimeout(
+        supabase
+          .from("custom_domains")
+          .select("*")
+          .eq("id", id)
+          .eq("owner_user_id", ownerUserId)
+          .maybeSingle()
+      );
+      if (!error && data) {
+        return mapRow(data as DomainRow);
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return getLocalDomains().find((d) => d.id === id && d.ownerUserId === ownerUserId) || null;
 }
 
 export async function findDomainByPageId(
   pageId: string,
   ownerUserId: string
 ): Promise<CustomDomainRecord | null> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("page_id", pageId)
-    .eq("owner_user_id", ownerUserId)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  return data ? mapRow(data as DomainRow) : null;
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data, error } = await withTimeout(
+        supabase
+          .from("custom_domains")
+          .select("*")
+          .eq("page_id", pageId)
+          .eq("owner_user_id", ownerUserId)
+          .maybeSingle()
+      );
+      if (!error && data) {
+        return mapRow(data as DomainRow);
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return getLocalDomains().find((d) => d.pageId === pageId && d.ownerUserId === ownerUserId) || null;
 }
-
-/** Hostnames that may serve a published page (full SSL or DNS-only + customer proxy). */
-export const ROUTABLE_DOMAIN_STATUSES: DomainStatus[] = ["Verified", "DNS Verified"];
 
 export async function findDomainByHostname(
   hostname: string
 ): Promise<CustomDomainRecord | null> {
   const normalized = hostname.toLowerCase();
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("domain_name", normalized)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (data) return mapRow(data as DomainRow);
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data, error } = await withTimeout(
+        supabase
+          .from("custom_domains")
+          .select("*")
+          .eq("domain_name", normalized)
+          .maybeSingle()
+      );
+      if (!error && data) {
+        return mapRow(data as DomainRow);
+      }
+    }
+  } catch {
+    // fallback
+  }
+  const match = getLocalDomains().find((d) => d.domainName.toLowerCase() === normalized);
+  if (match) return match;
 
   const alias = resolveRoutableHostnameAlias(normalized);
-  if (alias === normalized) return null;
-
-  const { data: aliased, error: aliasError } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("domain_name", alias)
-    .maybeSingle();
-  if (aliasError) throw new Error(aliasError.message);
-  return aliased ? mapRow(aliased as DomainRow) : null;
-}
-
-async function findRoutableRowByStoredHostname(hostname: string): Promise<DomainRow | null> {
-  const normalized = hostname.toLowerCase();
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("domain_name", normalized)
-    .in("status", ROUTABLE_DOMAIN_STATUSES)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (data) return data as DomainRow;
-
-  const alias = resolveRoutableHostnameAlias(normalized);
-  if (alias === normalized) return null;
-
-  const { data: aliased, error: aliasError } = await db()
-    .from("custom_domains")
-    .select("*")
-    .eq("domain_name", alias)
-    .in("status", ROUTABLE_DOMAIN_STATUSES)
-    .maybeSingle();
-  if (aliasError) throw new Error(aliasError.message);
-  return (aliased as DomainRow | null) ?? null;
+  if (alias !== normalized) {
+    return getLocalDomains().find((d) => d.domainName.toLowerCase() === alias.toLowerCase()) || null;
+  }
+  return null;
 }
 
 export async function findRoutableDomainByHostname(
   hostname: string
 ): Promise<CustomDomainRecord | null> {
-  const row = await findRoutableRowByStoredHostname(hostname);
-  if (row) return mapRow(row);
-
-  // Keep serving after a successful verify even if status was reset to Pending DNS.
   const normalized = hostname.toLowerCase();
   const candidates = [normalized, resolveRoutableHostnameAlias(normalized)];
+  const localList = getLocalDomains();
+
   for (const candidate of [...new Set(candidates)]) {
-    const { data: fallback, error: fallbackError } = await db()
-      .from("custom_domains")
-      .select("*")
-      .eq("domain_name", candidate)
-      .not("dns_verified_at", "is", null)
-      .maybeSingle();
-    if (fallbackError) throw new Error(fallbackError.message);
-    if (fallback) return mapRow(fallback as DomainRow);
+    const match = localList.find(
+      (d) =>
+        d.domainName.toLowerCase() === candidate.toLowerCase() &&
+        (ROUTABLE_DOMAIN_STATUSES.includes(d.status) || Boolean(d.dnsVerifiedAt))
+    );
+    if (match) return match;
+  }
+
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      for (const candidate of [...new Set(candidates)]) {
+        const { data, error } = await withTimeout(
+          supabase
+            .from("custom_domains")
+            .select("*")
+            .eq("domain_name", candidate)
+            .maybeSingle()
+        );
+        if (!error && data) {
+          const mapped = mapRow(data as DomainRow);
+          if (ROUTABLE_DOMAIN_STATUSES.includes(mapped.status) || Boolean(mapped.dnsVerifiedAt)) {
+            return mapped;
+          }
+        }
+      }
+    }
+  } catch {
+    // fallback
   }
 
   return null;
 }
 
-/** @deprecated Use findRoutableDomainByHostname */
 export const findVerifiedDomainByHostname = findRoutableDomainByHostname;
 
 export async function createDomain(input: {
@@ -209,29 +259,51 @@ export async function createDomain(input: {
   provider: "cloudflare" | "manual";
 }): Promise<CustomDomainRecord> {
   const now = new Date().toISOString();
-  const kind = getCustomDomainKind(input.domainName);
-  const recordType = kind === "subdomain" ? "A" : "A";
-  const { data, error } = await db()
-    .from("custom_domains")
-    .insert({
-      id: input.id,
-      owner_user_id: input.ownerUserId,
-      page_id: input.pageId,
-      domain_name: input.domainName,
-      type: recordType,
-      target_ip: input.dnsTarget,
-      status: "Pending DNS",
-      dns_target: input.dnsTarget,
-      provider: input.provider,
-      provider_status: "pending",
-      ssl_status: "pending",
-      created_at: now,
-      updated_at: now
-    })
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return mapRow(data as DomainRow);
+  const record: CustomDomainRecord = {
+    id: input.id,
+    ownerUserId: input.ownerUserId,
+    pageId: input.pageId,
+    domainName: input.domainName,
+    status: "Pending DNS",
+    dnsTarget: input.dnsTarget,
+    dnsVerifiedAt: null,
+    provider: input.provider,
+    providerStatus: "pending",
+    sslStatus: "pending",
+    createdAt: now,
+    updatedAt: now
+  };
+
+  const list = getLocalDomains();
+  list.unshift(record);
+  saveLocalDomains(list);
+
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const kind = getCustomDomainKind(input.domainName);
+      const recordType = kind === "subdomain" ? "A" : "A";
+      void supabase.from("custom_domains").insert({
+        id: input.id,
+        owner_user_id: input.ownerUserId,
+        page_id: input.pageId,
+        domain_name: input.domainName,
+        type: recordType,
+        target_ip: input.dnsTarget,
+        status: "Pending DNS",
+        dns_target: input.dnsTarget,
+        provider: input.provider,
+        provider_status: "pending",
+        ssl_status: "pending",
+        created_at: now,
+        updated_at: now
+      });
+    }
+  } catch (e) {
+    console.warn("[domains] Supabase insert fallback to rootStore:", e);
+  }
+
+  return record;
 }
 
 export async function updateDomain(
@@ -239,52 +311,98 @@ export async function updateDomain(
   ownerUserId: string,
   patch: Record<string, unknown>
 ): Promise<CustomDomainRecord> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .update({ ...patch, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("owner_user_id", ownerUserId)
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return mapRow(data as DomainRow);
+  const list = getLocalDomains();
+  const idx = list.findIndex((d) => d.id === id && d.ownerUserId === ownerUserId);
+  if (idx < 0) {
+    throw new Error("Domain not found.");
+  }
+
+  const existing = list[idx];
+  const updated: CustomDomainRecord = {
+    ...existing,
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+  list[idx] = updated;
+  saveLocalDomains(list);
+
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      void supabase
+        .from("custom_domains")
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("owner_user_id", ownerUserId);
+    }
+  } catch (e) {
+    console.warn("[domains] Supabase update fallback to rootStore:", e);
+  }
+
+  return updated;
 }
 
-/** System updates (SSL poller) without owner scoping on the write path. */
 export async function updateDomainById(
   id: string,
   patch: Record<string, unknown>
 ): Promise<CustomDomainRecord> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .update({ ...patch, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return mapRow(data as DomainRow);
+  const list = getLocalDomains();
+  const idx = list.findIndex((d) => d.id === id);
+  if (idx < 0) {
+    throw new Error("Domain not found.");
+  }
+
+  const existing = list[idx];
+  const updated: CustomDomainRecord = {
+    ...existing,
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+  list[idx] = updated;
+  saveLocalDomains(list);
+
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      void supabase
+        .from("custom_domains")
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq("id", id);
+    }
+  } catch {
+    // fallback
+  }
+
+  return updated;
 }
 
 export async function listDomainsForSslPolling(): Promise<CustomDomainRecord[]> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .select("*")
-    .in("status", ["DNS Verified", "Provisioning SSL", "Pending DNS"])
-    .not("dns_verified_at", "is", null);
-  if (error) throw new Error(error.message);
-  return ((data || []) as DomainRow[]).map(mapRow);
+  return getLocalDomains().filter(
+    (d) =>
+      ["DNS Verified", "Provisioning SSL", "Pending DNS"].includes(d.status) &&
+      Boolean(d.dnsVerifiedAt)
+  );
 }
 
 export async function removeDomain(id: string, ownerUserId: string): Promise<void> {
-  const { data, error } = await db()
-    .from("custom_domains")
-    .delete()
-    .eq("id", id)
-    .eq("owner_user_id", ownerUserId)
-    .select("id");
-  if (error) throw new Error(error.message);
-  if (!data?.length) {
+  const list = getLocalDomains();
+  const filtered = list.filter((d) => !(d.id === id && d.ownerUserId === ownerUserId));
+  if (filtered.length === list.length) {
     throw new Error("Domain not found or you do not have permission to remove it.");
+  }
+  saveLocalDomains(filtered);
+
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      void supabase
+        .from("custom_domains")
+        .delete()
+        .eq("id", id)
+        .eq("owner_user_id", ownerUserId);
+    }
+  } catch {
+    // fallback
   }
 }
 
@@ -297,16 +415,18 @@ export async function appendDomainVerificationLog(input: {
   metadata?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    const { error } = await db().from("domain_verification_logs").insert({
-      domain_id: input.domainId,
-      owner_user_id: input.ownerUserId,
-      event: input.event,
-      status: input.status,
-      message: input.message ?? null,
-      metadata: input.metadata ?? {},
-      created_at: new Date().toISOString()
-    });
-    if (error) console.warn("[domains] verification log insert failed:", error.message);
+    const supabase = getSupabase();
+    if (supabase) {
+      void supabase.from("domain_verification_logs").insert({
+        domain_id: input.domainId,
+        owner_user_id: input.ownerUserId,
+        event: input.event,
+        status: input.status,
+        message: input.message ?? null,
+        metadata: input.metadata ?? {},
+        created_at: new Date().toISOString()
+      });
+    }
   } catch (error) {
     console.warn("[domains] verification log unavailable:", error);
   }

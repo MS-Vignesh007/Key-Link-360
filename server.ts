@@ -32,6 +32,8 @@ import {
 import { createLinkRotatorsRouter } from "./server/linkRotators/routes";
 import { createPaymentsRouter } from "./server/payments/routes";
 import { createAdminRouter } from "./server/admin/routes";
+import { createBillingRouter } from "./server/billing/routes";
+import { checkResourceQuota } from "./server/billing/quotaGuard";
 import {
   recordLinkRotatorClick,
   resolvePublicLinkRotator
@@ -74,6 +76,7 @@ import { normalizeQrPublicCode } from "./server/qrCodes/publicUrl";
 import { toAbsoluteHttpUrl as toQrAbsoluteUrl } from "./server/shortLinks/validation";
 
 const app = express();
+app.disable("x-powered-by");
 const PORT = Number(process.env.PORT) || 3000;
 
 function allowedCorsOrigins(): Set<string> {
@@ -120,6 +123,18 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
+  }
+  next();
+});
+
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader("X-XSS-Protection", "0");
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   }
   next();
 });
@@ -226,6 +241,7 @@ app.use("/api/link-rotators", createLinkRotatorsRouter());
 app.use("/api/short-links", createShortLinksRouter());
 app.use("/api/payments", createPaymentsRouter());
 app.use("/api/admin", createAdminRouter());
+app.use("/api/billing", createBillingRouter());
 
 /** Authenticated QR list — includes exact server-side scan counts. */
 app.get("/api/qr-codes", requireAuth, (req, res) => {
@@ -259,7 +275,17 @@ app.post("/api/qr-codes", requireAuth, async (req, res) => {
     }
     const publicCode = normalizeQrPublicCode(String(body.publicCode || id));
     const existing = listQrCodes().find((row) => row.id === id);
-    if (existing && existing.ownerUserId && existing.ownerUserId !== userId && existing.ownerUserId !== "local") {
+    if (!existing) {
+      const quota = checkResourceQuota(userId, "qrCodes", 1);
+      if (!quota.allowed) {
+        res.status(403).json({
+          error: quota.error,
+          code: "QUOTA_EXCEEDED",
+          quota
+        });
+        return;
+      }
+    } else if (existing.ownerUserId && existing.ownerUserId !== userId && existing.ownerUserId !== "local") {
       res.status(403).json({ error: "You do not have permission to modify this QR code." });
       return;
     }
@@ -655,6 +681,21 @@ app.post("/api/pages", requireAuth, (req, res) => {
   const userId = (req as any).authUser.id as string;
   const store = readStore();
   const existing = Array.isArray(store["pages_list"]) ? store["pages_list"] : [];
+  const userExistingPages = existing.filter((page: any) => page.ownerUserId === userId);
+
+  // If user is expanding their total page count, verify quota
+  if (pages.length > userExistingPages.length) {
+    const quota = checkResourceQuota(userId, "pages", pages.length - userExistingPages.length);
+    if (!quota.allowed) {
+      res.status(403).json({
+        error: quota.error,
+        code: "QUOTA_EXCEEDED",
+        quota
+      });
+      return;
+    }
+  }
+
   const otherUsers = existing.filter((page: any) => page.ownerUserId && page.ownerUserId !== userId);
   store["pages_list"] = [
     ...otherUsers,
@@ -744,16 +785,15 @@ app.delete("/api/page/:id", requireAuth, (req, res) => {
   const userId = (req as any).authUser.id as string;
   const pages = Array.isArray(store["pages_list"]) ? store["pages_list"] : [];
   const page = pages.find((item: any) => item.id === id);
-  if (!page || page.ownerUserId !== userId) {
-    res.status(404).json({ error: "Page not found" });
-    return;
-  }
-  if (!(id in store)) {
+  if (!page || (page.ownerUserId && page.ownerUserId !== userId && page.ownerUserId !== "local")) {
     res.status(404).json({ error: "Page not found" });
     return;
   }
 
-  delete store[id];
+  store["pages_list"] = pages.filter((item: any) => item.id !== id);
+  if (id in store) {
+    delete store[id];
+  }
   writeStore(store);
   res.json({ success: true });
 });
@@ -790,6 +830,12 @@ function parseUserAgent(uaString: string | undefined) {
 
 // Track Event API
 app.post("/api/track", (req, res) => {
+  const ip = clientIp(req as any);
+  if (!consumeRateLimit(`track:${ip}`, 120, 60_000)) {
+    res.status(429).json({ error: "Too many tracking events.", code: "RATE_LIMITED" });
+    return;
+  }
+
   const { pageId, eventType, eventLabel, details } = req.body;
   const ua = req.headers["user-agent"];
   const parsedUA = parseUserAgent(ua);
@@ -836,8 +882,14 @@ app.post("/api/track", (req, res) => {
 });
 
 /** Public lead capture from Bio Page Form / Smart Form blocks → Contacts */
-app.post("/api/leads", (req, res) => {
+app.post("/api/leads", async (req, res) => {
   try {
+    const ip = clientIp(req as any);
+    if (!consumeRateLimit(`lead:${ip}`, 60, 60_000)) {
+      res.status(429).json({ error: "Too many submissions. Please wait a minute.", code: "RATE_LIMITED" });
+      return;
+    }
+
     const pageId = String(req.body?.pageId || "").trim();
     const fields =
       req.body?.fields && typeof req.body.fields === "object" && !Array.isArray(req.body.fields)
@@ -1246,6 +1298,11 @@ app.use(async (req, res, next) => {
   }
 });
 
+// Ensure unhandled API routes return JSON 404 instead of HTML SPA fallback
+app.all("/api/*", (_req, res) => {
+  res.status(404).json({ error: "API endpoint not found.", code: "NOT_FOUND" });
+});
+
 // Vite middleware setup
 function isProductionMode(): boolean {
   const lifecycle = process.env.npm_lifecycle_event;
@@ -1320,6 +1377,30 @@ async function startServer() {
     console.error("Data store init failed (continuing with file fallback):", error);
   }
 }
+
+// Centralized Production Error Handler
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const status = typeof err?.status === "number" && err.status >= 400 && err.status < 600 ? err.status : 500;
+  console.error(`[Error] ${req.method} ${req.originalUrl}:`, err?.message || err);
+  
+  if (res.headersSent) return;
+
+  res.status(status).json({
+    error: status === 500 && process.env.NODE_ENV === "production"
+      ? "An unexpected error occurred. Please try again later."
+      : (err?.message || "An unexpected error occurred."),
+    code: err?.code || (status === 500 ? "INTERNAL_SERVER_ERROR" : "REQUEST_ERROR")
+  });
+});
+
+function handleShutdown(signal: string) {
+  console.log(`[server] Received ${signal}. Flushing data store and exiting gracefully...`);
+  void flushRootStore().catch(() => {}).finally(() => {
+    process.exit(0);
+  });
+}
+process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+process.on("SIGINT", () => handleShutdown("SIGINT"));
 
 startServer();
 

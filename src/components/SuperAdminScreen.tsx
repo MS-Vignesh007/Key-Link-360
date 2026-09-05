@@ -37,6 +37,7 @@ interface SuperAdminScreenProps {
 
 interface OverviewMetrics {
   users: { total: number; active: number; inactive: number; blocked: number; new7d: number };
+  subscriptions?: { totalFree: number; totalPro: number; activeSubscriptions: number; revenueInr: number };
   pages: { total: number; live: number; draft: number; totalViews: number };
   domains: { total: number; connected: number; platformSubdomains: number };
   qrCodes: { total: number; active: number; totalScans: number };
@@ -84,6 +85,11 @@ interface TenantDetails {
   rotators: Array<{ id: string; name: string; slug: string; destinationsCount: number; status: string }>;
   domains: Array<{ id: string; domainName: string; pageId: string; status: string; type: string }>;
   contactsCount: number;
+  subscription?: {
+    subscription: { status: string; planName: string; billingInterval: string; amountInr: number; currentPeriodEnd: string };
+    usage: { pages: number; customDomains: number; qrCodes: number; shortLinks: number; rotators: number };
+    limits: { pages: number; customDomains: number; qrCodes: number; shortLinks: number; rotators: number };
+  };
 }
 
 interface SystemHealth {
@@ -469,6 +475,19 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
               </div>
               <div className="text-2xl font-bold text-white">₹{metrics.payments.totalRevenueInr.toLocaleString()}</div>
               <div className="text-xs text-slate-400 mt-1">{metrics.payments.paidOrders} confirmed orders</div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
+              <div className="flex items-center gap-3 mb-2">
+                <Sparkles className="w-5 h-5 text-indigo-400" />
+                <span className="text-sm font-medium text-slate-300">Subscriptions</span>
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {metrics.subscriptions?.activeSubscriptions || 0} Active Pro
+              </div>
+              <div className="text-xs text-slate-400 mt-1">
+                {metrics.subscriptions?.totalFree || 0} Free users • ₹{(metrics.subscriptions?.revenueInr || 0).toLocaleString()} recurring rev
+              </div>
             </div>
           </div>
         </div>
@@ -909,6 +928,55 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
                       <div className="text-xl font-bold text-emerald-400">{inspectingData.contactsCount}</div>
                     </div>
                   </div>
+
+                  {/* Plan & Quota Breakdown */}
+                  {inspectingData.subscription && (
+                    <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/30 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-indigo-400" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+                            Subscription & Resource Quotas
+                          </span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">
+                          {inspectingData.subscription.subscription.status} • {inspectingData.subscription.subscription.planName}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+                        <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                          <div className="text-slate-400 text-[10px]">Pages</div>
+                          <div className="font-mono font-bold text-slate-200">
+                            {inspectingData.subscription.usage.pages} / {inspectingData.subscription.limits.pages}
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                          <div className="text-slate-400 text-[10px]">Domains</div>
+                          <div className="font-mono font-bold text-slate-200">
+                            {inspectingData.subscription.usage.customDomains} / {inspectingData.subscription.limits.customDomains}
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                          <div className="text-slate-400 text-[10px]">QR Codes</div>
+                          <div className="font-mono font-bold text-slate-200">
+                            {inspectingData.subscription.usage.qrCodes} / {inspectingData.subscription.limits.qrCodes}
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                          <div className="text-slate-400 text-[10px]">Short Links</div>
+                          <div className="font-mono font-bold text-slate-200">
+                            {inspectingData.subscription.usage.shortLinks} / {inspectingData.subscription.limits.shortLinks}
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                          <div className="text-slate-400 text-[10px]">Rotators</div>
+                          <div className="font-mono font-bold text-slate-200">
+                            {inspectingData.subscription.usage.rotators} / {inspectingData.subscription.limits.rotators}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Bio Pages Owned */}
                   <div>

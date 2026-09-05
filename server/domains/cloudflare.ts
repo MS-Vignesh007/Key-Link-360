@@ -68,6 +68,7 @@ async function cloudflareRequest<T>(path: string, init: RequestInit = {}): Promi
 
   const response = await fetch(`${apiBase}/zones/${zoneId}${path}`, {
     ...init,
+    signal: init.signal || AbortSignal.timeout(3000),
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -92,22 +93,27 @@ export async function findCustomHostnameByName(hostname: string): Promise<Provid
   const { token, zoneId, apiBase } = config();
   if (!token || !zoneId) return null;
   const normalized = hostname.trim().toLowerCase();
-  const response = await fetch(
-    `${apiBase}/zones/${zoneId}/custom_hostnames?hostname=${encodeURIComponent(normalized)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
+  try {
+    const response = await fetch(
+      `${apiBase}/zones/${zoneId}/custom_hostnames?hostname=${encodeURIComponent(normalized)}`,
+      {
+        signal: AbortSignal.timeout(3000),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       }
-    }
-  );
-  const body = (await response.json().catch(() => null)) as CloudflareHostnameList & {
-    success?: boolean;
-  } | null;
-  const match = (body?.result || []).find(
-    (item) => (item.hostname || "").toLowerCase() === normalized
-  );
-  return match ? normalizeResult(match) : null;
+    );
+    const body = (await response.json().catch(() => null)) as CloudflareHostnameList & {
+      success?: boolean;
+    } | null;
+    const match = (body?.result || []).find(
+      (item) => (item.hostname || "").toLowerCase() === normalized
+    );
+    return match ? normalizeResult(match) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function registerCustomHostname(hostname: string): Promise<ProviderHostname> {

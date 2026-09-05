@@ -22,6 +22,7 @@ import {
 import { generateShortLinkSlug, normalizeShortLinkSlug, validateShortLinkSlug } from "./slug";
 import type { ShortLinkRecord, ShortLinkRetarget, ShortLinkStatus } from "./types";
 import { toAbsoluteHttpUrl } from "./validation";
+import { checkResourceQuota } from "../billing/quotaGuard";
 
 type AuthedRequest = Request & {
   authUser?: { id: string; email: string };
@@ -184,6 +185,16 @@ export function createShortLinksRouter() {
 
   router.post("/", async (req: AuthedRequest, res: Response) => {
     try {
+      const quota = checkResourceQuota(req.authUser!.id, "shortLinks", 1);
+      if (!quota.allowed) {
+        res.status(403).json({
+          error: quota.error,
+          code: "QUOTA_EXCEEDED",
+          quota
+        });
+        return;
+      }
+
       const title = String(req.body?.title || "").trim();
       const destinationUrl = toAbsoluteHttpUrl(String(req.body?.destinationUrl || ""));
       const status = parseStatus(req.body?.status);

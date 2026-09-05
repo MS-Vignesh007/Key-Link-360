@@ -73,10 +73,14 @@ export function resolvePublicShortLink(
   const byHost = matches.find((row) => normalizeShortLinkHost(row.hostDomain) === host);
   if (byHost) return byHost;
 
-  if (host === platform) {
+  const isLocalHost = host === "localhost" || host.startsWith("127.") || host === platform;
+  if (isLocalHost) {
     if (matches.length === 1) return matches[0];
     const platformBound = matches.find(
-      (row) => normalizeShortLinkHost(row.hostDomain) === platform
+      (row) =>
+        normalizeShortLinkHost(row.hostDomain) === platform ||
+        normalizeShortLinkHost(row.hostDomain) === "localhost" ||
+        normalizeShortLinkHost(row.hostDomain).startsWith("127.")
     );
     if (platformBound) return platformBound;
     return matches[0];

@@ -15,6 +15,7 @@ export type CloudflareZone = {
 
 async function cfGet<T>(apiToken: string, path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
+    signal: AbortSignal.timeout(3000),
     headers: {
       Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json"

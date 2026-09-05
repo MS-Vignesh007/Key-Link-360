@@ -1,6 +1,5 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { ScreenId } from "../types";
 import { User, ChevronLeft, ChevronRight } from "lucide-react";
 import { NAV_CATEGORIES, NavItem, ADMIN_NAV_ITEM, screenToPath } from "../navigation";
 import { UserProfile, ScreenId } from "../types";

@@ -82,10 +82,14 @@ export function resolvePublicLinkRotator(
   const byHost = matches.find((row) => normalizeLinkRotatorHost(row.hostDomain) === host);
   if (byHost) return byHost;
 
-  if (host === platform) {
+  const isLocalHost = host === "localhost" || host.startsWith("127.") || host === platform;
+  if (isLocalHost) {
     if (matches.length === 1) return matches[0];
     const platformBound = matches.find(
-      (row) => normalizeLinkRotatorHost(row.hostDomain) === platform
+      (row) =>
+        normalizeLinkRotatorHost(row.hostDomain) === platform ||
+        normalizeLinkRotatorHost(row.hostDomain) === "localhost" ||
+        normalizeLinkRotatorHost(row.hostDomain).startsWith("127.")
     );
     if (platformBound) return platformBound;
     // Host rewrite dropped customer host — still serve the only/custom rotator by slug.

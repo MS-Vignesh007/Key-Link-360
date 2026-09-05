@@ -240,13 +240,8 @@ function seedDemoUser(store: AuthStoreShape): boolean {
   const now = new Date().toISOString();
 
   if (existing) {
-    const passwordOk =
-      Boolean(existing.passwordHash) &&
-      Boolean(existing.passwordSalt) &&
-      verifyPassword(DEMO_PASSWORD, existing.passwordSalt, existing.passwordHash);
-
     let mutated = false;
-    if (!passwordOk) {
+    if (!existing.passwordHash || !existing.passwordSalt) {
       const { salt, hash } = hashPassword(DEMO_PASSWORD);
       existing.passwordHash = hash;
       existing.passwordSalt = salt;

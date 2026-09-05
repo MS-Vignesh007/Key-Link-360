@@ -71,6 +71,7 @@ import {
   type CustomDomainRecord,
   type DomainStatus
 } from "./repository";
+import { checkResourceQuota } from "../billing/quotaGuard";
 
 type AuthedRequest = Request & {
   authUser?: { id: string; email: string; plan?: string };
@@ -85,17 +86,19 @@ function errorMessage(error: unknown) {
 }
 
 function pageBelongsToUser(pageId: string, userId: string) {
-  const pages = getRootStore().pages_list;
-  return (
-    Array.isArray(pages) &&
-    pages.some(
-      (page) =>
-        page &&
-        typeof page === "object" &&
-        page.id === pageId &&
-        page.ownerUserId === userId
-    )
-  );
+  const store = getRootStore();
+  const pages = store.pages_list;
+  if (Array.isArray(pages)) {
+    const page = pages.find((p) => p && typeof p === "object" && p.id === pageId);
+    if (page) {
+      return page.ownerUserId === userId;
+    }
+  }
+  const doc = store[pageId] as Record<string, unknown> | undefined;
+  if (doc && typeof doc === "object") {
+    return doc.ownerUserId === userId;
+  }
+  return false;
 }
 
 const DNS_PROVIDER_CACHE_MS = 5 * 60 * 1000;
@@ -835,6 +838,18 @@ export function createDomainsRouter() {
         code: "DOMAIN_EXISTS"
       });
       return;
+    }
+
+    if (!existingByHost) {
+      const quota = checkResourceQuota(req.authUser!.id, "customDomains", 1);
+      if (!quota.allowed) {
+        res.status(403).json({
+          error: quota.error,
+          code: "QUOTA_EXCEEDED",
+          quota
+        });
+        return;
+      }
     }
 
     let resumeRecord: CustomDomainRecord | null = null;
