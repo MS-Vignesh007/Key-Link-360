@@ -779,15 +779,11 @@ export function createAuthRouter() {
       writeAuthStore(store);
       void flushRootStore().catch((err) => console.error("flush after forgot-password:", err));
 
-      const exposeOtp = shouldExposeAuthTokens() || !isSmtpConfigured() || !emailDelivered;
+      const exposeOtp = shouldExposeAuthTokens();
 
       res.json({
         success: true,
-        message: isSmtpConfigured() && emailDelivered
-          ? "A 6-digit verification code has been sent to your email."
-          : isSmtpConfigured()
-            ? "Reset code generated. Check your email or use the code provided."
-            : "Reset code generated. (Configure SMTP in Railway variables for email delivery).",
+        message: "If an account exists for that email, a 6-digit verification code has been sent.",
         emailDelivered,
         otp: exposeOtp ? otp : undefined
       });

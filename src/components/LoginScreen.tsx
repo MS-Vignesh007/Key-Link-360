@@ -467,13 +467,9 @@ export default function LoginScreen({
     try {
       const result = await forgotPasswordRequest(trimmedEmail);
       setResendCooldown(30);
-      if (result.otp) {
+      if (result.otp && config?.exposeTokens) {
         setOtp(result.otp);
-        setInfo(
-          result.emailDelivered
-            ? "Verification code sent to your email."
-            : `Verification code: ${result.otp}`
-        );
+        setInfo(`Dev OTP: ${result.otp}`);
       } else {
         setInfo(result.message || "A 6-digit verification code has been dispatched to your email.");
       }
@@ -516,13 +512,9 @@ export default function LoginScreen({
     try {
       const result = await forgotPasswordRequest(email.trim().toLowerCase());
       setResendCooldown(30);
-      if (result.otp) {
+      if (result.otp && config?.exposeTokens) {
         setOtp(result.otp);
-        setInfo(
-          result.emailDelivered
-            ? "A fresh 6-digit code has been sent to your email."
-            : `New Verification code: ${result.otp}`
-        );
+        setInfo(`Dev OTP: ${result.otp}`);
       } else {
         setInfo("A fresh 6-digit verification code has been sent to your email.");
       }
