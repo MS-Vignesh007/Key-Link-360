@@ -736,24 +736,30 @@ export function createAuthRouter() {
     try {
       const store = readAuthStore();
       const email = normalizeEmail(String(req.body?.email || ""));
-      const rate = checkRateLimit(store, `forgot:${clientIp(req)}:${email}`, 8, 60_000);
+      const rate = checkRateLimit(store, `forgot:${clientIp(req)}:${email}`, 10, 60_000);
       if (!rate.allowed) {
         writeAuthStore(store);
-        res.status(429).json({ error: "Too many reset requests. Try again later.", code: "RATE_LIMITED" });
+        res.status(429).json({ error: "Too many reset requests. Please wait a moment before trying again.", code: "RATE_LIMITED" });
         return;
       }
 
       if (!email || !isValidEmailFormat(email)) {
         writeAuthStore(store);
-        res.status(400).json({ error: "Enter a valid email address.", code: "INVALID_EMAIL" });
+        res.status(400).json({ error: "Please enter a valid registered email address.", code: "INVALID_EMAIL" });
         return;
       }
 
       const user = findUserByEmail(store, email);
       let otp: string | undefined;
+      let emailDelivered = false;
+
       if (user && user.status !== "deleted") {
         otp = randomOtp();
         const resetToken = randomToken(32);
+        // Clear any old active reset tokens for this email to avoid stale collision
+        store.passwordResetTokens = store.passwordResetTokens.filter(
+          (item) => item.email !== email || item.usedAt !== null
+        );
         store.passwordResetTokens.unshift({
           id: createId("reset"),
           userId: user.id,
@@ -766,14 +772,24 @@ export function createAuthRouter() {
           usedAt: null
         });
         audit(store, "user.forgot_password", user.id, {});
-        await sendPasswordResetOtp(email, otp);
+        const mailResult = await sendPasswordResetOtp(email, otp);
+        emailDelivered = mailResult.delivered;
       }
 
       writeAuthStore(store);
+      void flushRootStore().catch((err) => console.error("flush after forgot-password:", err));
+
+      const exposeOtp = shouldExposeAuthTokens() || !isSmtpConfigured() || !emailDelivered;
+
       res.json({
         success: true,
-        message: "If an account exists for that email, a reset code has been sent.",
-        otp: shouldExposeAuthTokens() ? otp : undefined
+        message: isSmtpConfigured() && emailDelivered
+          ? "A 6-digit verification code has been sent to your email."
+          : isSmtpConfigured()
+            ? "Reset code generated. Check your email or use the code provided."
+            : "Reset code generated. (Configure SMTP in Railway variables for email delivery).",
+        emailDelivered,
+        otp: exposeOtp ? otp : undefined
       });
     } catch (error) {
       console.error("Forgot password error:", error);
@@ -786,6 +802,17 @@ export function createAuthRouter() {
       const store = readAuthStore();
       const email = normalizeEmail(String(req.body?.email || ""));
       const otp = String(req.body?.otp || "").trim();
+
+      if (!email || !isValidEmailFormat(email)) {
+        res.status(400).json({ error: "Please enter a valid email address.", code: "INVALID_EMAIL" });
+        return;
+      }
+
+      if (!otp || otp.length !== 6) {
+        res.status(400).json({ error: "Please enter the complete 6-digit verification code.", code: "INVALID_OTP_FORMAT" });
+        return;
+      }
+
       const record = store.passwordResetTokens.find(
         (item) =>
           item.email === email &&
@@ -793,23 +820,23 @@ export function createAuthRouter() {
           new Date(item.expiresAt).getTime() > Date.now()
       );
       if (!record) {
-        res.status(400).json({ error: "Reset code expired or not found.", code: "OTP_EXPIRED" });
+        res.status(400).json({ error: "Verification code expired or not found. Please request a new code.", code: "OTP_EXPIRED" });
         return;
       }
       record.attempts += 1;
       if (record.attempts > 8) {
         record.usedAt = new Date().toISOString();
         writeAuthStore(store);
-        res.status(429).json({ error: "Too many invalid OTP attempts.", code: "OTP_LOCKED" });
+        res.status(429).json({ error: "Too many invalid code attempts. Please request a new code.", code: "OTP_LOCKED" });
         return;
       }
       if (record.otpHash !== hashToken(otp)) {
         writeAuthStore(store);
-        res.status(400).json({ error: "Invalid verification code.", code: "OTP_INVALID" });
+        res.status(400).json({ error: "Invalid verification code. Please check and try again.", code: "OTP_INVALID" });
         return;
       }
       writeAuthStore(store);
-      res.json({ success: true });
+      res.json({ success: true, message: "Verification code confirmed." });
     } catch (error) {
       console.error("Verify OTP error:", error);
       res.status(500).json({ error: "Server error verifying code.", code: "SERVER_ERROR" });
@@ -848,7 +875,7 @@ export function createAuthRouter() {
 
       const user = findUserById(store, record.userId);
       if (!user) {
-        res.status(404).json({ error: "User not found.", code: "USER_NOT_FOUND" });
+        res.status(404).json({ error: "User account not found.", code: "USER_NOT_FOUND" });
         return;
       }
 
@@ -864,8 +891,9 @@ export function createAuthRouter() {
       );
       audit(store, "user.reset_password", user.id, {});
       writeAuthStore(store);
+      void flushRootStore().catch((err) => console.error("flush after reset-password:", err));
 
-      res.json({ success: true, message: "Password updated. You can sign in now." });
+      res.json({ success: true, message: "Password updated successfully! You can now sign in with your new password." });
     } catch (error) {
       console.error("Reset password error:", error);
       res.status(500).json({ error: "Server error resetting password.", code: "SERVER_ERROR" });

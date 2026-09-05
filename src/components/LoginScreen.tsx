@@ -165,6 +165,15 @@ export default function LoginScreen({
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
   const [newsletterOptIn, setNewsletterOptIn] = useState(true);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -450,22 +459,27 @@ export default function LoginScreen({
 
     const trimmedEmail = email.trim().toLowerCase();
     if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
-      setError("Please enter a valid email address.");
+      setError("Please enter a valid registered email address.");
       return;
     }
 
     setLoading(true);
     try {
       const result = await forgotPasswordRequest(trimmedEmail);
-      if (result.otp && config?.exposeTokens) {
+      setResendCooldown(30);
+      if (result.otp) {
         setOtp(result.otp);
-        setInfo(`Dev OTP: ${result.otp}`);
+        setInfo(
+          result.emailDelivered
+            ? "Verification code sent to your email."
+            : `Verification code: ${result.otp}`
+        );
       } else {
-        setInfo(result.message);
+        setInfo(result.message || "A 6-digit verification code has been dispatched to your email.");
       }
       setView("otp");
     } catch (err) {
-      setError((err as AuthApiError).message || "Unable to process password reset.");
+      setError((err as AuthApiError).message || "Unable to process password reset. Please verify your email.");
     } finally {
       setLoading(false);
     }
@@ -476,35 +490,44 @@ export default function LoginScreen({
     setError("");
     setInfo("");
 
-    if (!otp.trim()) {
-      setError("Enter the 6-digit verification code.");
+    const cleanOtp = otp.trim().replace(/\D/g, "");
+    if (cleanOtp.length !== 6) {
+      setError("Please enter the complete 6-digit verification code.");
       return;
     }
 
     setLoading(true);
     try {
-      await verifyResetOtpRequest(email.trim().toLowerCase(), otp.trim());
+      await verifyResetOtpRequest(email.trim().toLowerCase(), cleanOtp);
+      setInfo("Code verified successfully! Now create your new password.");
       setView("reset");
     } catch (err) {
-      setError((err as AuthApiError).message || "Invalid or expired OTP code.");
+      setError((err as AuthApiError).message || "Invalid or expired verification code. Please check your email or click 'Resend Code'.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
+    if (resendCooldown > 0 || loading) return;
     setError("");
+    setInfo("");
     setLoading(true);
     try {
       const result = await forgotPasswordRequest(email.trim().toLowerCase());
-      if (result.otp && config?.exposeTokens) {
+      setResendCooldown(30);
+      if (result.otp) {
         setOtp(result.otp);
-        setInfo(`New OTP: ${result.otp}`);
+        setInfo(
+          result.emailDelivered
+            ? "A fresh 6-digit code has been sent to your email."
+            : `New Verification code: ${result.otp}`
+        );
       } else {
-        setInfo("A new verification code has been dispatched.");
+        setInfo("A fresh 6-digit verification code has been sent to your email.");
       }
     } catch (err) {
-      setError((err as AuthApiError).message || "Failed to resend code.");
+      setError((err as AuthApiError).message || "Failed to resend code. Please wait a moment and try again.");
     } finally {
       setLoading(false);
     }
@@ -535,7 +558,7 @@ export default function LoginScreen({
       });
       setView("reset-success");
     } catch (err) {
-      setError((err as AuthApiError).message || "Failed to update password.");
+      setError((err as AuthApiError).message || "Failed to update password. Please request a new code.");
     } finally {
       setLoading(false);
     }
@@ -837,12 +860,18 @@ export default function LoginScreen({
               onClick={() => {
                 setError("");
                 setInfo("");
-                setView(view === "otp" || view === "reset" ? "forgot" : "login");
+                if (view === "reset") setView("otp");
+                else if (view === "otp") setView("forgot");
+                else setView("login");
               }}
               className="mb-5 inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Back to Sign In
+              {view === "otp"
+                ? "Back to Email"
+                : view === "reset"
+                  ? "Back to Code"
+                  : "Back to Sign In"}
             </button>
           )}
 
@@ -1221,12 +1250,31 @@ export default function LoginScreen({
 
         {view === "otp" && (
           <form onSubmit={handleVerifyOtp} className="space-y-5" noValidate>
+            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs font-mono text-cyan-200/90 flex items-center justify-between">
+              <div className="truncate flex items-center gap-2">
+                <Mail className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                <span className="truncate">Sent to: <strong className="text-white">{email}</strong></span>
+              </div>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => {
+                  setError("");
+                  setInfo("");
+                  setView("forgot");
+                }}
+                className="text-[11px] text-cyan-400 hover:text-cyan-200 underline ml-2 shrink-0 font-semibold"
+              >
+                Change
+              </button>
+            </div>
+
             <div>
               <label
                 htmlFor="reset-otp"
                 className="block text-[11px] font-mono font-bold text-cyan-300/90 uppercase tracking-widest mb-1.5"
               >
-                VERIFICATION CODE (OTP)
+                6-DIGIT VERIFICATION CODE (OTP)
               </label>
               <input
                 id="reset-otp"
@@ -1236,8 +1284,9 @@ export default function LoginScreen({
                 autoComplete="one-time-code"
                 value={otp}
                 onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="key-cyber-input py-3 px-4 text-center font-mono text-xl tracking-[0.4em] text-cyan-300 font-bold placeholder:text-slate-500 placeholder:tracking-normal placeholder:text-sm"
-                placeholder="Enter 6-digit code"
+                className="key-cyber-input py-3.5 px-4 text-center font-mono text-2xl tracking-[0.45em] text-cyan-300 font-bold placeholder:text-slate-500 placeholder:tracking-normal placeholder:text-sm"
+                placeholder="000000"
+                autoFocus
               />
             </div>
             <button
@@ -1256,11 +1305,13 @@ export default function LoginScreen({
             </button>
             <button
               type="button"
-              disabled={loading}
+              disabled={loading || resendCooldown > 0}
               onClick={() => void handleResendOtp()}
-              className="w-full text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 hover:underline disabled:opacity-60 transition-colors"
+              className="w-full text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-colors py-1"
             >
-              Didn&apos;t receive code? Resend Code
+              {resendCooldown > 0
+                ? `Didn't receive code? Resend Code in ${resendCooldown}s`
+                : "Didn't receive code? Resend Code"}
             </button>
           </form>
         )}
@@ -1384,12 +1435,14 @@ export default function LoginScreen({
                 setError("");
                 setInfo("");
                 setPassword("");
+                setConfirmPassword("");
+                setOtp("");
                 setView("login");
               }}
               className="key-btn-cyber"
             >
               <Zap className="h-4 w-4 text-cyan-200" />
-              <span>BACK TO SIGN IN</span>
+              <span>SIGN IN WITH NEW PASSWORD</span>
             </button>
           </div>
         )}
