@@ -313,7 +313,9 @@ export async function forgotPasswordRequest(email: string) {
   return authFetch<{
     success: boolean;
     message: string;
+    emailDelivered?: boolean;
     resetToken?: string;
+    resetUrl?: string;
     otp?: string;
   }>(
     "/api/auth/forgot-password",

@@ -796,48 +796,53 @@ export function createAuthRouter() {
         }
       }
 
-      let resetToken: string | undefined;
+      if (!user || user.status === "deleted") {
+        res.status(404).json({
+          error: `No registered account found with "${email}". Please check for spelling mistakes or create a new account.`,
+          code: "USER_NOT_FOUND"
+        });
+        return;
+      }
+
+      let resetToken = randomToken(32);
       let emailDelivered = false;
 
-      if (user && user.status !== "deleted") {
-        resetToken = randomToken(32);
-        if (!Array.isArray(store.passwordResetTokens)) {
-          store.passwordResetTokens = [];
-        }
-        store.passwordResetTokens = store.passwordResetTokens.filter(
-          (item) => item.email !== email || item.usedAt !== null
-        );
-        store.passwordResetTokens.unshift({
-          id: createId("reset"),
-          userId: user.id,
-          email: user.email,
-          otpHash: hashToken(resetToken),
-          tokenHash: hashToken(resetToken),
-          attempts: 0,
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + RESET_TTL_MS).toISOString(),
-          usedAt: null
-        });
+      if (!Array.isArray(store.passwordResetTokens)) {
+        store.passwordResetTokens = [];
+      }
+      store.passwordResetTokens = store.passwordResetTokens.filter(
+        (item) => item.email !== email || item.usedAt !== null
+      );
+      store.passwordResetTokens.unshift({
+        id: createId("reset"),
+        userId: user.id,
+        email: user.email,
+        otpHash: hashToken(resetToken),
+        tokenHash: hashToken(resetToken),
+        attempts: 0,
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + RESET_TTL_MS).toISOString(),
+        usedAt: null
+      });
 
-        try {
-          audit(store, "user.forgot_password", user.id, {});
-        } catch (auditErr) {
-          console.error("audit log error:", auditErr);
-        }
+      try {
+        audit(store, "user.forgot_password", user.id, {});
+      } catch (auditErr) {
+        console.error("audit log error:", auditErr);
+      }
 
-        const hostHeader = (req.headers["x-forwarded-host"] || req.headers["x-original-host"] || req.headers.host);
-        const protoHeader = (req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http"));
-        const clientOrigin = typeof hostHeader === "string" && hostHeader.trim()
-          ? `${protoHeader}://${hostHeader.trim()}`
-          : appOrigin();
+      const hostHeader = (req.headers["x-forwarded-host"] || req.headers["x-original-host"] || req.headers.host);
+      const protoHeader = (req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http"));
+      const clientOrigin = typeof hostHeader === "string" && hostHeader.trim()
+        ? `${protoHeader}://${hostHeader.trim()}`
+        : appOrigin();
 
-        try {
-          const mailResult = await sendPasswordResetLink(email, resetToken, clientOrigin);
-          emailDelivered = Boolean(mailResult?.delivered);
-        } catch (mailErr) {
-          console.error("sendPasswordResetLink error:", mailErr);
-          emailDelivered = false;
-        }
+      try {
+        const mailResult = await sendPasswordResetLink(email, resetToken, clientOrigin);
+        emailDelivered = Boolean(mailResult?.delivered);
+      } catch (mailErr) {
+        console.error("sendPasswordResetLink error:", mailErr);
+        emailDelivered = false;
       }
 
       try {
@@ -847,20 +852,22 @@ export function createAuthRouter() {
         console.error("writeAuthStore error:", writeErr);
       }
 
-      const exposeTokens = shouldExposeAuthTokens();
+      const resetUrl = `${clientOrigin}/?view=reset&token=${resetToken}&email=${encodeURIComponent(email)}`;
 
       res.json({
         success: true,
-        message: "Check your email! We have sent a password reset link to your email address.",
+        message: emailDelivered
+          ? "Check your email! We have sent a password reset link to your email address."
+          : "Password reset link generated. You can also proceed directly below to update your password.",
         emailDelivered,
-        resetToken: exposeTokens ? resetToken : undefined
+        resetToken,
+        resetUrl
       });
     } catch (error) {
       console.error("Forgot password unexpected error:", error);
-      res.json({
-        success: true,
-        message: "Check your email! We have sent a password reset link to your email address.",
-        emailDelivered: false
+      res.status(500).json({
+        error: "Server error processing password reset request.",
+        code: "SERVER_ERROR"
       });
     }
   });

@@ -153,6 +153,7 @@ export default function LoginScreen({
   });
   const [email, setEmail] = useState(() => emailParam || "");
   const [resetToken, setResetToken] = useState(() => resetTokenParam || "");
+  const [directResetToken, setDirectResetToken] = useState("");
   const [resetLinkSent, setResetLinkSent] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -480,6 +481,9 @@ export default function LoginScreen({
       const result = await forgotPasswordRequest(trimmedEmail);
       setResendCooldown(30);
       setResetLinkSent(true);
+      if (result.resetToken) {
+        setDirectResetToken(result.resetToken);
+      }
       setInfo(result.message || "Check your email! We have sent a password reset link to your email address.");
     } catch (err) {
       setError((err as AuthApiError).message || "Unable to process password reset. Please verify your email.");
@@ -496,7 +500,10 @@ export default function LoginScreen({
     try {
       const result = await forgotPasswordRequest(email.trim().toLowerCase());
       setResendCooldown(30);
-      setInfo("A fresh password reset link has been dispatched to your email.");
+      if (result.resetToken) {
+        setDirectResetToken(result.resetToken);
+      }
+      setInfo(result.message || "A fresh password reset link has been dispatched to your email.");
     } catch (err) {
       setError((err as AuthApiError).message || "Failed to resend reset link. Please wait a moment and try again.");
     } finally {
@@ -1210,6 +1217,21 @@ export default function LoginScreen({
                     We sent a password reset link to <strong className="text-cyan-300">{email}</strong>. Open the link in your email to set a new password.
                   </p>
                 </div>
+
+                {directResetToken && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetToken(directResetToken);
+                      setView("reset");
+                    }}
+                    className="key-btn-cyber w-full !py-2.5 !text-xs !bg-gradient-to-r !from-cyan-500 !to-indigo-600 shadow-[0_0_16px_rgba(0,240,255,0.35)] flex items-center justify-center gap-2"
+                  >
+                    <KeyRound className="h-4 w-4 text-white" />
+                    <span>SET NEW PASSWORD NOW →</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   disabled={loading || resendCooldown > 0}
