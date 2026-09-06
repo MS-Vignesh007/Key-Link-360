@@ -25,11 +25,9 @@ export function isSmtpConfigured(): boolean {
   return Boolean(service || host || (user && pass));
 }
 
-/** Email verification is required only when explicitly enabled, or when SMTP can deliver mail. */
+/** Email verification is required only when explicitly enabled via AUTH_REQUIRE_EMAIL_VERIFICATION="true". */
 export function requireEmailVerification() {
-  if (process.env.AUTH_REQUIRE_EMAIL_VERIFICATION === "true") return true;
-  if (process.env.AUTH_REQUIRE_EMAIL_VERIFICATION === "false") return false;
-  return isSmtpConfigured();
+  return process.env.AUTH_REQUIRE_EMAIL_VERIFICATION === "true";
 }
 
 function getSmtpTransportConfig() {

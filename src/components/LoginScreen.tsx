@@ -425,17 +425,13 @@ export default function LoginScreen({
         newsletterOptIn
       });
 
-      if (result.verificationToken && config?.exposeTokens) {
-        setVerifyToken(result.verificationToken);
-        setInfo(`Dev verification token: ${result.verificationToken}`);
-      }
-
-      if (result.user && !result.emailVerificationRequired && result.accessToken && result.refreshToken) {
+      if (result.user && result.accessToken && result.refreshToken) {
         finishLogin(result.user, result.accessToken, result.refreshToken, true);
         return;
       }
 
-      setView("register-success");
+      setInfo("Account created successfully! You can now sign in.");
+      setView("login");
     } catch (err) {
       const apiErr = err as AuthApiError;
       if (
@@ -1412,23 +1408,10 @@ export default function LoginScreen({
               <CheckCircle className="h-8 w-8 text-cyan-300 animate-pulse" />
             </div>
             <p className="text-sm font-mono text-slate-200 leading-relaxed" role="status">
-              {view === "register-success"
-                ? config?.emailVerificationRequired
-                  ? "Account created. We sent a verification link to your email to activate your account."
-                  : "Account created successfully! You can now sign in with your email and password."
-                : view === "reset-success"
-                  ? "Password updated successfully! You can now sign in with your new password."
-                  : "Email verified successfully! You can now sign in."}
+              {view === "reset-success"
+                ? "Password updated successfully! You can now sign in with your new password."
+                : "Account created successfully! You can now sign in to your dashboard."}
             </p>
-            {view === "register-success" && config?.emailVerificationRequired && (
-              <button
-                type="button"
-                onClick={() => setView("verify")}
-                className="w-full border border-cyan-500/40 rounded-xl py-2.5 text-xs font-mono font-bold text-cyan-300 hover:bg-cyan-500/10 transition-colors"
-              >
-                Enter token manually
-              </button>
-            )}
             <button
               type="button"
               onClick={() => {
@@ -1442,7 +1425,7 @@ export default function LoginScreen({
               className="key-btn-cyber"
             >
               <Zap className="h-4 w-4 text-cyan-200" />
-              <span>SIGN IN WITH NEW PASSWORD</span>
+              <span>{view === "reset-success" ? "SIGN IN WITH NEW PASSWORD" : "SIGN IN TO DASHBOARD"}</span>
             </button>
           </div>
         )}
