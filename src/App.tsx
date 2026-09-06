@@ -239,7 +239,15 @@ export default function App() {
   }, [location.pathname, resetMainScroll]);
   const authVerifyToken = React.useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get("verifyToken") || params.get("token") || "";
+    return params.get("verifyToken") || "";
+  }, []);
+  const authResetToken = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("resetToken") || params.get("reset_token") || params.get("token") || "";
+  }, []);
+  const authEmailParam = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("email") || "";
   }, []);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [uiTheme, setUiTheme] = useState<AppTheme>(() => getStoredTheme());
@@ -2309,8 +2317,10 @@ export default function App() {
                   element={
                     <LoginScreen
                       onLoginSuccess={handleLoginSuccess}
-                      initialView={authVerifyToken ? "verify" : "login"}
+                      initialView={authResetToken ? "reset" : authVerifyToken ? "verify" : "login"}
                       initialVerifyToken={authVerifyToken}
+                      initialResetToken={authResetToken}
+                      initialEmail={authEmailParam}
                     />
                   }
                 />

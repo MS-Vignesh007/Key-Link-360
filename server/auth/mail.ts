@@ -130,6 +130,37 @@ export async function sendVerificationEmail(email: string, token: string) {
   return sendMail({ to: email, subject, text, html });
 }
 
+export async function sendPasswordResetLink(email: string, resetToken: string, originUrl?: string) {
+  const base = (originUrl || appUrl()).replace(/\/$/, "");
+  const resetLink = `${base}/login?resetToken=${encodeURIComponent(resetToken)}&email=${encodeURIComponent(email)}`;
+  const subject = `${APP_NAME} — Reset Your Password`;
+  const text = `Reset your ${APP_NAME} password by opening the link below:\n\n${resetLink}\n\nThis link will expire in 15 minutes.\n\nIf you did not request a password reset, you can safely ignore this email.`;
+  const html = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background-color:#0b0f19;color:#f8fafc;padding:36px 20px;border-radius:12px;max-width:540px;margin:0 auto;border:1px solid #1e293b">
+      <div style="text-align:center;margin-bottom:24px">
+        <h1 style="color:#00f0ff;margin:0;font-size:24px;font-weight:800;letter-spacing:2px">${APP_NAME}</h1>
+        <p style="color:#94a3b8;font-size:13px;margin-top:4px">Password Reset Request</p>
+      </div>
+      <div style="background-color:#0f172a;padding:28px 24px;border-radius:10px;border:1px solid #334155;text-align:center;margin-bottom:24px">
+        <p style="color:#e2e8f0;font-size:15px;margin:0 0 22px;line-height:1.5">You requested to reset your ${APP_NAME} account password. Click the button below to create your new password:</p>
+        <a href="${resetLink}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#00f0ff 0%,#7000ff 100%);color:#ffffff;font-weight:700;padding:14px 30px;border-radius:8px;text-decoration:none;font-size:15px;letter-spacing:1px;box-shadow:0 0 25px rgba(0,240,255,0.4)">RESET PASSWORD</a>
+        <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1e293b;text-align:left">
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 8px">Or copy and paste this link into your browser:</p>
+          <a href="${resetLink}" style="color:#00f0ff;font-size:12px;word-break:break-all;text-decoration:underline">${resetLink}</a>
+        </div>
+        <p style="color:#94a3b8;font-size:12px;margin-top:18px;margin-bottom:0">⏱️ This link will expire in <strong>15 minutes</strong>.</p>
+      </div>
+      <p style="color:#64748b;font-size:12px;line-height:1.6;text-align:center;margin:0 0 16px">
+        If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.
+      </p>
+      <div style="border-top:1px solid #1e293b;padding-top:16px;text-align:center;color:#475569;font-size:11px">
+        &copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+      </div>
+    </div>
+  `;
+  return sendMail({ to: email, subject, text, html });
+}
+
 export async function sendPasswordResetOtp(email: string, otp: string) {
   const subject = `${APP_NAME} — Your Password Reset Code: ${otp}`;
   const text = `Your ${APP_NAME} password reset verification code is: ${otp}\n\nThis code will expire in 15 minutes.\n\nIf you did not request a password reset, please ignore this email.`;

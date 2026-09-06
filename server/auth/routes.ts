@@ -34,6 +34,7 @@ import {
 } from "./validation";
 import {
   requireEmailVerification,
+  sendPasswordResetLink,
   sendPasswordResetOtp,
   sendVerificationEmail,
   shouldExposeAuthTokens
@@ -771,17 +772,26 @@ export function createAuthRouter() {
         return;
       }
 
-      const user = findUserByEmail(store, email);
-      let otp: string | undefined;
+      let user = findUserByEmail(store, email);
+      if (!user) {
+        // Fallback recovery from Supabase
+        const recovered = await fetchAuthUserByEmailFromSupabase(email);
+        if (recovered) {
+          user = recovered;
+          Object.assign(store, readAuthStore());
+          user = findUserByEmail(store, email) || recovered;
+        }
+      }
+
+      let resetToken: string | undefined;
       let emailDelivered = false;
 
       if (user && user.status !== "deleted") {
-        otp = randomOtp();
-        const resetToken = randomToken(32);
+        resetToken = randomToken(32);
         if (!Array.isArray(store.passwordResetTokens)) {
           store.passwordResetTokens = [];
         }
-        // Clear any old active reset tokens for this email to avoid stale collision
+        // Clear any old active reset tokens for this email
         store.passwordResetTokens = store.passwordResetTokens.filter(
           (item) => item.email !== email || item.usedAt !== null
         );
@@ -789,23 +799,32 @@ export function createAuthRouter() {
           id: createId("reset"),
           userId: user.id,
           email: user.email,
-          otpHash: hashToken(otp),
+          otpHash: hashToken(resetToken),
           tokenHash: hashToken(resetToken),
           attempts: 0,
           createdAt: new Date().toISOString(),
           expiresAt: new Date(Date.now() + RESET_TTL_MS).toISOString(),
           usedAt: null
         });
+
         try {
           audit(store, "user.forgot_password", user.id, {});
         } catch (auditErr) {
           console.error("audit log error:", auditErr);
         }
+
+        // Determine client origin URL for the reset link
+        const hostHeader = (req.headers["x-forwarded-host"] || req.headers["x-original-host"] || req.headers.host);
+        const protoHeader = (req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http"));
+        const clientOrigin = typeof hostHeader === "string" && hostHeader.trim()
+          ? `${protoHeader}://${hostHeader.trim()}`
+          : appOrigin();
+
         try {
-          const mailResult = await sendPasswordResetOtp(email, otp);
+          const mailResult = await sendPasswordResetLink(email, resetToken, clientOrigin);
           emailDelivered = Boolean(mailResult?.delivered);
         } catch (mailErr) {
-          console.error("sendPasswordResetOtp error:", mailErr);
+          console.error("sendPasswordResetLink error:", mailErr);
           emailDelivered = false;
         }
       }
@@ -813,17 +832,17 @@ export function createAuthRouter() {
       writeAuthStore(store);
       void flushRootStore().catch((err) => console.error("flush after forgot-password:", err));
 
-      const exposeOtp = shouldExposeAuthTokens();
+      const exposeTokens = shouldExposeAuthTokens();
 
       res.json({
         success: true,
-        message: "If an account exists for that email, a 6-digit verification code has been sent.",
+        message: "Check your email! We have sent a password reset link to your email address.",
         emailDelivered,
-        otp: exposeOtp ? otp : undefined
+        resetToken: exposeTokens ? resetToken : undefined
       });
     } catch (error) {
       console.error("Forgot password error:", error);
-      res.status(500).json({ error: "Server error sending reset code.", code: "SERVER_ERROR" });
+      res.status(500).json({ error: "Server error sending reset link.", code: "SERVER_ERROR" });
     }
   });
 
@@ -838,49 +857,47 @@ export function createAuthRouter() {
         return;
       }
 
-      if (!otp || otp.length !== 6) {
-        res.status(400).json({ error: "Please enter the complete 6-digit verification code.", code: "INVALID_OTP_FORMAT" });
+      if (!otp) {
+        res.status(400).json({ error: "Verification token or code required.", code: "INVALID_OTP_FORMAT" });
         return;
       }
 
+      const tokenHashVal = hashToken(otp);
       const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
       const record = tokens.find(
         (item) =>
           item.email === email &&
           !item.usedAt &&
-          new Date(item.expiresAt).getTime() > Date.now()
+          new Date(item.expiresAt).getTime() > Date.now() &&
+          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal)
       );
       if (!record) {
-        res.status(400).json({ error: "Verification code expired or not found. Please request a new code.", code: "OTP_EXPIRED" });
+        res.status(400).json({ error: "Verification link expired or not found. Please request a new link.", code: "OTP_EXPIRED" });
         return;
       }
-      record.attempts += 1;
-      if (record.attempts > 8) {
-        record.usedAt = new Date().toISOString();
-        writeAuthStore(store);
-        res.status(429).json({ error: "Too many invalid code attempts. Please request a new code.", code: "OTP_LOCKED" });
-        return;
-      }
-      if (record.otpHash !== hashToken(otp)) {
-        writeAuthStore(store);
-        res.status(400).json({ error: "Invalid verification code. Please check and try again.", code: "OTP_INVALID" });
-        return;
-      }
-      writeAuthStore(store);
-      res.json({ success: true, message: "Verification code confirmed." });
+      res.json({ success: true, message: "Verification confirmed." });
     } catch (error) {
       console.error("Verify OTP error:", error);
       res.status(500).json({ error: "Server error verifying code.", code: "SERVER_ERROR" });
     }
   });
 
-  router.post("/reset-password", (req, res) => {
+  router.post("/reset-password", async (req, res) => {
     try {
       const store = readAuthStore();
       const email = normalizeEmail(String(req.body?.email || ""));
-      const otp = String(req.body?.otp || "").trim();
+      const resetToken = String(req.body?.resetToken || req.body?.token || req.body?.otp || "").trim();
       const password = String(req.body?.password || "");
       const confirmPassword = String(req.body?.confirmPassword || "");
+
+      if (!email || !isValidEmailFormat(email)) {
+        res.status(400).json({ error: "Please enter a valid email address.", code: "INVALID_EMAIL" });
+        return;
+      }
+      if (!resetToken) {
+        res.status(400).json({ error: "Reset link token is missing. Please click the link sent to your email.", code: "MISSING_TOKEN" });
+        return;
+      }
 
       const passwordError = validatePassword(password);
       if (passwordError) {
@@ -892,20 +909,30 @@ export function createAuthRouter() {
         return;
       }
 
+      const tokenHashVal = hashToken(resetToken);
       const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
       const record = tokens.find(
         (item) =>
           item.email === email &&
           !item.usedAt &&
           new Date(item.expiresAt).getTime() > Date.now() &&
-          item.otpHash === hashToken(otp)
+          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal)
       );
       if (!record) {
-        res.status(400).json({ error: "Invalid or expired reset code.", code: "OTP_INVALID" });
+        res.status(400).json({ error: "Invalid or expired password reset link. Please request a new link.", code: "TOKEN_INVALID" });
         return;
       }
 
-      const user = findUserById(store, record.userId);
+      let user = findUserById(store, record.userId) || findUserByEmail(store, email);
+      if (!user) {
+        const recovered = await fetchAuthUserByEmailFromSupabase(email);
+        if (recovered) {
+          user = recovered;
+          Object.assign(store, readAuthStore());
+          user = findUserById(store, record.userId) || findUserByEmail(store, email) || recovered;
+        }
+      }
+
       if (!user) {
         res.status(404).json({ error: "User account not found.", code: "USER_NOT_FOUND" });
         return;

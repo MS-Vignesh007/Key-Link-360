@@ -57,6 +57,8 @@ interface LoginScreenProps {
   onLoginSuccess: (user: AuthUser) => void;
   initialView?: AuthView;
   initialVerifyToken?: string;
+  initialResetToken?: string;
+  initialEmail?: string;
 }
 
 const COUNTRIES = [
@@ -125,11 +127,15 @@ function loginErrorMessage(err: AuthApiError): string {
 export default function LoginScreen({
   onLoginSuccess,
   initialView = "login",
-  initialVerifyToken = ""
+  initialVerifyToken = "",
+  initialResetToken = "",
+  initialEmail = ""
 }: LoginScreenProps) {
   const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const modeParam = searchParams.get("mode") || searchParams.get("view");
   const handleParam = searchParams.get("handle") || "";
+  const resetTokenParam = searchParams.get("resetToken") || searchParams.get("reset_token") || searchParams.get("token") || initialResetToken;
+  const emailParam = searchParams.get("email") || initialEmail;
 
   const isLocalHost = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -138,12 +144,16 @@ export default function LoginScreen({
   }, []);
 
   const [view, setView] = useState<AuthView>(() => {
+    if (resetTokenParam) return "reset";
     if (initialVerifyToken) return "verify";
     if (modeParam === "register" || modeParam === "signup") return "register";
-    if (modeParam === "reset" || modeParam === "forgot") return "reset";
+    if (modeParam === "reset") return "reset";
+    if (modeParam === "forgot") return "forgot";
     return initialView;
   });
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => emailParam || "");
+  const [resetToken, setResetToken] = useState(() => resetTokenParam || "");
+  const [resetLinkSent, setResetLinkSent] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -469,13 +479,8 @@ export default function LoginScreen({
     try {
       const result = await forgotPasswordRequest(trimmedEmail);
       setResendCooldown(30);
-      if (result.otp && config?.exposeTokens) {
-        setOtp(result.otp);
-        setInfo(`Dev OTP: ${result.otp}`);
-      } else {
-        setInfo(result.message || "A 6-digit verification code has been dispatched to your email.");
-      }
-      setView("otp");
+      setResetLinkSent(true);
+      setInfo(result.message || "Check your email! We have sent a password reset link to your email address.");
     } catch (err) {
       setError((err as AuthApiError).message || "Unable to process password reset. Please verify your email.");
     } finally {
@@ -483,30 +488,7 @@ export default function LoginScreen({
     }
   };
 
-  const handleVerifyOtp = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError("");
-    setInfo("");
-
-    const cleanOtp = otp.trim().replace(/\D/g, "");
-    if (cleanOtp.length !== 6) {
-      setError("Please enter the complete 6-digit verification code.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await verifyResetOtpRequest(email.trim().toLowerCase(), cleanOtp);
-      setInfo("Code verified successfully! Now create your new password.");
-      setView("reset");
-    } catch (err) {
-      setError((err as AuthApiError).message || "Invalid or expired verification code. Please check your email or click 'Resend Code'.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
+  const handleResendForgotLink = async () => {
     if (resendCooldown > 0 || loading) return;
     setError("");
     setInfo("");
@@ -514,14 +496,9 @@ export default function LoginScreen({
     try {
       const result = await forgotPasswordRequest(email.trim().toLowerCase());
       setResendCooldown(30);
-      if (result.otp && config?.exposeTokens) {
-        setOtp(result.otp);
-        setInfo(`Dev OTP: ${result.otp}`);
-      } else {
-        setInfo("A fresh 6-digit verification code has been sent to your email.");
-      }
+      setInfo("A fresh password reset link has been dispatched to your email.");
     } catch (err) {
-      setError((err as AuthApiError).message || "Failed to resend code. Please wait a moment and try again.");
+      setError((err as AuthApiError).message || "Failed to resend reset link. Please wait a moment and try again.");
     } finally {
       setLoading(false);
     }
@@ -531,6 +508,18 @@ export default function LoginScreen({
     event.preventDefault();
     setError("");
     setInfo("");
+
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
+      setError("Please enter your account email address.");
+      return;
+    }
+
+    const currentToken = (resetToken || resetTokenParam || "").trim();
+    if (!currentToken) {
+      setError("Password reset link is missing or invalid. Please click the reset link sent to your email.");
+      return;
+    }
 
     const clientPassError = validatePasswordClient(password);
     if (clientPassError) {
@@ -545,14 +534,14 @@ export default function LoginScreen({
     setLoading(true);
     try {
       await resetPasswordRequest({
-        email: email.trim().toLowerCase(),
-        otp: otp.trim(),
+        email: trimmedEmail,
+        resetToken: currentToken,
         password,
         confirmPassword
       });
       setView("reset-success");
     } catch (err) {
-      setError((err as AuthApiError).message || "Failed to update password. Please request a new code.");
+      setError((err as AuthApiError).message || "Failed to update password. Your reset link may have expired. Please request a new link.");
     } finally {
       setLoading(false);
     }
@@ -614,14 +603,12 @@ export default function LoginScreen({
       : view === "register"
         ? "Create your account to start building your bio pages."
         : view === "forgot"
-          ? "Enter your email to receive a password reset code."
-          : view === "otp"
-            ? "Enter the 6-digit verification code sent to your email."
-            : view === "reset"
-              ? "Enter a strong new password for your account."
-              : view === "verify"
-                ? "Confirm your email to activate your account."
-                : "You're all set! You can now sign in.";
+          ? "Enter your email to receive a password reset link."
+          : view === "reset"
+            ? "Enter a strong new password for your account."
+            : view === "verify"
+              ? "Confirm your email to activate your account."
+              : "You're all set! You can now sign in.";
 
   const StrengthBar = () =>
     passwordStrength ? (
@@ -854,18 +841,13 @@ export default function LoginScreen({
               onClick={() => {
                 setError("");
                 setInfo("");
-                if (view === "reset") setView("otp");
-                else if (view === "otp") setView("forgot");
-                else setView("login");
+                setResetLinkSent(false);
+                setView("login");
               }}
               className="mb-5 inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              {view === "otp"
-                ? "Back to Email"
-                : view === "reset"
-                  ? "Back to Code"
-                  : "Back to Sign In"}
+              <span>Back to Sign In</span>
             </button>
           )}
 
@@ -1217,103 +1199,73 @@ export default function LoginScreen({
 
         {view === "forgot" && (
           <form onSubmit={handleForgot} className="space-y-5" noValidate>
-            <CyberField
-              id="forgot-email"
-              icon={Mail}
-              label="REGISTERED EMAIL"
-              placeholder="Enter your registered email address"
-              value={email}
-              onChange={setEmail}
-              type="email"
-              autoComplete="email"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="key-btn-cyber"
-            >
-              {loading ? (
-                <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <Zap className="h-4 w-4 text-cyan-200" />
-                  <span>SEND RESET CODE</span>
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {view === "otp" && (
-          <form onSubmit={handleVerifyOtp} className="space-y-5" noValidate>
-            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs font-mono text-cyan-200/90 flex items-center justify-between">
-              <div className="truncate flex items-center gap-2">
-                <Mail className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-                <span className="truncate">Sent to: <strong className="text-white">{email}</strong></span>
+            {resetLinkSent ? (
+              <div className="space-y-4 py-2">
+                <div className="p-4 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-xs font-mono text-cyan-200 shadow-[0_0_20px_rgba(0,240,255,0.15)] leading-relaxed text-center">
+                  <div className="mx-auto h-12 w-12 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                    <Mail className="h-6 w-6 text-cyan-300 animate-pulse" />
+                  </div>
+                  <p className="font-bold text-white text-sm mb-1">Check Your Email</p>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    We sent a password reset link to <strong className="text-cyan-300">{email}</strong>. Open the link in your email to set a new password.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={loading || resendCooldown > 0}
+                  onClick={() => void handleResendForgotLink()}
+                  className="w-full text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-colors py-1 text-center"
+                >
+                  {resendCooldown > 0
+                    ? `Didn't receive link? Resend Link in ${resendCooldown}s`
+                    : "Didn't receive link? Resend Link"}
+                </button>
               </div>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => {
-                  setError("");
-                  setInfo("");
-                  setView("forgot");
-                }}
-                className="text-[11px] text-cyan-400 hover:text-cyan-200 underline ml-2 shrink-0 font-semibold"
-              >
-                Change
-              </button>
-            </div>
-
-            <div>
-              <label
-                htmlFor="reset-otp"
-                className="block text-[11px] font-mono font-bold text-cyan-300/90 uppercase tracking-widest mb-1.5"
-              >
-                6-DIGIT VERIFICATION CODE (OTP)
-              </label>
-              <input
-                id="reset-otp"
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                autoComplete="one-time-code"
-                value={otp}
-                onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="key-cyber-input py-3.5 px-4 text-center font-mono text-2xl tracking-[0.45em] text-cyan-300 font-bold placeholder:text-slate-500 placeholder:tracking-normal placeholder:text-sm"
-                placeholder="000000"
-                autoFocus
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="key-btn-cyber"
-            >
-              {loading ? (
-                <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <ShieldCheck className="h-4 w-4 text-cyan-200" />
-                  <span>VERIFY CODE</span>
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              disabled={loading || resendCooldown > 0}
-              onClick={() => void handleResendOtp()}
-              className="w-full text-xs font-mono font-semibold text-cyan-400 hover:text-cyan-300 hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-colors py-1"
-            >
-              {resendCooldown > 0
-                ? `Didn't receive code? Resend Code in ${resendCooldown}s`
-                : "Didn't receive code? Resend Code"}
-            </button>
+            ) : (
+              <>
+                <CyberField
+                  id="forgot-email"
+                  icon={Mail}
+                  label="REGISTERED EMAIL"
+                  placeholder="Enter your registered email address"
+                  value={email}
+                  onChange={setEmail}
+                  type="email"
+                  autoComplete="email"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="key-btn-cyber"
+                >
+                  {loading ? (
+                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4 text-cyan-200" />
+                      <span>SEND RESET LINK</span>
+                    </>
+                  )}
+                </button>
+              </>
+            )}
           </form>
         )}
 
         {view === "reset" && (
           <form onSubmit={handleResetPassword} className="space-y-5" noValidate>
+            {!email && (
+              <CyberField
+                id="reset-email"
+                icon={Mail}
+                label="ACCOUNT EMAIL"
+                placeholder="Enter your account email"
+                value={email}
+                onChange={setEmail}
+                type="email"
+                autoComplete="email"
+              />
+            )}
             <CyberPasswordField
               id="reset-password"
               label="NEW PASSWORD"
