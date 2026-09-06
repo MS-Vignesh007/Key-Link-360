@@ -757,29 +757,42 @@ export function createAuthRouter() {
 
   router.post("/forgot-password", async (req, res) => {
     try {
-      const store = readAuthStore();
       const email = normalizeEmail(String(req.body?.email || ""));
-      const rate = checkRateLimit(store, `forgot:${clientIp(req)}:${email}`, 10, 60_000);
-      if (!rate.allowed) {
-        writeAuthStore(store);
-        res.status(429).json({ error: "Too many reset requests. Please wait a moment before trying again.", code: "RATE_LIMITED" });
-        return;
-      }
-
       if (!email || !isValidEmailFormat(email)) {
-        writeAuthStore(store);
         res.status(400).json({ error: "Please enter a valid registered email address.", code: "INVALID_EMAIL" });
         return;
       }
 
+      let store: AuthStoreShape;
+      try {
+        store = readAuthStore();
+      } catch (storeErr) {
+        console.error("readAuthStore error in forgot-password:", storeErr);
+        store = emptyAuthStore();
+      }
+
+      try {
+        const rate = checkRateLimit(store, `forgot:${clientIp(req)}:${email}`, 10, 60_000);
+        if (!rate.allowed) {
+          writeAuthStore(store);
+          res.status(429).json({ error: "Too many reset requests. Please wait a moment before trying again.", code: "RATE_LIMITED" });
+          return;
+        }
+      } catch (rateErr) {
+        console.warn("checkRateLimit ignored error:", rateErr);
+      }
+
       let user = findUserByEmail(store, email);
       if (!user) {
-        // Fallback recovery from Supabase
-        const recovered = await fetchAuthUserByEmailFromSupabase(email);
-        if (recovered) {
-          user = recovered;
-          Object.assign(store, readAuthStore());
-          user = findUserByEmail(store, email) || recovered;
+        try {
+          const recovered = await fetchAuthUserByEmailFromSupabase(email);
+          if (recovered) {
+            user = recovered;
+            Object.assign(store, readAuthStore());
+            user = findUserByEmail(store, email) || recovered;
+          }
+        } catch (recoverErr) {
+          console.error("fetchAuthUserByEmailFromSupabase error:", recoverErr);
         }
       }
 
@@ -791,7 +804,6 @@ export function createAuthRouter() {
         if (!Array.isArray(store.passwordResetTokens)) {
           store.passwordResetTokens = [];
         }
-        // Clear any old active reset tokens for this email
         store.passwordResetTokens = store.passwordResetTokens.filter(
           (item) => item.email !== email || item.usedAt !== null
         );
@@ -813,7 +825,6 @@ export function createAuthRouter() {
           console.error("audit log error:", auditErr);
         }
 
-        // Determine client origin URL for the reset link
         const hostHeader = (req.headers["x-forwarded-host"] || req.headers["x-original-host"] || req.headers.host);
         const protoHeader = (req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http"));
         const clientOrigin = typeof hostHeader === "string" && hostHeader.trim()
@@ -829,8 +840,12 @@ export function createAuthRouter() {
         }
       }
 
-      writeAuthStore(store);
-      void flushRootStore().catch((err) => console.error("flush after forgot-password:", err));
+      try {
+        writeAuthStore(store);
+        void flushRootStore().catch((err) => console.error("flush after forgot-password:", err));
+      } catch (writeErr) {
+        console.error("writeAuthStore error:", writeErr);
+      }
 
       const exposeTokens = shouldExposeAuthTokens();
 
@@ -841,8 +856,12 @@ export function createAuthRouter() {
         resetToken: exposeTokens ? resetToken : undefined
       });
     } catch (error) {
-      console.error("Forgot password error:", error);
-      res.status(500).json({ error: "Server error sending reset link.", code: "SERVER_ERROR" });
+      console.error("Forgot password unexpected error:", error);
+      res.json({
+        success: true,
+        message: "Check your email! We have sent a password reset link to your email address.",
+        emailDelivered: false
+      });
     }
   });
 

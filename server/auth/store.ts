@@ -343,6 +343,13 @@ export function readAuthStore(): AuthStoreShape {
 
 export function writeAuthStore(store: AuthStoreShape) {
   const root = readRootStore();
+  if (!store || typeof store !== "object") return;
+  if (!store.rateLimits || typeof store.rateLimits !== "object") store.rateLimits = {};
+  if (!Array.isArray(store.passwordResetTokens)) store.passwordResetTokens = [];
+  if (!Array.isArray(store.users)) store.users = [];
+  if (!Array.isArray(store.sessions)) store.sessions = [];
+  if (!Array.isArray(store.auditLogs)) store.auditLogs = [];
+  if (!Array.isArray(store.loginHistory)) store.loginHistory = [];
   root.auth = store;
   writeRootStore(root);
 }
@@ -407,8 +414,14 @@ export function checkRateLimit(
   windowMs: number
 ): { allowed: boolean; retryAfterSec: number } {
   const now = Date.now();
+  if (!store || typeof store !== "object") {
+    return { allowed: true, retryAfterSec: 0 };
+  }
+  if (!store.rateLimits || typeof store.rateLimits !== "object") {
+    store.rateLimits = {};
+  }
   const current = store.rateLimits[key];
-  if (!current || now - current.windowStart > windowMs) {
+  if (!current || typeof current !== "object" || now - (current.windowStart || 0) > windowMs) {
     store.rateLimits[key] = { count: 1, windowStart: now };
     return { allowed: true, retryAfterSec: 0 };
   }
