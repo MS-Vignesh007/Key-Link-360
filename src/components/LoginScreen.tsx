@@ -522,7 +522,7 @@ export default function LoginScreen({
       return;
     }
 
-    const currentToken = (resetToken || resetTokenParam || "").trim();
+    const currentToken = (resetToken || directResetToken || resetTokenParam || "").trim();
     if (!currentToken) {
       setError("Password reset link is missing or invalid. Please click the reset link sent to your email.");
       return;
@@ -1276,7 +1276,21 @@ export default function LoginScreen({
 
         {view === "reset" && (
           <form onSubmit={handleResetPassword} className="space-y-5" noValidate>
-            {!email && (
+            {email ? (
+              <div className="p-3 rounded-xl bg-cyan-950/50 border border-cyan-500/30 text-xs font-mono text-cyan-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-cyan-400 shrink-0" />
+                  <span className="truncate">Reset for: <strong className="text-white">{email}</strong></span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setView("forgot")}
+                  className="text-[10px] text-cyan-400 hover:text-cyan-200 underline shrink-0 ml-2"
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
               <CyberField
                 id="reset-email"
                 icon={Mail}
