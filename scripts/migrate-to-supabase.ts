@@ -53,6 +53,18 @@ async function main() {
     process.exit(1);
   }
 
+  console.log("Purging non-demo users and records from Supabase tables...");
+  try {
+    await supabase.from("auth_sessions").delete().neq("user_id", "user_demo_keylink360");
+    await supabase.from("auth_password_resets").delete().neq("email", "keylink360@gmail.com");
+    await supabase.from("auth_login_history").delete().neq("email", "keylink360@gmail.com");
+    await supabase.from("auth_audit_logs").delete().neq("user_id", "user_demo_keylink360");
+    await supabase.from("auth_users").delete().neq("email", "keylink360@gmail.com");
+    console.log("Supabase non-demo purge completed.");
+  } catch (purgeErr) {
+    console.warn("Supabase purge notice:", purgeErr);
+  }
+
   console.log("Migrating all fields into normalized tables...");
   const result = await syncRootToNormalizedTables(supabase, root);
   if (!result.ok) {
