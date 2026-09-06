@@ -71,21 +71,43 @@ function extraAllowedOrigins(): string[] {
     .filter(Boolean);
 }
 
-function isAllowedOrigin(candidate: string): boolean {
+function isAllowedOrigin(candidate: string, req?: Request): boolean {
   try {
     const url = new URL(candidate);
-    const allowed = new URL(appOrigin());
-    if (url.origin === allowed.origin) return true;
+    try {
+      const allowed = new URL(appOrigin());
+      if (url.origin === allowed.origin) return true;
+      if (url.hostname.toLowerCase() === allowed.hostname.toLowerCase()) return true;
+    } catch {
+      /* skip invalid appOrigin */
+    }
+
+    if (req) {
+      const reqHost = (req.headers["x-forwarded-host"] || req.headers["x-original-host"] || req.headers.host);
+      if (typeof reqHost === "string" && reqHost.trim()) {
+        const hostWithoutPort = reqHost.split(":")[0].trim().toLowerCase();
+        if (url.hostname.toLowerCase() === hostWithoutPort) return true;
+      }
+    }
+
     for (const raw of extraAllowedOrigins()) {
       try {
-        if (url.origin === new URL(raw).origin) return true;
+        const extraUrl = new URL(raw);
+        if (url.origin === extraUrl.origin) return true;
+        if (url.hostname.toLowerCase() === extraUrl.hostname.toLowerCase()) return true;
       } catch {
         /* skip bad entry */
       }
     }
+
     // Local development: allow localhost / 127.0.0.1 on any port
+    if (url.hostname === "localhost" || url.hostname === "127.0.0.1") return true;
+
+    // Production Railway deployments & up.railway.app domains
+    if (url.hostname.endsWith(".railway.app") || url.hostname.endsWith(".up.railway.app")) return true;
+
     if (process.env.NODE_ENV === "production") return false;
-    return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    return true;
   } catch {
     return false;
   }
@@ -97,11 +119,11 @@ function assertSameOrigin(req: Request, res: Response): boolean {
   const origin = req.headers.origin;
   const referer = req.headers.referer;
   if (!origin && !referer) return true;
-  if (origin && !isAllowedOrigin(origin)) {
+  if (origin && !isAllowedOrigin(origin, req)) {
     res.status(403).json({ error: "Invalid request origin.", code: "CSRF_ORIGIN" });
     return false;
   }
-  if (!origin && referer && !isAllowedOrigin(referer)) {
+  if (!origin && referer && !isAllowedOrigin(referer, req)) {
     res.status(403).json({ error: "Invalid request origin.", code: "CSRF_ORIGIN" });
     return false;
   }
