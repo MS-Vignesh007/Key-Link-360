@@ -1,5 +1,4 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { getSupabase } from "../db/supabase";
 import {
   AuthUserRecord,
   hashPassword,
@@ -805,7 +804,16 @@ export function createAuthRouter() {
         return;
       }
 
-      const newResetRecord = {
+      let resetToken = randomToken(32);
+      let emailDelivered = false;
+
+      if (!Array.isArray(store.passwordResetTokens)) {
+        store.passwordResetTokens = [];
+      }
+      store.passwordResetTokens = store.passwordResetTokens.filter(
+        (item) => item.email !== email || item.usedAt !== null
+      );
+      store.passwordResetTokens.unshift({
         id: createId("reset"),
         userId: user.id,
         email: user.email,
@@ -815,35 +823,7 @@ export function createAuthRouter() {
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + RESET_TTL_MS).toISOString(),
         usedAt: null
-      };
-
-      if (!Array.isArray(store.passwordResetTokens)) {
-        store.passwordResetTokens = [];
-      }
-      store.passwordResetTokens = store.passwordResetTokens.filter(
-        (item) => item.email !== email || item.usedAt !== null
-      );
-      store.passwordResetTokens.unshift(newResetRecord);
-
-      // Direct write to Supabase auth_password_resets table
-      try {
-        const supabase = getSupabase();
-        if (supabase) {
-          await supabase.from("auth_password_resets").insert({
-            id: newResetRecord.id,
-            user_id: newResetRecord.userId,
-            email: newResetRecord.email,
-            otp_hash: newResetRecord.otpHash,
-            token_hash: newResetRecord.tokenHash,
-            attempts: 0,
-            created_at: newResetRecord.createdAt,
-            expires_at: newResetRecord.expiresAt,
-            used_at: null
-          });
-        }
-      } catch (dbInsertErr) {
-        console.error("Direct auth_password_resets insert error:", dbInsertErr);
-      }
+      });
 
       try {
         audit(store, "user.forgot_password", user.id, {});
@@ -892,7 +872,7 @@ export function createAuthRouter() {
     }
   });
 
-  router.post("/verify-reset-otp", async (req, res) => {
+  router.post("/verify-reset-otp", (req, res) => {
     try {
       const store = readAuthStore();
       const email = normalizeEmail(String(req.body?.email || ""));
@@ -910,54 +890,13 @@ export function createAuthRouter() {
 
       const tokenHashVal = hashToken(otp);
       const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
-      let record = tokens.find(
+      const record = tokens.find(
         (item) =>
-          item.email.trim().toLowerCase() === email &&
+          item.email === email &&
           !item.usedAt &&
           new Date(item.expiresAt).getTime() > Date.now() &&
-          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal || item.tokenHash === otp || item.otpHash === otp)
+          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal)
       );
-
-      if (!record) {
-        try {
-          const supabase = getSupabase();
-          if (supabase) {
-            const { data: dbResets } = await supabase
-              .from("auth_password_resets")
-              .select("*")
-              .ilike("email", email)
-              .is("used_at", null)
-              .gt("expires_at", new Date().toISOString())
-              .order("created_at", { ascending: false });
-
-            if (Array.isArray(dbResets) && dbResets.length > 0) {
-              const matchedRow = dbResets.find(
-                (row) =>
-                  row.token_hash === tokenHashVal ||
-                  row.otp_hash === tokenHashVal ||
-                  row.token_hash === otp ||
-                  row.otp_hash === otp
-              );
-              if (matchedRow) {
-                record = {
-                  id: String(matchedRow.id),
-                  userId: String(matchedRow.user_id),
-                  email: String(matchedRow.email),
-                  otpHash: String(matchedRow.otp_hash || ""),
-                  tokenHash: String(matchedRow.token_hash || ""),
-                  attempts: Number(matchedRow.attempts) || 0,
-                  createdAt: String(matchedRow.created_at),
-                  expiresAt: String(matchedRow.expires_at),
-                  usedAt: matchedRow.used_at ? String(matchedRow.used_at) : null
-                };
-              }
-            }
-          }
-        } catch (dbErr) {
-          console.error("Supabase verify-otp query error:", dbErr);
-        }
-      }
-
       if (!record) {
         res.status(400).json({ error: "Verification link expired or not found. Please request a new link.", code: "OTP_EXPIRED" });
         return;
@@ -997,57 +936,14 @@ export function createAuthRouter() {
       }
 
       const tokenHashVal = hashToken(resetToken);
-      let tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
-      let record = tokens.find(
+      const tokens = Array.isArray(store.passwordResetTokens) ? store.passwordResetTokens : [];
+      const record = tokens.find(
         (item) =>
-          item.email.trim().toLowerCase() === email &&
+          item.email === email &&
           !item.usedAt &&
           new Date(item.expiresAt).getTime() > Date.now() &&
-          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal || item.tokenHash === resetToken || item.otpHash === resetToken)
+          (item.tokenHash === tokenHashVal || item.otpHash === tokenHashVal)
       );
-
-      // If not found in in-memory store (e.g. server redeploy), query Supabase auth_password_resets table
-      if (!record) {
-        try {
-          const supabase = getSupabase();
-          if (supabase) {
-            const { data: dbResets } = await supabase
-              .from("auth_password_resets")
-              .select("*")
-              .ilike("email", email)
-              .is("used_at", null)
-              .gt("expires_at", new Date().toISOString())
-              .order("created_at", { ascending: false });
-
-            if (Array.isArray(dbResets) && dbResets.length > 0) {
-              const matchedRow = dbResets.find(
-                (row) =>
-                  row.token_hash === tokenHashVal ||
-                  row.otp_hash === tokenHashVal ||
-                  row.token_hash === resetToken ||
-                  row.otp_hash === resetToken
-              );
-              if (matchedRow) {
-                record = {
-                  id: String(matchedRow.id),
-                  userId: String(matchedRow.user_id),
-                  email: String(matchedRow.email),
-                  otpHash: String(matchedRow.otp_hash || ""),
-                  tokenHash: String(matchedRow.token_hash || ""),
-                  attempts: Number(matchedRow.attempts) || 0,
-                  createdAt: String(matchedRow.created_at),
-                  expiresAt: String(matchedRow.expires_at),
-                  usedAt: matchedRow.used_at ? String(matchedRow.used_at) : null
-                };
-                store.passwordResetTokens = [record, ...tokens.filter(t => t.id !== record!.id)];
-              }
-            }
-          }
-        } catch (dbLookupErr) {
-          console.error("Supabase password reset token lookup error:", dbLookupErr);
-        }
-      }
-
       if (!record) {
         res.status(400).json({ error: "Invalid or expired password reset link. Please request a new link.", code: "TOKEN_INVALID" });
         return;
@@ -1085,31 +981,6 @@ export function createAuthRouter() {
       } catch (auditErr) {
         console.error("audit log error:", auditErr);
       }
-
-      // Direct sync to Supabase database for both auth_users and auth_password_resets
-      try {
-        const supabase = getSupabase();
-        if (supabase) {
-          await supabase
-            .from("auth_password_resets")
-            .update({ used_at: record.usedAt })
-            .eq("id", record.id);
-
-          await supabase
-            .from("auth_users")
-            .update({
-              password_hash: hash,
-              password_salt: salt,
-              failed_login_attempts: 0,
-              locked_until: null,
-              updated_at: user.updatedAt
-            })
-            .eq("id", user.id);
-        }
-      } catch (dbUpdateErr) {
-        console.error("Direct Supabase update on reset-password error:", dbUpdateErr);
-      }
-
       writeAuthStore(store);
       void flushRootStore().catch((err) => console.error("flush after reset-password:", err));
 
