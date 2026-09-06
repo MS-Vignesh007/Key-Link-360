@@ -1,1 +1,1105 @@
-{"auth":{"users":[{"id":"user_1788641690406_8113f25f","email":"balaplanivel123@gmil.com","passwordHash":"8ccf28db95b26f21d2b6f6e32e4058063592de9154d2b4ae04ab41e70224ff6e93a8d9ac4ea09b0766a7b76d88d7bbbe89f1458e791c638dbe6c479660fa3cc5","passwordSalt":"e7ba6b835a35f23d7c513f54a5b9d646","firstName":"bala","lastName":"planivel","companyName":"woods","businessName":"woods","phone":"46573726218","country":"India","avatarUrl":"https://tapback.co/api/avatar/balaplanivel123.webp","plan":"Free Plan","isVerified":true,"emailVerified":true,"status":"active","mfaEnabled":false,"newsletterOptIn":true,"preferredDnsProvider":null,"failedLoginAttempts":0,"lockedUntil":null,"createdAt":"2026-09-05T20:54:50.406+00:00","updatedAt":"2026-09-05T20:55:39.559+00:00","lastLoginAt":"2026-09-05T20:55:39.559+00:00"},{"id":"user_1788044743935_d6a492b5","email":"krishnakumarwebdeveloper@gmail.com","passwordHash":"7b63797b81745a8ca1d80779c89681f667efe2e1118766b9f65a3680a6d9c09842a58f2214af650716028e289a886409cfbcabf2d05b9bfb955c13efb742f8f1","passwordSalt":"6b2449147fa0199d9c58505fb8fff254","firstName":"selva","lastName":"tester","companyName":"testing","businessName":"testing","phone":"8973678007","country":"India","avatarUrl":"https://tapback.co/api/avatar/krishnakumarwebdeveloper.webp","plan":"Free Plan","isVerified":true,"emailVerified":true,"status":"active","mfaEnabled":false,"newsletterOptIn":true,"preferredDnsProvider":null,"failedLoginAttempts":0,"lockedUntil":null,"createdAt":"2026-08-29T23:05:43.935+00:00","updatedAt":"2026-09-06T18:15:42.958+00:00","lastLoginAt":"2026-09-06T18:15:42.958+00:00"},{"id":"user_demo_keylink360","email":"keylink360@gmail.com","passwordHash":"fc3d77be63af4ba8c340a4532a98d9515bbbdc929f05aeb2129fae4c511d8799e3a81ffbb990fe7202420e051259d32200182958f3e0d4fac6abcdd45a53b9bb","passwordSalt":"354634c60beb4e720d4be90f6d23e5e1","firstName":"KEYLINK","lastName":"360","companyName":"KEYLINK360","businessName":"KEYLINK360","phone":"","country":"United States","avatarUrl":"https://tapback.co/api/avatar/key.webp","plan":"Free Plan","isVerified":true,"emailVerified":true,"status":"active","mfaEnabled":false,"newsletterOptIn":true,"preferredDnsProvider":null,"failedLoginAttempts":0,"lockedUntil":null,"createdAt":"2026-08-29T22:59:06.049+00:00","updatedAt":"2026-09-06T19:00:17.824Z","lastLoginAt":"2026-09-06T18:24:10.633+00:00","role":"MAIN_OWNER"}],"sessions":[{"id":"sess_1788719050633_99827f70","ip":"152.57.203.74","userId":"user_demo_keylink360","createdAt":"2026-09-06T18:24:10.634Z","expiresAt":"2026-10-06T18:24:10.633Z","revokedAt":"2026-09-06T18:24:16.863Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"c376f69894e2ebe9b6d5bb50a991556f6564142f1c74f6ef28906ef7c779b266"},{"id":"sess_1788718542958_23955f57","ip":"152.57.203.74","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-06T18:15:42.959Z","expiresAt":"2026-10-06T18:15:42.959Z","revokedAt":"2026-09-06T18:15:57.691Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"14fc291bcd94d9bdbcac572e036144a47679115deeaeb468dfeb50eb75296b10"},{"id":"sess_1788652319821_ce656cb4","ip":"152.57.203.126","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:59.821Z","expiresAt":"2026-10-05T23:51:59.821Z","revokedAt":"2026-09-05T23:52:05.946Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"1847791b9939d2594e10d0329cf48ca90b5f09c6fbf0255084c133311366d792"},{"id":"sess_1788652310229_95c3429c","ip":"152.57.203.126","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:50.229Z","expiresAt":"2026-10-05T23:51:50.229Z","revokedAt":"2026-09-05T23:51:56.676Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"65a53641616cb74f59ebbd1db87fd902f62a17f9031333b2f910352123623fba"},{"id":"sess_1788647841304_97fef996","ip":"152.57.203.126","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:37:21.304Z","expiresAt":"2026-10-05T22:37:21.304Z","revokedAt":"2026-09-05T22:40:03.470Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"e2a2c138b86b6485efade36881c8c28842f9e9673ce1a29af4b3fe999162403c"},{"id":"sess_1788647702567_fc0cc40d","ip":"152.57.203.126","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:35:02.568Z","expiresAt":"2026-10-05T22:35:02.568Z","revokedAt":"2026-09-05T22:35:12.432Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"52bc568fd11614f8c9eb0625b54586eab48276db043c9c9a3197cf9fc384f89a"},{"id":"sess_1788644376725_41e25e7d","ip":"152.57.203.126","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:39:36.725Z","expiresAt":"2026-10-05T21:39:36.725Z","revokedAt":"2026-09-05T21:39:51.170Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"f89af166b5d387f96a3158f9a48183f81d75fef96da0ef5ce20624f660f2d1ac"},{"id":"sess_1788641739559_e4ea9a75","ip":"152.57.203.126","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:55:39.560Z","expiresAt":"2026-10-05T20:55:39.560Z","revokedAt":"2026-09-05T20:55:46.124Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"0e6e93b5e85e1497d56b9db5563d1392d998ace1819d146b5be9d030ae389ffb"},{"id":"sess_1788641690406_dfd290d6","ip":"152.57.203.126","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:54:50.406Z","expiresAt":"2026-09-12T20:54:50.406Z","revokedAt":"2026-09-05T20:55:26.477Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":false,"refreshTokenHash":"3fff51a015817f68394b1e43f1a0f4b7c41f3b221ed874fc494d2e5eddd8b204"},{"id":"sess_1788641417926_c1bcb891","ip":"152.57.203.126","userId":"user_demo_keylink360","createdAt":"2026-09-05T20:50:17.926Z","expiresAt":"2026-10-05T20:50:17.926Z","revokedAt":"2026-09-05T20:52:00.193Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"d6d8fe75ef9506b722f7c63a8b4b7283683fffc5d1c5bc1c797a5387d258f165"},{"id":"sess_1788641417462_e6d11f95","ip":"152.57.203.126","userId":"user_demo_keylink360","createdAt":"2026-09-05T20:50:17.462Z","expiresAt":"2026-10-05T20:50:17.462Z","revokedAt":"2026-09-05T20:50:17.926Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"2eaff3b4164469a281d8fc3dbb3b4e260b7928242a34aac226f98723444ad379"},{"id":"sess_1788045200453_05f0190f","ip":"152.57.206.162","userId":"user_demo_keylink360","createdAt":"2026-08-29T23:13:20.453Z","expiresAt":"2026-09-28T23:13:20.453Z","revokedAt":"2026-09-05T20:50:17.462Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"1da31a2de8845fc21427773b0b68b8afe547648cbd7db321f8d5936c10146a16"},{"id":"sess_1788045166754_d80ca549","ip":"152.57.206.162","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:12:46.754Z","expiresAt":"2026-09-28T23:12:46.754Z","revokedAt":"2026-08-29T23:13:01.121Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"3dda8d738ad522d75de60c63d13e196dfed64f206ffabf5bcd9624d74bc1421d"},{"id":"sess_1788044743936_5cda2d2e","ip":"152.57.206.162","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:05:43.936Z","expiresAt":"2026-09-05T23:05:43.936Z","revokedAt":"2026-08-29T23:12:21.948Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36","rememberMe":false,"refreshTokenHash":"555398a53ac5073f67a45e2a469bd895e546e6521832cb59e23940237dbdf694"},{"id":"sess_1788044346125_e846e30a","ip":"152.57.206.162","userId":"user_demo_keylink360","createdAt":"2026-08-29T22:59:06.126Z","expiresAt":"2026-09-28T22:59:06.126Z","revokedAt":"2026-08-29T22:59:23.056Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36","rememberMe":true,"refreshTokenHash":"bf61069763257e514c26ccf5db17f63f8d1b55e1524fc166c826765fa92bfe29"}],"passwordResetTokens":[{"id":"reset_1788720836307_0232bc4f","email":"krishnakumarwebdeveloper@gmail.com","usedAt":null,"userId":"user_1788044743935_d6a492b5","otpHash":"e452b7e9ba5bcf33509722fc6742c1a2fc5c39cf6215991df7f19697c85819a0","attempts":0,"createdAt":"2026-09-06T18:53:56.307Z","expiresAt":"2026-09-06T19:08:56.307Z","tokenHash":"b8e1e85651f1961a4b3550687bd475cd30b6dc3edfe18cc6130a10cb6c3fe504"},{"id":"reset_1788641753766_e3aeea66","email":"balaplanivel123@gmil.com","usedAt":null,"userId":"user_1788641690406_8113f25f","otpHash":"534af68152f3ce10164aaf028f45a7d92febbe712ff584b2a2052ef3913740b1","attempts":0,"createdAt":"2026-09-05T20:55:53.766Z","expiresAt":"2026-09-05T21:10:53.766Z","tokenHash":"fae08290b653c45e8e8fe0ca35925a95a62be0b995989e1574d6626b320a96f1"}],"emailVerificationTokens":[],"oauthAccounts":[],"loginHistory":[{"id":"login_1788719050634_2fe1289d","ip":"152.57.203.74","email":"keylink360@gmail.com","reason":"ok","userId":"user_demo_keylink360","success":true,"createdAt":"2026-09-06T18:24:10.634Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788718542959_f5d8d154","ip":"152.57.203.74","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-06T18:15:42.959Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788652319821_33b2e3b0","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-05T23:51:59.821Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788652310230_ba164869","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-05T23:51:50.230Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788647841305_527bce06","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-05T22:37:21.305Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788647702568_af168190","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-05T22:35:02.568Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788644376725_1875ec57","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-09-05T21:39:36.725Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788642554991_1b7bc827","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"wrong_password","userId":"user_1788044743935_d6a492b5","success":false,"createdAt":"2026-09-05T21:09:14.992Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788642548681_55899fbf","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"wrong_password","userId":"user_1788044743935_d6a492b5","success":false,"createdAt":"2026-09-05T21:09:08.681Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788642515819_a5d1d236","ip":"152.57.203.126","email":"krishnakumarwebdeveloper@gmail.com","reason":"wrong_password","userId":"user_1788044743935_d6a492b5","success":false,"createdAt":"2026-09-05T21:08:35.819Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788641739560_02db938f","ip":"152.57.203.126","email":"balaplanivel123@gmil.com","reason":"ok","userId":"user_1788641690406_8113f25f","success":true,"createdAt":"2026-09-05T20:55:39.560Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"},{"id":"login_1788045200453_554a98b3","ip":"152.57.206.162","email":"keylink360@gmail.com","reason":"ok","userId":"user_demo_keylink360","success":true,"createdAt":"2026-08-29T23:13:20.453Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"},{"id":"login_1788045166754_8db1e4cc","ip":"152.57.206.162","email":"krishnakumarwebdeveloper@gmail.com","reason":"ok","userId":"user_1788044743935_d6a492b5","success":true,"createdAt":"2026-08-29T23:12:46.754Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"},{"id":"login_1788044346126_4f2ecc1a","ip":"152.57.206.162","email":"keylink360@gmail.com","reason":"ok","userId":"user_demo_keylink360","success":true,"createdAt":"2026-08-29T22:59:06.126Z","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"}],"auditLogs":[{"id":"audit_1788720836307_ce562438","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-06T18:53:56.307Z"},{"id":"audit_1788719056863_affd18e3","meta":{},"action":"user.logout","userId":"user_demo_keylink360","createdAt":"2026-09-06T18:24:16.863Z"},{"id":"audit_1788719050634_8a9cfe22","meta":{"rememberMe":true},"action":"user.login","userId":"user_demo_keylink360","createdAt":"2026-09-06T18:24:10.634Z"},{"id":"audit_1788718566615_71882f98","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-06T18:16:06.615Z"},{"id":"audit_1788718557691_91064f86","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-06T18:15:57.691Z"},{"id":"audit_1788718542959_f8745376","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-06T18:15:42.959Z"},{"id":"audit_1788652333358_38e4b1fa","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:52:13.358Z"},{"id":"audit_1788652325946_b657cd12","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:52:05.946Z"},{"id":"audit_1788652319821_8eadc3ef","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:59.821Z"},{"id":"audit_1788652316676_c5ae975f","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:56.677Z"},{"id":"audit_1788652310230_f26b813e","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:50.230Z"},{"id":"audit_1788652302071_8de6720b","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T23:51:42.072Z"},{"id":"audit_1788648007868_14571451","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:40:07.868Z"},{"id":"audit_1788648003470_d67e806e","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:40:03.470Z"},{"id":"audit_1788647986520_aff1ac67","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:39:46.520Z"},{"id":"audit_1788647841305_25abfdcc","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:37:21.305Z"},{"id":"audit_1788647719539_6bfac786","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:35:19.539Z"},{"id":"audit_1788647712432_73a29490","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:35:12.432Z"},{"id":"audit_1788647702568_aa2faf32","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T22:35:02.568Z"},{"id":"audit_1788645534343_defcb278","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:58:54.343Z"},{"id":"audit_1788644437253_873a38e7","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:40:37.253Z"},{"id":"audit_1788644404329_c8841f08","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:40:04.329Z"},{"id":"audit_1788644391170_912a8093","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:39:51.170Z"},{"id":"audit_1788644376725_d2bd7f61","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:39:36.725Z"},{"id":"audit_1788643022475_64cd07ce","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:17:02.475Z"},{"id":"audit_1788642591608_bf8faed8","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:09:51.608Z"},{"id":"audit_1788642563927_2573e638","meta":{},"action":"user.forgot_password","userId":"user_1788044743935_d6a492b5","createdAt":"2026-09-05T21:09:23.927Z"},{"id":"audit_1788641753766_865024d2","meta":{},"action":"user.forgot_password","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:55:53.766Z"},{"id":"audit_1788641746124_919a58e3","meta":{},"action":"user.logout","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:55:46.124Z"},{"id":"audit_1788641739560_3d5ac17c","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:55:39.560Z"},{"id":"audit_1788641726477_9bc0aaab","meta":{},"action":"user.logout","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:55:26.477Z"},{"id":"audit_1788641690406_8566e0be","meta":{"email":"balaplanivel123@gmil.com","emailVerified":true,"verificationRequired":false},"action":"user.register","userId":"user_1788641690406_8113f25f","createdAt":"2026-09-05T20:54:50.406Z"},{"id":"audit_1788641520193_d22b28be","meta":{},"action":"user.logout","userId":"user_demo_keylink360","createdAt":"2026-09-05T20:52:00.193Z"},{"id":"audit_1788045200453_f69e240e","meta":{"rememberMe":true},"action":"user.login","userId":"user_demo_keylink360","createdAt":"2026-08-29T23:13:20.453Z"},{"id":"audit_1788045181121_cc4ace49","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:13:01.121Z"},{"id":"audit_1788045166754_4d893018","meta":{"rememberMe":true},"action":"user.login","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:12:46.754Z"},{"id":"audit_1788045141948_96f9871a","meta":{},"action":"user.logout","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:12:21.948Z"},{"id":"audit_1788044743936_e4a4207b","meta":{"email":"krishnakumarwebdeveloper@gmail.com","emailVerified":true,"verificationRequired":false},"action":"user.register","userId":"user_1788044743935_d6a492b5","createdAt":"2026-08-29T23:05:43.936Z"},{"id":"audit_1788044363056_da94a7a0","meta":{},"action":"user.logout","userId":"user_demo_keylink360","createdAt":"2026-08-29T22:59:23.056Z"},{"id":"audit_1788044346126_16c6d20b","meta":{"rememberMe":true},"action":"user.login","userId":"user_demo_keylink360","createdAt":"2026-08-29T22:59:06.126Z"}],"rateLimits":{"register:152.57.203.126":{"count":1,"windowStart":1788642465769},"register:152.57.206.162":{"count":1,"windowStart":1788044743913},"login:152.57.203.74:keylink360@gmail.com":{"count":1,"windowStart":1788719050599},"login:152.57.206.162:keylink360@gmail.com":{"count":1,"windowStart":1788045200428},"login:152.57.203.126:balaplanivel123@gmil.com":{"count":1,"windowStart":1788641739496},"forgot:152.57.203.126:balaplanivel123@gmil.com":{"count":1,"windowStart":1788641753766},"login:152.57.203.74:krishnakumarwebdeveloper@gmail.com":{"count":1,"windowStart":1788718542919},"forgot:152.57.203.74:krishnakumarwebdeveloper@gmail.com":{"count":1,"windowStart":1788720836307},"login:152.57.203.126:krishnakumarwebdeveloper@gmail.com":{"count":2,"windowStart":1788652310166},"login:152.57.206.162:krishnakumarwebdeveloper@gmail.com":{"count":1,"windowStart":1788045166729},"forgot:152.57.203.126:krishnakumarwebdeveloper@gmail.com":{"count":2,"windowStart":1788652302070}}},"contacts":[],"qr_codes":[{"id":"qr2","name":"Global Conference Link","qrUrl":"https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=0f172a&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F2","scans":"0","status":"Active","scanUrl":"https://keylink360.mindflo.today/q/2","targetUrl":"https://key.li/global-conf-reg","publicCode":"2","designColor":"#0f172a","ownerUserId":"user_demo_keylink360","topLocation":"N/A","customDesign":false,"conversionRate":"0%","uniqueScanners":"0","targetUpdatedAt":"2026-08-29T22:59:18.454Z"},{"id":"qr3","name":"Feedback Portal","qrUrl":"https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=64748b&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F3","scans":"0","status":"Paused","scanUrl":"https://keylink360.mindflo.today/q/3","targetUrl":"https://key.li/customer-feedback","publicCode":"3","designColor":"#64748b","ownerUserId":"user_demo_keylink360","topLocation":"N/A","customDesign":false,"conversionRate":"0%","uniqueScanners":"0","targetUpdatedAt":"2026-08-29T22:59:18.428Z"},{"id":"qr1","name":"Summer Campaign 2024","qrUrl":"https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=7c3aed&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F1","scans":"0","status":"Active","scanUrl":"https://keylink360.mindflo.today/q/1","targetUrl":"https://key.li/summer-special-24","publicCode":"1","designColor":"#7c3aed","ownerUserId":"user_demo_keylink360","topLocation":"N/A","customDesign":true,"conversionRate":"0%","uniqueScanners":"0","targetUpdatedAt":"2026-08-29T22:59:18.401Z"}],"pages_list":[{"id":"1","slug":"key.link/page-r3ee6iw","title":"Marvel Products","views":0,"status":"Live","createdAt":"4 Jul 2026","ownerUserId":"user_1788641690406_8113f25f"},{"id":"1","slug":"key.link/page-r3ee6iw","title":"Marvel Products","views":0,"status":"Live","createdAt":"4 Jul 2026","ownerUserId":"user_1788044743935_d6a492b5"},{"id":"1","slug":"key.link/page-r3ee6iw","title":"Marvel Products","views":0,"status":"Live","createdAt":"4 Jul 2026","ownerUserId":"user_demo_keylink360"}],"media_files":[{"id":"m1","url":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400","name":"campaign_header_v2.jpg","size":"1.2 MB","type":"image","dimensions":"1200 × 630","uploadedAt":"4 Jul 2026"},{"id":"m2","url":"https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=400","name":"product_demo_reel.mp4","size":"24.5 MB","type":"video","dimensions":"1920 × 1080","uploadedAt":"4 Jul 2026"},{"id":"m3","url":"https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=400","name":"lifestyle_workspace.png","size":"4.8 MB","type":"image","dimensions":"2500 × 1667","uploadedAt":"4 Jul 2026"}],"smart_links":[],"integrations":[{"id":"i1","name":"WOO Chat","type":"Messaging","status":"Connected","description":"Send form confirmations & broadcasts through your own WOO Chat account. Bring your team, setup auto-replies, and run customer conversations.","upgradeMessage":""},{"id":"i2","name":"Interakt WhatsApp","type":"Messaging","status":"Locked","description":"Send form confirmations & broadcasts through your own Interakt account — one Secret Key covers sending and template sync.","upgradeMessage":"WhatsApp messaging is part of the Pro Smart Marketing plan."},{"id":"i3","name":"Flodesk","type":"Email Marketing","status":"Locked","description":"Add Smart Form leads straight to your Flodesk email segments.","upgradeMessage":"Connecting an email-marketing account is part of a paid Smart Marketing plan."},{"id":"i4","name":"Payments","type":"Payments","status":"Coming Soon","description":"Take payments on your bio pages via your own Razorpay or Stripe account.","upgradeMessage":""}],"help_articles":[{"id":"faq1","title":"How do I get started with KEYLINK360?","content":"Welcome to KEYLINK360.\n\n1. Create your account and open the Dashboard.\n2. Go to Bio Pages and create your first page from scratch or a template.\n3. Add widgets (buttons, forms, WhatsApp, shop blocks) in the editor.\n4. Publish when ready, then share your public URL or QR code.\n5. Optionally connect Custom Domains, Pixels, and Integrations for branding and tracking.\n\nTip: Use Templates to launch faster, then save your own layouts under My Templates.","excerpt":"Simply sign up for a free account, go to Bio Pages or Links, and create your first smart resource. You can customize the theme, add multiple widgets, and configure tracking pixels or custom domains instantly.","category":"Getting Started","readTime":"2 mins"},{"id":"faq2","title":"What's the difference between the Free and Pro plans?","content":"Free Plan\n• 1 bio page\n• Core widgets\n• Basic analytics\n• Limited media storage\n\nPro / Smart Marketing\n• Unlimited bio pages\n• Smart links & QR codes\n• Custom domains\n• Tracking pixels\n• Messaging & email integrations\n• Priority support\n\nYou can review your current plan under Account Settings. Contact Support if you need help upgrading or comparing features for your team.","excerpt":"The Free plan includes 1 Bio page, 13 core widgets, and up to 100MB of media storage. The Pro plan unlocks unlimited Bio Pages, high-speed custom shortened links, professional templates, full tracking integrations, custom domains, and retargeting pixels.","category":"Billing","readTime":"3 mins"},{"id":"faq3","title":"Can I cancel or get a refund?","content":"Cancellation\nYou can cancel anytime from Account Settings. Access continues through the end of your current billing period.\n\nRefunds\nAnnual plans include a 14-day money-back guarantee. Monthly plans are generally non-refundable after the billing date, except where required by law.\n\nNeed help? Open Contact Support with your workspace email and we will assist with cancellation or refund requests.","excerpt":"Yes, you can cancel your subscription at any time from your billing settings. We offer a 14-day money-back guarantee for all annual subscriptions if you are not fully satisfied.","category":"Billing","readTime":"1 min"},{"id":"faq4","title":"How do I connect my Amazon Advertising account?","content":"Amazon Ads setup overview\n\n1. Open Integrations and confirm your workspace plan supports advertising connectors.\n2. Request Amazon Ads access from Contact Support if the connector is not yet unlocked.\n3. Provide your Amazon Advertising account ID and authorized email.\n4. Once connected, metrics sync on a scheduled interval.\n\nWebhooks\nFor custom automation, ask Support for webhook endpoints that can receive form leads and page events from KEYLINK360.","excerpt":"Contact support or follow the Amazon Ads setup guide to synchronize advertising performance metrics with your workspace.","category":"APIs & Webhooks","readTime":"4 mins"},{"id":"faq5","title":"Can I use my own custom domain?","content":"Short answer: Yes.\n\nKEYLINK360 lets you open your bio page on an address you already own instead of the default KEY URL.\n\nYou have two main options:\n\n1) ROOT DOMAIN — yourdomain.com and www.yourdomain.com\n   → Read: \"Story guide: Connect a root domain (yourdomain.com)\"\n\n2) SUBDOMAIN — name.yourdomain.com or shop.yourdomain.com\n   → Read: \"Story guide: Connect a subdomain (name.yourdomain.com)\"\n\nNot ready to buy a domain?\n   → On Bio Pages, use \"Get free URL\" for something like yourname.keylink360.mindflo.today (no DNS setup).\n\nWhere to start in the app:\nSidebar → Custom Domains → Connect Domain (button on the top right).\n\nPick the story guide that matches what you typed in the wizard — root or subdomain — and follow it step by step.","excerpt":"Yes — connect yourdomain.com (root) or name.yourdomain.com (subdomain). Start with the beginner story guides in this category.","category":"Custom Domains","readTime":"2 mins"},{"id":"faq-cd-cloudflare-account","title":"Connect Domain with Cloudflare (approve each time)","content":"HOW CLOUDFLARE CONNECT WORKS\n\n1. Custom Domains → Connect Domain → enter your address and pick a bio page.\n2. Choose Cloudflare → tap Connect Cloudflare.\n3. Approve KEYLINK360 in Cloudflare (required every time you connect a domain).\n4. KEY adds the CNAME (or A for root) in YOUR Cloudflare zone.\n5. Status becomes LIVE when DNS + HTTPS are ready.\n\nThere is no separate “Cloudflare account Connected” button on Custom Domains. Everything runs inside Connect Domain.\n\nRULES\n• Unlimited custom domains / subdomains on each root you own.\n• One custom domain per bio page.\n• Other DNS hosts: choose Manual and copy the records we show.\n\nKEYLINK360 never writes customer DNS using the platform owner’s Cloudflare account.","excerpt":"Each time you connect a domain on Cloudflare, approve KEYLINK360 in the wizard — then DNS is added automatically.","category":"Custom Domains","readTime":"3 mins"},{"id":"faq-cd-start","title":"Start here: Custom domains for complete beginners","content":"WHO IS THIS FOR?\nYou built a bio page in KEYLINK360. You want people to visit YOUR website name — not a long link. You have never touched DNS before. Perfect — read this like a short story.\n\n━━━━━━━━━━━━━━━━━━━━\nTHREE WAYS TO SHARE YOUR PAGE\n━━━━━━━━━━━━━━━━━━━━\n\nA) FREE KEY URL (easiest — no domain needed)\n   Example: yourname.keylink360.mindflo.today\n   Where: Bio Pages → Get free URL\n   Good when: you are testing or do not own a domain yet.\n\nB) ROOT DOMAIN (your main website name)\n   Example: yourdomain.com\n   Also opens: www.yourdomain.com\n   Good when: you bought yourdomain.com and want that exact name.\n\nC) SUBDOMAIN (a prefix before your domain)\n   Example: name.yourdomain.com or shop.yourdomain.com\n   Good when: your main site stays somewhere else, but one link should open your KEY bio page.\n\n━━━━━━━━━━━━━━━━━━━━\nWORDS YOU WILL SEE (SIMPLE MEANING)\n━━━━━━━━━━━━━━━━━━━━\n\n• Domain — the website name you type in the browser (yourdomain.com).\n• Root / apex domain — yourdomain.com with nothing in front.\n• Subdomain — the part before the domain (name. in name.yourdomain.com).\n• DNS provider — where you edit DNS records (GoDaddy, Namecheap, Cloudflare, Hostinger, Amazon Route 53, etc.). KEY detects this automatically and shows the name on your domain card.\n• A record — points a name to an IP address (used for root domains).\n• CNAME record — points a name to another hostname (used for subdomains).\n• Connect Domain — the wizard button in Custom Domains.\n• Test Connection — checks if DNS is correct after you save records.\n\n━━━━━━━━━━━━━━━━━━━━\nTHE FULL JOURNEY (ALL TYPES)\n━━━━━━━━━━━━━━━━━━━━\n\nStep 1 — Build and publish your bio page first.\nStep 2 — Sidebar → Custom Domains → Connect Domain.\nStep 3 — Type your address exactly:\n        • Root: yourdomain.com (no www, no https://)\n        • Subdomain: name.yourdomain.com (full address including the prefix)\nStep 4 — Choose which bio page should open when someone visits that address.\nStep 5 — KEY shows which DNS host we detected and the exact records to copy.\nStep 6 — Log in to THAT provider (not a random one) and add the records.\nStep 7 — Wait 2–15 minutes for DNS to update worldwide.\nStep 8 — Back in KEY → Test Connection (plug icon on the domain row).\nStep 9 — Status becomes Verified → open your domain in the browser and celebrate.\n\nStatus meanings:\n• Pending DNS — records missing or still propagating.\n• DNS Verified / Provisioning SSL — almost there; HTTPS finishing.\n• Verified — live. Share the link.\n• OFFLINE on the card — DNS still points elsewhere; fix records and Test again.\n\n━━━━━━━━━━━━━━━━━━━━\nWHICH GUIDE TO READ NEXT?\n━━━━━━━━━━━━━━━━━━━━\n\n→ Root domain story (yourdomain.com): open \"Story guide: Connect a root domain\"\n→ Subdomain story (name.yourdomain.com): open \"Story guide: Connect a subdomain\"\n→ Exact buttons in the app: open \"Step-by-step: Connect Domain wizard\"\n→ Stuck on Pending DNS?: open \"Troubleshooting: domain not verifying\"","excerpt":"New to DNS? Read this first. Simple story examples for root domain, subdomain, and where to click in KEYLINK360.","category":"Custom Domains","readTime":"6 mins"},{"id":"faq-cd-root","title":"Story guide: Connect a root domain (yourdomain.com)","content":"STORY — CONNECTING YOURDOMAIN.COM\n\nYou already own yourdomain.com from a registrar (GoDaddy, Namecheap, etc.). In KEYLINK360 you created a bio page with buttons, WhatsApp, and a product gallery.\n\nYou do NOT want to share:\n  https://keylink360.mindflo.today/p/something-long\n\nYou WANT people to type:\n  yourdomain.com\n\nThat is a ROOT DOMAIN connection. Here is exactly what to do.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — OPEN THE RIGHT PAGE IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Log in to KEYLINK360.\n2. Left sidebar → Custom Domains.\n3. Top right → Connect Domain.\n\nDo not look for this inside Publish — custom domains live only on the Custom Domains page.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — ENTER THE ROOT DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nIn the wizard type:\n  yourdomain.com\n\nRules:\n• No https://\n• No www. (www is handled separately via DNS)\n• Just the bare domain: yourdomain.com\n\nSelect the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — KEY FINDS WHERE DNS LIVES\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and shows your DNS host (for example GoDaddy or Cloudflare).\n\nImportant: KEY shows YOUR real provider. Edit DNS there, not somewhere else.\n\nIf you bought the domain on Hostinger but moved nameservers to Cloudflare, you edit Cloudflare — trust the name KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — ADD TWO A RECORDS (ROOT ONLY)\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Record 1\n  Type: A\n  Name / Host: @  (means root — some panels say \"@\" or leave blank)\n  Value / Points to: 69.46.46.90  (use the IP KEY shows on YOUR screen)\n\n  Record 2\n  Type: A\n  Name / Host: www\n  Value / Points to: same IP as above\n\nLog in to your DNS provider → DNS → Add both records → Save.\n\nCloudflare users: turn Proxied (orange cloud) ON for both records.\n\nRemove OLD A records that point to a previous website host. Duplicate @ records cause \"still opens another site\" errors.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 5 — WAIT, THEN TEST\n━━━━━━━━━━━━━━━━━━━━\n\nDNS is not instant. Wait a few minutes, then in KEYLINK360:\n\nCustom Domains → yourdomain.com row → Test Connection (plug icon).\n\nFirst try: Pending DNS (normal if records just saved).\nSecond try after a few minutes: DNS Verified → then Verified.\n\nYou can also expand \"Show DNS\" on the card to copy values again.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 6 — OPEN THE LIVE SITE\n━━━━━━━━━━━━━━━━━━━━\n\nWhen status = Verified, open your domain.\n\nBoth work:\n  https://yourdomain.com\n  https://www.yourdomain.com\n\nYour KEY bio page opens with HTTPS.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT DOMAIN CHECKLIST (COPY THIS)\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Bio page built and published\n☐ Custom Domains → Connect Domain\n☐ Entered yourdomain.com (root only)\n☐ Picked the correct bio page\n☐ Added A record @ → KEY IP\n☐ Added A record www → same IP\n☐ Removed old conflicting A records\n☐ Waited a few minutes\n☐ Test Connection until Verified\n☐ Opened domain in browser\n\nNote: You only change DNS at your domain provider. If HTTPS is still pending, wait a few minutes and click Test Connection again. See Troubleshooting article if needed.","excerpt":"Follow the yourdomain.com example — from Connect Domain to A record @, Test Connection, and going live.","category":"Custom Domains","readTime":"7 mins"},{"id":"faq-cd-subdomain","title":"Story guide: Connect a subdomain (name.yourdomain.com)","content":"STORY — CONNECTING NAME.YOURDOMAIN.COM\n\nYour company already uses yourdomain.com for the main marketing website (hosted elsewhere). You do NOT want to move the whole domain.\n\nYou only want ONE special address for your KEY bio page:\n  name.yourdomain.com\n\nThat is a SUBDOMAIN. The prefix is name. and the parent domain is yourdomain.com.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT VS SUBDOMAIN — QUICK COMPARE\n━━━━━━━━━━━━━━━━━━━━\n\nROOT (yourdomain.com)\n  Records needed: 2 × A records (@ and www)\n  Wizard input: yourdomain.com\n\nSUBDOMAIN (name.yourdomain.com)\n  Records needed: 1 × CNAME\n  Wizard input: name.yourdomain.com  ← type the FULL address including name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — CONNECT IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Sidebar → Custom Domains → Connect Domain.\n2. Type exactly:\n     name.yourdomain.com\n   NOT just yourdomain.com\n3. Select the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — CHECK DNS HOST\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows where yourdomain.com DNS is managed — for example Cloudflare or Namecheap.\n\nYou must be able to edit DNS for the PARENT zone (yourdomain.com). If your IT team owns DNS, send them the CNAME KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — ADD ONE CNAME RECORD\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Type: CNAME\n  Name / Host: name\n    (some panels want only \"name\", not the full name.yourdomain.com)\n  Target / Value: keylink360.mindflo.today\n    (use the exact target KEY shows on YOUR screen)\n\nCloudflare: Proxied (orange cloud) is OK.\n\nDo NOT add A records for a subdomain connection — use CNAME unless KEY explicitly says otherwise.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — TEST AND GO LIVE\n━━━━━━━━━━━━━━━━━━━━\n\nWait a few minutes → Test Connection on the domain row.\n\nWhen Verified, open:\n  https://name.yourdomain.com\n\nYour bio page loads. The main site at yourdomain.com stays unchanged.\n\n━━━━━━━━━━━━━━━━━━━━\nMORE SUBDOMAIN EXAMPLES\n━━━━━━━━━━━━━━━━━━━━\n\nWhat you type in wizard → CNAME host label\n\n  shop.yourdomain.com     →  shop\n  bio.yourdomain.com      →  bio\n  link.yourdomain.com     →  link\n  studio.yourdomain.com   →  studio\n\nRule: everything BEFORE the main domain is the host name in DNS.\n\n━━━━━━━━━━━━━━━━━━━━\nSUBDOMAIN CHECKLIST\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Typed FULL subdomain in wizard (e.g. name.yourdomain.com)\n☐ Selected correct bio page\n☐ Added CNAME with host = prefix only (name, shop, bio…)\n☐ Target = KEY hostname shown in app\n☐ Test Connection → Verified\n☐ Opened https://name.yourdomain.com in browser","excerpt":"Follow the name.yourdomain.com example — one CNAME record, Test Connection, and your bio page on a prefix URL.","category":"Custom Domains","readTime":"6 mins"},{"id":"faq-cd-wizard","title":"Step-by-step: Connect Domain wizard in KEYLINK360","content":"This guide matches the Connect Domain wizard screen by screen.\n\n━━━━━━━━━━━━━━━━━━━━\nBEFORE YOU START\n━━━━━━━━━━━━━━━━━━━━\n\n• Have at least one bio page ready.\n• Know your domain name (root or full subdomain).\n• Know the login for your DNS provider (GoDaddy, Cloudflare, etc.).\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 1 — ENTER DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nWhere: Custom Domains → Connect Domain\n\n1. Type your domain:\n   Root example: yourdomain.com\n   Subdomain example: name.yourdomain.com\n2. Pick which bio page opens on that address.\n3. Click Continue.\n\nIf the page dropdown says \"(in use)\", that page already has another domain — pick a different page or remove the old domain first.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 2 — ANALYZING\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and detects your DNS provider. Wait a few seconds.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 3 — YOUR DNS PROVIDER\n━━━━━━━━━━━━━━━━━━━━\n\nYou see the provider logo and name (e.g. Cloudflare, GoDaddy, Amazon Route 53).\n\nOptional: \"Open [Provider] DNS help\" opens their official docs in a new tab.\n\nClick Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 4 — DNS RECORDS\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 lists exact records to copy:\n\nRoot domain → two A records (@ and www) pointing to the platform IP.\nSubdomain → one CNAME pointing to the KEY hostname.\n\nUse Copy buttons next to each value.\n\nIf Cloudflare for SaaS is enabled, you may also see a TXT ownership record — add it if shown.\n\nClick \"I added these records\" or verify when ready.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 5 — SUCCESS / PENDING\n━━━━━━━━━━━━━━━━━━━━\n\n• Verified or DNS Verified → you are live or almost live.\n• Still Pending DNS → records not detected yet. Wait and use Test Connection from the domain list.\n\nYou can close the wizard — the domain stays on your Custom Domains list.\n\n━━━━━━━━━━━━━━━━━━━━\nAFTER THE WIZARD — DOMAIN CARD ACTIONS\n━━━━━━━━━━━━━━━━━━━━\n\nOn each domain row:\n\n• Domain name — click to open when live.\n• Opens: dropdown — change which bio page loads without reconnecting DNS.\n• Show DNS — see records again.\n• Test Connection (plug) — re-check DNS anytime.\n• Refresh — sync SSL/status.\n• Trash — remove domain from KEY (does not delete your domain from the registrar).\n\nBadge \"DNS at [Provider]\" — where you must edit records.\n\n━━━━━━━━━━━━━━━━━━━━\nRECOMMENDED ORDER WITH PUBLISH\n━━━━━━━━━━━━━━━━━━━━\n\n1. Build bio page\n2. Connect custom domain (this wizard)\n3. Publish (set visibility)\n4. Share your brand URL","excerpt":"Every screen in the Connect Domain wizard — what to click, what to type, and what happens after Done.","category":"Custom Domains","readTime":"5 mins"},{"id":"faq-cd-trouble","title":"Troubleshooting: domain stuck on Pending DNS or OFFLINE","content":"STORY — \"I CLICKED TEST 10 TIMES BUT STILL PENDING\"\n\nYou connected yourdomain.com. The card said OFFLINE and Pending DNS. You were editing Cloudflare — but your domain actually used Amazon Route 53. No wonder nothing changed.\n\nLesson: always edit DNS where the card says \"DNS at [Provider]\".\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 1 — WRONG DNS WEBSITE\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: You add records but Test never passes.\n\nFix:\n1. Read the badge on your domain row: \"DNS at GoDaddy\" (example).\n2. Log in to THAT site only.\n3. Add records exactly as Show DNS lists them.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 2 — ROOT VS SUBDOMAIN MIX-UP\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Added A records but you wanted name.yourdomain.com.\n\nFix: Subdomains need CNAME, not @/www A records. Remove wrong records. Re-run wizard with full subdomain typed.\n\nSymptom: Added CNAME but you wanted yourdomain.com.\n\nFix: Root needs A record @ only. Connect www.yourdomain.com separately as a subdomain (CNAME) if needed.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 3 — OLD RECORDS STILL POINTING ELSEWHERE\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Message says site \"still opens another website\".\n\nFix:\n• Delete extra @ A records (only one correct IP should remain).\n• Remove parking page or old host IPs.\n• For www, point to the same KEY IP (or CNAME if your provider requires).\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 4 — DNS NOT PROPAGATED YET\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Records look correct in provider but KEY says Pending.\n\nFix: Wait 5–30 minutes. TTL and registrar speed vary. Test again — do not change records every minute.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 5 — HTTPS / SSL STUCK AFTER DNS OK\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: DNS Verified but not Verified yet.\n\nFix: Wait a few minutes. Click Refresh / Test Connection on the domain row. No hosting panel setup is required — only DNS at your domain provider.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 6 — CANNOT DELETE A DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nFix: Click trash on the domain row. If error persists, refresh the page and try again, or contact support with the domain name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTILL STUCK?\n━━━━━━━━━━━━━━━━━━━━\n\nContact Support with:\n• Domain name\n• Root or subdomain\n• Screenshot of DNS records from your provider\n• Screenshot of KEY Custom Domains card\n\nWe will help you finish the connection.","excerpt":"Test Connection fails? Wrong website opens? Read common fixes — wrong provider, old A records, root vs subdomain mix-ups.","category":"Custom Domains","readTime":"5 mins"},{"id":"faq5b","title":"What is the difference between Publish and Custom Domains?","content":"Publish vs Custom Domains\n\nPublish (navbar on Dashboard / Account)\n• Makes your KEYLINK360 website live\n• Shows your public URL\n• Lets you choose visibility: Public, Workspace only, or Selected members\n• Lets you copy or open the live link after success\n\nCustom Domains (sidebar)\n• Connect root domain (yourdomain.com) or subdomain (name.yourdomain.com)\n• View DNS instructions and detected DNS provider\n• Verify Pending / Verified status\n• Remove domains\n\nRecommended flow\n1. Build your bio pages\n2. Help Center → Custom Domains category → read \"Start here: Custom domains for complete beginners\"\n3. Open Custom Domains → Connect Domain → follow the story guide for root or subdomain\n4. Click Publish to go live and share the URL\n\nTip: Domain connect/manage is only on Custom Domains. Publish is only for go-live and visibility. For a free URL without buying a domain, use Get free URL on Bio Pages.","excerpt":"Publish goes live and sets who can see your site. Custom Domains connects and manages your brand domain.","category":"Getting Started","readTime":"2 mins"},{"id":"faq6","title":"How do I publish my first bio page?","content":"Publishing checklist\n\n1. Finish your page content and cover image in the editor.\n2. Save a draft anytime — drafts stay private.\n3. On Dashboard or Account, click Publish and choose visibility (public, workspace, or selected members).\n4. To use your own brand domain, open Custom Domains in the sidebar (not inside Publish).\n5. Copy the public URL or generate a QR code from the QR Codes page.\n6. Share the link on social profiles, packaging, or campaigns.\n\nIf something looks wrong on the public page, reopen the editor, fix blocks, and publish again.","excerpt":"Open Bio Pages, create or edit a page, then use Publish on the Dashboard to make your site live and set visibility.","category":"Getting Started","readTime":"2 mins"},{"id":"faq7","title":"How is my workspace data protected?","content":"Security basics\n\n• Keep your account email up to date under Account Settings.\n• Enable MFA for two-factor protection.\n• Export regular JSON backups before major imports or device changes.\n• Only share public bio URLs — drafts remain private until published.\n\nPrivacy\nLeads captured by forms stay in your Contacts list. Do not share backup files that contain customer data outside your organization.","excerpt":"Account data is stored in your browser workspace backup and server sync where available. Enable MFA from Account Settings for stronger sign-in protection.","category":"Security & Privacy","readTime":"2 mins"},{"id":"faq8","title":"What DNS records do I need?","content":"KEYLINK360 supports root domains and subdomains.\n\nROOT (yourdomain.com)\n  Type: A\n  Name: @\n  Value: platform IP (example: 69.46.46.90)\n\nSUBDOMAIN (name.yourdomain.com, www.yourdomain.com, shop.yourdomain.com)\n  Type: CNAME\n  Name: name (prefix only — not the full domain)\n  Value: keylink360.mindflo.today (or value from Show DNS)\n\nRules:\n• Root → A record only\n• Subdomain → CNAME only (never A)\n\nAlways copy live values from Custom Domains → Show DNS.\n\nAfter saving → Test Connection → Verified.","excerpt":"Root: A @ → platform IP. Subdomain: CNAME → platform hostname. Copy from Show DNS.","category":"Custom Domains","readTime":"2 mins"}],"notifications":[],"subscriptions":{"user_1788641690406_8113f25f":{"planId":"FREE","status":"FREE","userId":"user_1788641690406_8113f25f","planName":"Free Plan","provider":"manual","amountInr":0,"createdAt":"2026-09-05T20:55:14.815Z","startDate":"2026-09-05T20:55:14.815Z","updatedAt":"2026-09-05T20:55:14.815Z","billingInterval":"monthly","currentPeriodEnd":"2126-08-12T20:55:14.815Z","cancelAtPeriodEnd":false}},"bio_page_drafts":[],"support_tickets":[],"tracking_pixels":[{"id":"p1","name":"Main Facebook Pixel","type":"Facebook Pixel","status":"Active","pixelId":"882739401928374"},{"id":"p2","name":"Google Ads G-Tag","type":"Google Analytics Tag","status":"Active","pixelId":"AW-10928374561"},{"id":"p3","name":"TikTok Pixel","type":"TikTok Pixel","status":"Validation Required","pixelId":"T-1827463529"}],"publish_settings":{"updatedAt":"2026-09-06T18:24:14.368Z","primaryUrl":"https://keylink360.mindflo.today","visibility":"public","customDomains":[{"id":"domain_primary","status":"verified","hostname":"keylink360.mindflo.today","createdAt":"2026-09-06T18:24:14.368Z","updatedAt":"2026-09-06T18:24:14.368Z"}],"selectedMemberIds":[]},"catalog_templates":[{"id":"t-plant-shop","name":"Plant Shop Natural","price":"Free","widgets":6,"category":"E-commerce","imageUrl":"https://images.unsplash.com/photo-1466781783364-fc7e94d99b7d?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"48x","description":"Earthy botanical storefront for plant shops and garden brands."},{"id":"t-photo-portfolio","name":"Photo Portfolio","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1452587925148-ce544e77ee70?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"61x","description":"Dark, gallery-style layout for photographers and visual artists."},{"id":"t-book-release","name":"Book Release Author","price":"Free","widgets":6,"category":"Launch","imageUrl":"https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"27x","description":"Promote a new book with reviews, retailer links, and newsletter signup."},{"id":"t-flower-shop","name":"Flower Shop","price":"Free","widgets":6,"category":"E-commerce","imageUrl":"https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"35x","description":"Bright floral design for bouquets, events, and same-day delivery."},{"id":"t-travel-blog","name":"Travel Blog Website","price":"Free","widgets":6,"category":"Personal","imageUrl":"https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"44x","description":"Scenic travel blog with guides, tips, and affiliate links."},{"id":"t-real-estate","name":"Real Estate","price":"Free","widgets":6,"category":"Real Estate","imageUrl":"https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"38x","description":"Property listings, agent contact, and mortgage resources."},{"id":"t-beauty-clinic","name":"Beauty Clinic Lifestyle","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"31x","description":"Luxury purple-toned layout for clinics, spas, and skincare brands."},{"id":"t-product-launch-tech","name":"Product Launch Tech","price":"Free","widgets":6,"category":"Launch","imageUrl":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"42x","description":"Futuristic tech launch with waitlist, demo, and feature highlights."},{"id":"t-yoga-studio","name":"Yoga Studio - Wellness Boutique","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"29x","description":"Calm wellness layout for yoga studios, spas, and holistic brands."},{"id":"t-coach-mentor","name":"Coach - Mentor","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"36x","description":"Professional headshot-led page for coaches and business mentors."},{"id":"t-modern-restaurant","name":"Modern Restaurant","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"40x","description":"Dark modern restaurant layout with menu and reservation links."},{"id":"t-artist-designer","name":"Artist & Designer","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"33x","description":"Creative portfolio for illustrators, designers, and visual artists."},{"id":"t-event-agency","name":"Event Agency","price":"Free","widgets":6,"category":"Agency","imageUrl":"https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"25x","description":"Vibrant agency page for concerts, launches, and brand activations."},{"id":"t-marketing-pro","name":"Marketing Professional","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"34x","description":"Clean corporate bio for marketers, strategists, and consultants."},{"id":"t-musician-profile","name":"Musician - Personal Profile","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"47x","description":"Artist-forward layout with music links, tour dates, and merch."},{"id":"t-small-biz-ecom","name":"Small Business Ecommerce","price":"Free","widgets":6,"category":"E-commerce","imageUrl":"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"52x","description":"Product grid and checkout links for small online shops."},{"id":"t-dj-performer","name":"DJ & Performer","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1571266028243-e68f8570c9e0?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"28x","description":"Club-themed page for DJs, performers, and nightlife artists."},{"id":"t-fine-dining","name":"Fine Dining Restaurant","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"22x","description":"Elegant dining experience with tasting menu and reservations."},{"id":"t-travel-blogger","name":"Travel Blogger & Photographer","price":"Free","widgets":6,"category":"Personal","imageUrl":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"37x","description":"Adventure photography blog with guides and print shop links."},{"id":"t-financial-advisor","name":"Financial Advisor","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"19x","description":"Trust-focused layout for advisors, planners, and wealth managers."},{"id":"t-fashion-influencer","name":"Fashion Influencer","price":"Free","widgets":6,"category":"Link in Bio","imageUrl":"https://images.unsplash.com/photo-1483985988354-763728e1935b?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"55x","description":"Stylish influencer page with collabs, outfits, and affiliate links."},{"id":"t-content-creator","name":"Content Creator","price":"Free","widgets":6,"category":"Link in Bio","imageUrl":"https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"64x","description":"All-in-one hub for videos, merch, community, and sponsors."},{"id":"t-digital-artist","name":"Digital Artist","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"30x","description":"Showcase digital art, NFT drops, and commission bookings."},{"id":"t-cafe-coffee","name":"Cafe & Coffee Shop","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"41x","description":"Warm rustic cafe layout with menu, hours, and loyalty offer."},{"id":"t-freelance-writer","name":"Freelance Writer","price":"Free","widgets":6,"category":"Freelancer","imageUrl":"https://images.unsplash.com/photo-1455390582260-0446dd291f0a?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"26x","description":"Minimal writer portfolio with samples, rates, and contact form."},{"id":"t-fitness-coach","name":"Fitness Coach","price":"Free","widgets":6,"category":"Personal","imageUrl":"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"43x","description":"High-energy gym layout with programs and coaching signup."},{"id":"t-wedding-photo","name":"Wedding Photography","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"32x","description":"Soft elegant design for wedding photographers and studios."},{"id":"t-event-planner","name":"Event Planner & Decor","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"24x","description":"Colorful celebratory layout for planners and decor specialists."},{"id":"t-chef-food-blog","name":"Chef & Food Blog","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"31x","description":"Culinary blog with recipes, classes, and restaurant links."},{"id":"t-bar-mixology","name":"Bar & Mixology","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d46?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"21x","description":"Dark cocktail bar theme with menu, events, and reservations."},{"id":"t-interior-designer","name":"Interior Designer","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"23x","description":"Home decor portfolio with projects and consultation booking."},{"id":"t-beauty-fashion","name":"Beauty & Fashion","price":"Free","widgets":6,"category":"E-commerce","imageUrl":"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"46x","description":"Bright modern influencer shop for beauty and fashion brands."},{"id":"t-saas-startup","name":"SaaS Startup Launch","price":"Free","widgets":6,"category":"Launch","imageUrl":"https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"19x","description":"Clean product launch page with demo, pricing, and waitlist signup."},{"id":"t-podcast-show","name":"Podcast Show Hub","price":"Free","widgets":6,"category":"Personal","imageUrl":"https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"28x","description":"Episode links, guest spots, and subscribe buttons for podcasters."},{"id":"t-lawyer-firm","name":"Law Firm Profile","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"17x","description":"Trust-focused layout for attorneys with practice areas and consult booking."},{"id":"t-dentist-clinic","name":"Dental Clinic","price":"Free","widgets":6,"category":"Business","imageUrl":"https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"22x","description":"Friendly clinic page for appointments, services, and patient forms."},{"id":"t-pet-grooming","name":"Pet Grooming Salon","price":"Free","widgets":6,"category":"Business","imageUrl":"https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"26x","description":"Cute pet-care layout for grooming packages and booking links."},{"id":"t-online-tutor","name":"Online Tutor","price":"Free","widgets":6,"category":"Freelancer","imageUrl":"https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"33x","description":"Education-focused page for courses, slots, and student resources."},{"id":"t-nonprofit-cause","name":"Nonprofit Cause","price":"Free","widgets":6,"category":"Agency","imageUrl":"https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"15x","description":"Impact-driven layout for donations, volunteer signup, and updates."},{"id":"t-crypto-web3","name":"Web3 Creator Hub","price":"Free","widgets":6,"category":"Link in Bio","imageUrl":"https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"18x","description":"Modern creator hub for NFT drops, community, and socials."},{"id":"t-handmade-crafts","name":"Handmade Crafts Shop","price":"Free","widgets":6,"category":"E-commerce","imageUrl":"https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"29x","description":"Warm handmade storefront for artisans and craft brands."},{"id":"t-architect-studio","name":"Architecture Studio","price":"Free","widgets":6,"category":"Portfolio","imageUrl":"https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"14x","description":"Minimal studio portfolio for architects and design firms."},{"id":"t-gaming-streamer","name":"Gaming Streamer","price":"Free","widgets":6,"category":"Link in Bio","imageUrl":"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=500","suggested":true,"usedCount":"41x","description":"High-energy streamer page for schedules, merch, and channel links."},{"id":"t-nutritionist","name":"Nutrition Coach","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1490645935967-10de9cf7d6ea?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"25x","description":"Wellness coach page for meal plans, programs, and bookings."},{"id":"t-car-dealership","name":"Car Dealership","price":"Free","widgets":6,"category":"Business","imageUrl":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"20x","description":"Automotive showroom links for inventory, test drives, and offers."},{"id":"t-language-school","name":"Language School","price":"Free","widgets":6,"category":"Business","imageUrl":"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"16x","description":"School page for course levels, trials, and student enrollment."},{"id":"t-hr-recruiter","name":"HR Recruiter","price":"Free","widgets":6,"category":"Professional","imageUrl":"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"13x","description":"Talent recruiter hub for open roles, resume drop, and LinkedIn."},{"id":"t-bakery-cafe","name":"Bakery & Patisserie","price":"Free","widgets":6,"category":"Restaurants","imageUrl":"https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"30x","description":"Sweet bakery page for menus, catering, and daily specials."},{"id":"t-ux-freelancer","name":"UX Designer Freelance","price":"Free","widgets":6,"category":"Freelancer","imageUrl":"https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"27x","description":"Portfolio and booking page for UX designers and product freelancers."},{"id":"t-sports-academy","name":"Sports Academy","price":"Free","widgets":6,"category":"Industry","imageUrl":"https://images.unsplash.com/photo-1461896836934-ffe607ba6850?auto=format&fit=crop&q=80&w=500","suggested":false,"usedCount":"21x","description":"Academy hub for training programs, schedules, and enrollment."}],"integration_votes":[{"id":"v1","name":"GetResponse","voted":true,"votes":3},{"id":"v2","name":"Mailchimp","voted":false,"votes":1},{"id":"v3","name":"ConvertKit","voted":false,"votes":1},{"id":"v4","name":"MailerLite","voted":false,"votes":1},{"id":"v5","name":"ActiveCampaign","voted":false,"votes":3}],"bio_page_templates":[],"whatsapp_campaigns":[{"id":"w1","name":"Summer Sale Update","status":"Sent","openRate":"0%","recipients":"0"},{"id":"w2","name":"Welcome Sequence","status":"Active","openRate":"0%","recipients":"0/day"}],"whatsapp_templates":[{"id":"wt1","name":"Welcome Message","status":"Approved"},{"id":"wt2","name":"Order Confirmation","status":"Approved"}]}
+{
+  "auth": {
+    "users": [
+      {
+        "id": "user_demo_keylink360",
+        "email": "keylink360@gmail.com",
+        "passwordHash": "fc3d77be63af4ba8c340a4532a98d9515bbbdc929f05aeb2129fae4c511d8799e3a81ffbb990fe7202420e051259d32200182958f3e0d4fac6abcdd45a53b9bb",
+        "passwordSalt": "354634c60beb4e720d4be90f6d23e5e1",
+        "firstName": "KEYLINK",
+        "lastName": "360",
+        "companyName": "KEYLINK360",
+        "businessName": "KEYLINK360",
+        "phone": "",
+        "country": "United States",
+        "avatarUrl": "https://tapback.co/api/avatar/key.webp",
+        "plan": "Free Plan",
+        "isVerified": true,
+        "emailVerified": true,
+        "status": "active",
+        "mfaEnabled": false,
+        "newsletterOptIn": true,
+        "preferredDnsProvider": null,
+        "failedLoginAttempts": 0,
+        "lockedUntil": null,
+        "createdAt": "2026-08-29T22:59:06.049+00:00",
+        "updatedAt": "2026-09-06T19:00:17.824Z",
+        "lastLoginAt": "2026-09-06T18:24:10.633+00:00",
+        "role": "MAIN_OWNER"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "sess_1788719050633_99827f70",
+        "ip": "152.57.203.74",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-06T18:24:10.634Z",
+        "expiresAt": "2026-10-06T18:24:10.633Z",
+        "revokedAt": "2026-09-06T18:24:16.863Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "rememberMe": true,
+        "refreshTokenHash": "c376f69894e2ebe9b6d5bb50a991556f6564142f1c74f6ef28906ef7c779b266"
+      },
+      {
+        "id": "sess_1788641417926_c1bcb891",
+        "ip": "152.57.203.126",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-05T20:50:17.926Z",
+        "expiresAt": "2026-10-05T20:50:17.926Z",
+        "revokedAt": "2026-09-05T20:52:00.193Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "rememberMe": true,
+        "refreshTokenHash": "d6d8fe75ef9506b722f7c63a8b4b7283683fffc5d1c5bc1c797a5387d258f165"
+      },
+      {
+        "id": "sess_1788641417462_e6d11f95",
+        "ip": "152.57.203.126",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-05T20:50:17.462Z",
+        "expiresAt": "2026-10-05T20:50:17.462Z",
+        "revokedAt": "2026-09-05T20:50:17.926Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "rememberMe": true,
+        "refreshTokenHash": "2eaff3b4164469a281d8fc3dbb3b4e260b7928242a34aac226f98723444ad379"
+      },
+      {
+        "id": "sess_1788045200453_05f0190f",
+        "ip": "152.57.206.162",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-08-29T23:13:20.453Z",
+        "expiresAt": "2026-09-28T23:13:20.453Z",
+        "revokedAt": "2026-09-05T20:50:17.462Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+        "rememberMe": true,
+        "refreshTokenHash": "1da31a2de8845fc21427773b0b68b8afe547648cbd7db321f8d5936c10146a16"
+      },
+      {
+        "id": "sess_1788044346125_e846e30a",
+        "ip": "152.57.206.162",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-08-29T22:59:06.126Z",
+        "expiresAt": "2026-09-28T22:59:06.126Z",
+        "revokedAt": "2026-08-29T22:59:23.056Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+        "rememberMe": true,
+        "refreshTokenHash": "bf61069763257e514c26ccf5db17f63f8d1b55e1524fc166c826765fa92bfe29"
+      }
+    ],
+    "passwordResetTokens": [],
+    "emailVerificationTokens": [],
+    "oauthAccounts": [],
+    "loginHistory": [
+      {
+        "id": "login_1788719050634_2fe1289d",
+        "ip": "152.57.203.74",
+        "email": "keylink360@gmail.com",
+        "reason": "ok",
+        "userId": "user_demo_keylink360",
+        "success": true,
+        "createdAt": "2026-09-06T18:24:10.634Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"
+      },
+      {
+        "id": "login_1788045200453_554a98b3",
+        "ip": "152.57.206.162",
+        "email": "keylink360@gmail.com",
+        "reason": "ok",
+        "userId": "user_demo_keylink360",
+        "success": true,
+        "createdAt": "2026-08-29T23:13:20.453Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+      },
+      {
+        "id": "login_1788044346126_4f2ecc1a",
+        "ip": "152.57.206.162",
+        "email": "keylink360@gmail.com",
+        "reason": "ok",
+        "userId": "user_demo_keylink360",
+        "success": true,
+        "createdAt": "2026-08-29T22:59:06.126Z",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+      }
+    ],
+    "auditLogs": [
+      {
+        "id": "audit_1788719056863_affd18e3",
+        "meta": {},
+        "action": "user.logout",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-06T18:24:16.863Z"
+      },
+      {
+        "id": "audit_1788719050634_8a9cfe22",
+        "meta": {
+          "rememberMe": true
+        },
+        "action": "user.login",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-06T18:24:10.634Z"
+      },
+      {
+        "id": "audit_1788641520193_d22b28be",
+        "meta": {},
+        "action": "user.logout",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-09-05T20:52:00.193Z"
+      },
+      {
+        "id": "audit_1788045200453_f69e240e",
+        "meta": {
+          "rememberMe": true
+        },
+        "action": "user.login",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-08-29T23:13:20.453Z"
+      },
+      {
+        "id": "audit_1788044363056_da94a7a0",
+        "meta": {},
+        "action": "user.logout",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-08-29T22:59:23.056Z"
+      },
+      {
+        "id": "audit_1788044346126_16c6d20b",
+        "meta": {
+          "rememberMe": true
+        },
+        "action": "user.login",
+        "userId": "user_demo_keylink360",
+        "createdAt": "2026-08-29T22:59:06.126Z"
+      }
+    ],
+    "rateLimits": {
+      "login:152.57.203.74:keylink360@gmail.com": {
+        "count": 1,
+        "windowStart": 1788719050599
+      },
+      "login:152.57.206.162:keylink360@gmail.com": {
+        "count": 1,
+        "windowStart": 1788045200428
+      }
+    }
+  },
+  "contacts": [],
+  "qr_codes": [
+    {
+      "id": "qr2",
+      "name": "Global Conference Link",
+      "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=0f172a&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F2",
+      "scans": "0",
+      "status": "Active",
+      "scanUrl": "https://keylink360.mindflo.today/q/2",
+      "targetUrl": "https://key.li/global-conf-reg",
+      "publicCode": "2",
+      "designColor": "#0f172a",
+      "ownerUserId": "user_demo_keylink360",
+      "topLocation": "N/A",
+      "customDesign": false,
+      "conversionRate": "0%",
+      "uniqueScanners": "0",
+      "targetUpdatedAt": "2026-08-29T22:59:18.454Z"
+    },
+    {
+      "id": "qr3",
+      "name": "Feedback Portal",
+      "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=64748b&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F3",
+      "scans": "0",
+      "status": "Paused",
+      "scanUrl": "https://keylink360.mindflo.today/q/3",
+      "targetUrl": "https://key.li/customer-feedback",
+      "publicCode": "3",
+      "designColor": "#64748b",
+      "ownerUserId": "user_demo_keylink360",
+      "topLocation": "N/A",
+      "customDesign": false,
+      "conversionRate": "0%",
+      "uniqueScanners": "0",
+      "targetUpdatedAt": "2026-08-29T22:59:18.428Z"
+    },
+    {
+      "id": "qr1",
+      "name": "Summer Campaign 2024",
+      "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=7c3aed&data=https%3A%2F%2Fkeylink360.mindflo.today%2Fq%2F1",
+      "scans": "0",
+      "status": "Active",
+      "scanUrl": "https://keylink360.mindflo.today/q/1",
+      "targetUrl": "https://key.li/summer-special-24",
+      "publicCode": "1",
+      "designColor": "#7c3aed",
+      "ownerUserId": "user_demo_keylink360",
+      "topLocation": "N/A",
+      "customDesign": true,
+      "conversionRate": "0%",
+      "uniqueScanners": "0",
+      "targetUpdatedAt": "2026-08-29T22:59:18.401Z"
+    }
+  ],
+  "pages_list": [
+    {
+      "id": "1",
+      "slug": "key.link/page-r3ee6iw",
+      "title": "Marvel Products",
+      "views": 0,
+      "status": "Live",
+      "createdAt": "4 Jul 2026",
+      "ownerUserId": "user_demo_keylink360"
+    }
+  ],
+  "media_files": [
+    {
+      "id": "m1",
+      "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400",
+      "name": "campaign_header_v2.jpg",
+      "size": "1.2 MB",
+      "type": "image",
+      "dimensions": "1200 × 630",
+      "uploadedAt": "4 Jul 2026"
+    },
+    {
+      "id": "m2",
+      "url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=400",
+      "name": "product_demo_reel.mp4",
+      "size": "24.5 MB",
+      "type": "video",
+      "dimensions": "1920 × 1080",
+      "uploadedAt": "4 Jul 2026"
+    },
+    {
+      "id": "m3",
+      "url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=400",
+      "name": "lifestyle_workspace.png",
+      "size": "4.8 MB",
+      "type": "image",
+      "dimensions": "2500 × 1667",
+      "uploadedAt": "4 Jul 2026"
+    }
+  ],
+  "smart_links": [],
+  "integrations": [
+    {
+      "id": "i1",
+      "name": "WOO Chat",
+      "type": "Messaging",
+      "status": "Connected",
+      "description": "Send form confirmations & broadcasts through your own WOO Chat account. Bring your team, setup auto-replies, and run customer conversations.",
+      "upgradeMessage": ""
+    },
+    {
+      "id": "i2",
+      "name": "Interakt WhatsApp",
+      "type": "Messaging",
+      "status": "Locked",
+      "description": "Send form confirmations & broadcasts through your own Interakt account — one Secret Key covers sending and template sync.",
+      "upgradeMessage": "WhatsApp messaging is part of the Pro Smart Marketing plan."
+    },
+    {
+      "id": "i3",
+      "name": "Flodesk",
+      "type": "Email Marketing",
+      "status": "Locked",
+      "description": "Add Smart Form leads straight to your Flodesk email segments.",
+      "upgradeMessage": "Connecting an email-marketing account is part of a paid Smart Marketing plan."
+    },
+    {
+      "id": "i4",
+      "name": "Payments",
+      "type": "Payments",
+      "status": "Coming Soon",
+      "description": "Take payments on your bio pages via your own Razorpay or Stripe account.",
+      "upgradeMessage": ""
+    }
+  ],
+  "help_articles": [
+    {
+      "id": "faq1",
+      "title": "How do I get started with KEYLINK360?",
+      "content": "Welcome to KEYLINK360.\n\n1. Create your account and open the Dashboard.\n2. Go to Bio Pages and create your first page from scratch or a template.\n3. Add widgets (buttons, forms, WhatsApp, shop blocks) in the editor.\n4. Publish when ready, then share your public URL or QR code.\n5. Optionally connect Custom Domains, Pixels, and Integrations for branding and tracking.\n\nTip: Use Templates to launch faster, then save your own layouts under My Templates.",
+      "excerpt": "Simply sign up for a free account, go to Bio Pages or Links, and create your first smart resource. You can customize the theme, add multiple widgets, and configure tracking pixels or custom domains instantly.",
+      "category": "Getting Started",
+      "readTime": "2 mins"
+    },
+    {
+      "id": "faq2",
+      "title": "What's the difference between the Free and Pro plans?",
+      "content": "Free Plan\n• 1 bio page\n• Core widgets\n• Basic analytics\n• Limited media storage\n\nPro / Smart Marketing\n• Unlimited bio pages\n• Smart links & QR codes\n• Custom domains\n• Tracking pixels\n• Messaging & email integrations\n• Priority support\n\nYou can review your current plan under Account Settings. Contact Support if you need help upgrading or comparing features for your team.",
+      "excerpt": "The Free plan includes 1 Bio page, 13 core widgets, and up to 100MB of media storage. The Pro plan unlocks unlimited Bio Pages, high-speed custom shortened links, professional templates, full tracking integrations, custom domains, and retargeting pixels.",
+      "category": "Billing",
+      "readTime": "3 mins"
+    },
+    {
+      "id": "faq3",
+      "title": "Can I cancel or get a refund?",
+      "content": "Cancellation\nYou can cancel anytime from Account Settings. Access continues through the end of your current billing period.\n\nRefunds\nAnnual plans include a 14-day money-back guarantee. Monthly plans are generally non-refundable after the billing date, except where required by law.\n\nNeed help? Open Contact Support with your workspace email and we will assist with cancellation or refund requests.",
+      "excerpt": "Yes, you can cancel your subscription at any time from your billing settings. We offer a 14-day money-back guarantee for all annual subscriptions if you are not fully satisfied.",
+      "category": "Billing",
+      "readTime": "1 min"
+    },
+    {
+      "id": "faq4",
+      "title": "How do I connect my Amazon Advertising account?",
+      "content": "Amazon Ads setup overview\n\n1. Open Integrations and confirm your workspace plan supports advertising connectors.\n2. Request Amazon Ads access from Contact Support if the connector is not yet unlocked.\n3. Provide your Amazon Advertising account ID and authorized email.\n4. Once connected, metrics sync on a scheduled interval.\n\nWebhooks\nFor custom automation, ask Support for webhook endpoints that can receive form leads and page events from KEYLINK360.",
+      "excerpt": "Contact support or follow the Amazon Ads setup guide to synchronize advertising performance metrics with your workspace.",
+      "category": "APIs & Webhooks",
+      "readTime": "4 mins"
+    },
+    {
+      "id": "faq5",
+      "title": "Can I use my own custom domain?",
+      "content": "Short answer: Yes.\n\nKEYLINK360 lets you open your bio page on an address you already own instead of the default KEY URL.\n\nYou have two main options:\n\n1) ROOT DOMAIN — yourdomain.com and www.yourdomain.com\n   → Read: \"Story guide: Connect a root domain (yourdomain.com)\"\n\n2) SUBDOMAIN — name.yourdomain.com or shop.yourdomain.com\n   → Read: \"Story guide: Connect a subdomain (name.yourdomain.com)\"\n\nNot ready to buy a domain?\n   → On Bio Pages, use \"Get free URL\" for something like yourname.keylink360.mindflo.today (no DNS setup).\n\nWhere to start in the app:\nSidebar → Custom Domains → Connect Domain (button on the top right).\n\nPick the story guide that matches what you typed in the wizard — root or subdomain — and follow it step by step.",
+      "excerpt": "Yes — connect yourdomain.com (root) or name.yourdomain.com (subdomain). Start with the beginner story guides in this category.",
+      "category": "Custom Domains",
+      "readTime": "2 mins"
+    },
+    {
+      "id": "faq-cd-cloudflare-account",
+      "title": "Connect Domain with Cloudflare (approve each time)",
+      "content": "HOW CLOUDFLARE CONNECT WORKS\n\n1. Custom Domains → Connect Domain → enter your address and pick a bio page.\n2. Choose Cloudflare → tap Connect Cloudflare.\n3. Approve KEYLINK360 in Cloudflare (required every time you connect a domain).\n4. KEY adds the CNAME (or A for root) in YOUR Cloudflare zone.\n5. Status becomes LIVE when DNS + HTTPS are ready.\n\nThere is no separate “Cloudflare account Connected” button on Custom Domains. Everything runs inside Connect Domain.\n\nRULES\n• Unlimited custom domains / subdomains on each root you own.\n• One custom domain per bio page.\n• Other DNS hosts: choose Manual and copy the records we show.\n\nKEYLINK360 never writes customer DNS using the platform owner’s Cloudflare account.",
+      "excerpt": "Each time you connect a domain on Cloudflare, approve KEYLINK360 in the wizard — then DNS is added automatically.",
+      "category": "Custom Domains",
+      "readTime": "3 mins"
+    },
+    {
+      "id": "faq-cd-start",
+      "title": "Start here: Custom domains for complete beginners",
+      "content": "WHO IS THIS FOR?\nYou built a bio page in KEYLINK360. You want people to visit YOUR website name — not a long link. You have never touched DNS before. Perfect — read this like a short story.\n\n━━━━━━━━━━━━━━━━━━━━\nTHREE WAYS TO SHARE YOUR PAGE\n━━━━━━━━━━━━━━━━━━━━\n\nA) FREE KEY URL (easiest — no domain needed)\n   Example: yourname.keylink360.mindflo.today\n   Where: Bio Pages → Get free URL\n   Good when: you are testing or do not own a domain yet.\n\nB) ROOT DOMAIN (your main website name)\n   Example: yourdomain.com\n   Also opens: www.yourdomain.com\n   Good when: you bought yourdomain.com and want that exact name.\n\nC) SUBDOMAIN (a prefix before your domain)\n   Example: name.yourdomain.com or shop.yourdomain.com\n   Good when: your main site stays somewhere else, but one link should open your KEY bio page.\n\n━━━━━━━━━━━━━━━━━━━━\nWORDS YOU WILL SEE (SIMPLE MEANING)\n━━━━━━━━━━━━━━━━━━━━\n\n• Domain — the website name you type in the browser (yourdomain.com).\n• Root / apex domain — yourdomain.com with nothing in front.\n• Subdomain — the part before the domain (name. in name.yourdomain.com).\n• DNS provider — where you edit DNS records (GoDaddy, Namecheap, Cloudflare, Hostinger, Amazon Route 53, etc.). KEY detects this automatically and shows the name on your domain card.\n• A record — points a name to an IP address (used for root domains).\n• CNAME record — points a name to another hostname (used for subdomains).\n• Connect Domain — the wizard button in Custom Domains.\n• Test Connection — checks if DNS is correct after you save records.\n\n━━━━━━━━━━━━━━━━━━━━\nTHE FULL JOURNEY (ALL TYPES)\n━━━━━━━━━━━━━━━━━━━━\n\nStep 1 — Build and publish your bio page first.\nStep 2 — Sidebar → Custom Domains → Connect Domain.\nStep 3 — Type your address exactly:\n        • Root: yourdomain.com (no www, no https://)\n        • Subdomain: name.yourdomain.com (full address including the prefix)\nStep 4 — Choose which bio page should open when someone visits that address.\nStep 5 — KEY shows which DNS host we detected and the exact records to copy.\nStep 6 — Log in to THAT provider (not a random one) and add the records.\nStep 7 — Wait 2–15 minutes for DNS to update worldwide.\nStep 8 — Back in KEY → Test Connection (plug icon on the domain row).\nStep 9 — Status becomes Verified → open your domain in the browser and celebrate.\n\nStatus meanings:\n• Pending DNS — records missing or still propagating.\n• DNS Verified / Provisioning SSL — almost there; HTTPS finishing.\n• Verified — live. Share the link.\n• OFFLINE on the card — DNS still points elsewhere; fix records and Test again.\n\n━━━━━━━━━━━━━━━━━━━━\nWHICH GUIDE TO READ NEXT?\n━━━━━━━━━━━━━━━━━━━━\n\n→ Root domain story (yourdomain.com): open \"Story guide: Connect a root domain\"\n→ Subdomain story (name.yourdomain.com): open \"Story guide: Connect a subdomain\"\n→ Exact buttons in the app: open \"Step-by-step: Connect Domain wizard\"\n→ Stuck on Pending DNS?: open \"Troubleshooting: domain not verifying\"",
+      "excerpt": "New to DNS? Read this first. Simple story examples for root domain, subdomain, and where to click in KEYLINK360.",
+      "category": "Custom Domains",
+      "readTime": "6 mins"
+    },
+    {
+      "id": "faq-cd-root",
+      "title": "Story guide: Connect a root domain (yourdomain.com)",
+      "content": "STORY — CONNECTING YOURDOMAIN.COM\n\nYou already own yourdomain.com from a registrar (GoDaddy, Namecheap, etc.). In KEYLINK360 you created a bio page with buttons, WhatsApp, and a product gallery.\n\nYou do NOT want to share:\n  https://keylink360.mindflo.today/p/something-long\n\nYou WANT people to type:\n  yourdomain.com\n\nThat is a ROOT DOMAIN connection. Here is exactly what to do.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — OPEN THE RIGHT PAGE IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Log in to KEYLINK360.\n2. Left sidebar → Custom Domains.\n3. Top right → Connect Domain.\n\nDo not look for this inside Publish — custom domains live only on the Custom Domains page.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — ENTER THE ROOT DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nIn the wizard type:\n  yourdomain.com\n\nRules:\n• No https://\n• No www. (www is handled separately via DNS)\n• Just the bare domain: yourdomain.com\n\nSelect the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — KEY FINDS WHERE DNS LIVES\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and shows your DNS host (for example GoDaddy or Cloudflare).\n\nImportant: KEY shows YOUR real provider. Edit DNS there, not somewhere else.\n\nIf you bought the domain on Hostinger but moved nameservers to Cloudflare, you edit Cloudflare — trust the name KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — ADD TWO A RECORDS (ROOT ONLY)\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Record 1\n  Type: A\n  Name / Host: @  (means root — some panels say \"@\" or leave blank)\n  Value / Points to: 69.46.46.90  (use the IP KEY shows on YOUR screen)\n\n  Record 2\n  Type: A\n  Name / Host: www\n  Value / Points to: same IP as above\n\nLog in to your DNS provider → DNS → Add both records → Save.\n\nCloudflare users: turn Proxied (orange cloud) ON for both records.\n\nRemove OLD A records that point to a previous website host. Duplicate @ records cause \"still opens another site\" errors.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 5 — WAIT, THEN TEST\n━━━━━━━━━━━━━━━━━━━━\n\nDNS is not instant. Wait a few minutes, then in KEYLINK360:\n\nCustom Domains → yourdomain.com row → Test Connection (plug icon).\n\nFirst try: Pending DNS (normal if records just saved).\nSecond try after a few minutes: DNS Verified → then Verified.\n\nYou can also expand \"Show DNS\" on the card to copy values again.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 6 — OPEN THE LIVE SITE\n━━━━━━━━━━━━━━━━━━━━\n\nWhen status = Verified, open your domain.\n\nBoth work:\n  https://yourdomain.com\n  https://www.yourdomain.com\n\nYour KEY bio page opens with HTTPS.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT DOMAIN CHECKLIST (COPY THIS)\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Bio page built and published\n☐ Custom Domains → Connect Domain\n☐ Entered yourdomain.com (root only)\n☐ Picked the correct bio page\n☐ Added A record @ → KEY IP\n☐ Added A record www → same IP\n☐ Removed old conflicting A records\n☐ Waited a few minutes\n☐ Test Connection until Verified\n☐ Opened domain in browser\n\nNote: You only change DNS at your domain provider. If HTTPS is still pending, wait a few minutes and click Test Connection again. See Troubleshooting article if needed.",
+      "excerpt": "Follow the yourdomain.com example — from Connect Domain to A record @, Test Connection, and going live.",
+      "category": "Custom Domains",
+      "readTime": "7 mins"
+    },
+    {
+      "id": "faq-cd-subdomain",
+      "title": "Story guide: Connect a subdomain (name.yourdomain.com)",
+      "content": "STORY — CONNECTING NAME.YOURDOMAIN.COM\n\nYour company already uses yourdomain.com for the main marketing website (hosted elsewhere). You do NOT want to move the whole domain.\n\nYou only want ONE special address for your KEY bio page:\n  name.yourdomain.com\n\nThat is a SUBDOMAIN. The prefix is name. and the parent domain is yourdomain.com.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT VS SUBDOMAIN — QUICK COMPARE\n━━━━━━━━━━━━━━━━━━━━\n\nROOT (yourdomain.com)\n  Records needed: 2 × A records (@ and www)\n  Wizard input: yourdomain.com\n\nSUBDOMAIN (name.yourdomain.com)\n  Records needed: 1 × CNAME\n  Wizard input: name.yourdomain.com  ← type the FULL address including name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — CONNECT IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Sidebar → Custom Domains → Connect Domain.\n2. Type exactly:\n     name.yourdomain.com\n   NOT just yourdomain.com\n3. Select the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — CHECK DNS HOST\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows where yourdomain.com DNS is managed — for example Cloudflare or Namecheap.\n\nYou must be able to edit DNS for the PARENT zone (yourdomain.com). If your IT team owns DNS, send them the CNAME KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — ADD ONE CNAME RECORD\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Type: CNAME\n  Name / Host: name\n    (some panels want only \"name\", not the full name.yourdomain.com)\n  Target / Value: keylink360.mindflo.today\n    (use the exact target KEY shows on YOUR screen)\n\nCloudflare: Proxied (orange cloud) is OK.\n\nDo NOT add A records for a subdomain connection — use CNAME unless KEY explicitly says otherwise.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — TEST AND GO LIVE\n━━━━━━━━━━━━━━━━━━━━\n\nWait a few minutes → Test Connection on the domain row.\n\nWhen Verified, open:\n  https://name.yourdomain.com\n\nYour bio page loads. The main site at yourdomain.com stays unchanged.\n\n━━━━━━━━━━━━━━━━━━━━\nMORE SUBDOMAIN EXAMPLES\n━━━━━━━━━━━━━━━━━━━━\n\nWhat you type in wizard → CNAME host label\n\n  shop.yourdomain.com     →  shop\n  bio.yourdomain.com      →  bio\n  link.yourdomain.com     →  link\n  studio.yourdomain.com   →  studio\n\nRule: everything BEFORE the main domain is the host name in DNS.\n\n━━━━━━━━━━━━━━━━━━━━\nSUBDOMAIN CHECKLIST\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Typed FULL subdomain in wizard (e.g. name.yourdomain.com)\n☐ Selected correct bio page\n☐ Added CNAME with host = prefix only (name, shop, bio…)\n☐ Target = KEY hostname shown in app\n☐ Test Connection → Verified\n☐ Opened https://name.yourdomain.com in browser",
+      "excerpt": "Follow the name.yourdomain.com example — one CNAME record, Test Connection, and your bio page on a prefix URL.",
+      "category": "Custom Domains",
+      "readTime": "6 mins"
+    },
+    {
+      "id": "faq-cd-wizard",
+      "title": "Step-by-step: Connect Domain wizard in KEYLINK360",
+      "content": "This guide matches the Connect Domain wizard screen by screen.\n\n━━━━━━━━━━━━━━━━━━━━\nBEFORE YOU START\n━━━━━━━━━━━━━━━━━━━━\n\n• Have at least one bio page ready.\n• Know your domain name (root or full subdomain).\n• Know the login for your DNS provider (GoDaddy, Cloudflare, etc.).\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 1 — ENTER DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nWhere: Custom Domains → Connect Domain\n\n1. Type your domain:\n   Root example: yourdomain.com\n   Subdomain example: name.yourdomain.com\n2. Pick which bio page opens on that address.\n3. Click Continue.\n\nIf the page dropdown says \"(in use)\", that page already has another domain — pick a different page or remove the old domain first.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 2 — ANALYZING\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and detects your DNS provider. Wait a few seconds.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 3 — YOUR DNS PROVIDER\n━━━━━━━━━━━━━━━━━━━━\n\nYou see the provider logo and name (e.g. Cloudflare, GoDaddy, Amazon Route 53).\n\nOptional: \"Open [Provider] DNS help\" opens their official docs in a new tab.\n\nClick Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 4 — DNS RECORDS\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 lists exact records to copy:\n\nRoot domain → two A records (@ and www) pointing to the platform IP.\nSubdomain → one CNAME pointing to the KEY hostname.\n\nUse Copy buttons next to each value.\n\nIf Cloudflare for SaaS is enabled, you may also see a TXT ownership record — add it if shown.\n\nClick \"I added these records\" or verify when ready.\n\n━━━━━━━━━━━━━━━━━━━━\nSCREEN 5 — SUCCESS / PENDING\n━━━━━━━━━━━━━━━━━━━━\n\n• Verified or DNS Verified → you are live or almost live.\n• Still Pending DNS → records not detected yet. Wait and use Test Connection from the domain list.\n\nYou can close the wizard — the domain stays on your Custom Domains list.\n\n━━━━━━━━━━━━━━━━━━━━\nAFTER THE WIZARD — DOMAIN CARD ACTIONS\n━━━━━━━━━━━━━━━━━━━━\n\nOn each domain row:\n\n• Domain name — click to open when live.\n• Opens: dropdown — change which bio page loads without reconnecting DNS.\n• Show DNS — see records again.\n• Test Connection (plug) — re-check DNS anytime.\n• Refresh — sync SSL/status.\n• Trash — remove domain from KEY (does not delete your domain from the registrar).\n\nBadge \"DNS at [Provider]\" — where you must edit records.\n\n━━━━━━━━━━━━━━━━━━━━\nRECOMMENDED ORDER WITH PUBLISH\n━━━━━━━━━━━━━━━━━━━━\n\n1. Build bio page\n2. Connect custom domain (this wizard)\n3. Publish (set visibility)\n4. Share your brand URL",
+      "excerpt": "Every screen in the Connect Domain wizard — what to click, what to type, and what happens after Done.",
+      "category": "Custom Domains",
+      "readTime": "5 mins"
+    },
+    {
+      "id": "faq-cd-trouble",
+      "title": "Troubleshooting: domain stuck on Pending DNS or OFFLINE",
+      "content": "STORY — \"I CLICKED TEST 10 TIMES BUT STILL PENDING\"\n\nYou connected yourdomain.com. The card said OFFLINE and Pending DNS. You were editing Cloudflare — but your domain actually used Amazon Route 53. No wonder nothing changed.\n\nLesson: always edit DNS where the card says \"DNS at [Provider]\".\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 1 — WRONG DNS WEBSITE\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: You add records but Test never passes.\n\nFix:\n1. Read the badge on your domain row: \"DNS at GoDaddy\" (example).\n2. Log in to THAT site only.\n3. Add records exactly as Show DNS lists them.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 2 — ROOT VS SUBDOMAIN MIX-UP\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Added A records but you wanted name.yourdomain.com.\n\nFix: Subdomains need CNAME, not @/www A records. Remove wrong records. Re-run wizard with full subdomain typed.\n\nSymptom: Added CNAME but you wanted yourdomain.com.\n\nFix: Root needs A record @ only. Connect www.yourdomain.com separately as a subdomain (CNAME) if needed.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 3 — OLD RECORDS STILL POINTING ELSEWHERE\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Message says site \"still opens another website\".\n\nFix:\n• Delete extra @ A records (only one correct IP should remain).\n• Remove parking page or old host IPs.\n• For www, point to the same KEY IP (or CNAME if your provider requires).\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 4 — DNS NOT PROPAGATED YET\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: Records look correct in provider but KEY says Pending.\n\nFix: Wait 5–30 minutes. TTL and registrar speed vary. Test again — do not change records every minute.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 5 — HTTPS / SSL STUCK AFTER DNS OK\n━━━━━━━━━━━━━━━━━━━━\n\nSymptom: DNS Verified but not Verified yet.\n\nFix: Wait a few minutes. Click Refresh / Test Connection on the domain row. No hosting panel setup is required — only DNS at your domain provider.\n\n━━━━━━━━━━━━━━━━━━━━\nPROBLEM 6 — CANNOT DELETE A DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nFix: Click trash on the domain row. If error persists, refresh the page and try again, or contact support with the domain name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTILL STUCK?\n━━━━━━━━━━━━━━━━━━━━\n\nContact Support with:\n• Domain name\n• Root or subdomain\n• Screenshot of DNS records from your provider\n• Screenshot of KEY Custom Domains card\n\nWe will help you finish the connection.",
+      "excerpt": "Test Connection fails? Wrong website opens? Read common fixes — wrong provider, old A records, root vs subdomain mix-ups.",
+      "category": "Custom Domains",
+      "readTime": "5 mins"
+    },
+    {
+      "id": "faq5b",
+      "title": "What is the difference between Publish and Custom Domains?",
+      "content": "Publish vs Custom Domains\n\nPublish (navbar on Dashboard / Account)\n• Makes your KEYLINK360 website live\n• Shows your public URL\n• Lets you choose visibility: Public, Workspace only, or Selected members\n• Lets you copy or open the live link after success\n\nCustom Domains (sidebar)\n• Connect root domain (yourdomain.com) or subdomain (name.yourdomain.com)\n• View DNS instructions and detected DNS provider\n• Verify Pending / Verified status\n• Remove domains\n\nRecommended flow\n1. Build your bio pages\n2. Help Center → Custom Domains category → read \"Start here: Custom domains for complete beginners\"\n3. Open Custom Domains → Connect Domain → follow the story guide for root or subdomain\n4. Click Publish to go live and share the URL\n\nTip: Domain connect/manage is only on Custom Domains. Publish is only for go-live and visibility. For a free URL without buying a domain, use Get free URL on Bio Pages.",
+      "excerpt": "Publish goes live and sets who can see your site. Custom Domains connects and manages your brand domain.",
+      "category": "Getting Started",
+      "readTime": "2 mins"
+    },
+    {
+      "id": "faq6",
+      "title": "How do I publish my first bio page?",
+      "content": "Publishing checklist\n\n1. Finish your page content and cover image in the editor.\n2. Save a draft anytime — drafts stay private.\n3. On Dashboard or Account, click Publish and choose visibility (public, workspace, or selected members).\n4. To use your own brand domain, open Custom Domains in the sidebar (not inside Publish).\n5. Copy the public URL or generate a QR code from the QR Codes page.\n6. Share the link on social profiles, packaging, or campaigns.\n\nIf something looks wrong on the public page, reopen the editor, fix blocks, and publish again.",
+      "excerpt": "Open Bio Pages, create or edit a page, then use Publish on the Dashboard to make your site live and set visibility.",
+      "category": "Getting Started",
+      "readTime": "2 mins"
+    },
+    {
+      "id": "faq7",
+      "title": "How is my workspace data protected?",
+      "content": "Security basics\n\n• Keep your account email up to date under Account Settings.\n• Enable MFA for two-factor protection.\n• Export regular JSON backups before major imports or device changes.\n• Only share public bio URLs — drafts remain private until published.\n\nPrivacy\nLeads captured by forms stay in your Contacts list. Do not share backup files that contain customer data outside your organization.",
+      "excerpt": "Account data is stored in your browser workspace backup and server sync where available. Enable MFA from Account Settings for stronger sign-in protection.",
+      "category": "Security & Privacy",
+      "readTime": "2 mins"
+    },
+    {
+      "id": "faq8",
+      "title": "What DNS records do I need?",
+      "content": "KEYLINK360 supports root domains and subdomains.\n\nROOT (yourdomain.com)\n  Type: A\n  Name: @\n  Value: platform IP (example: 69.46.46.90)\n\nSUBDOMAIN (name.yourdomain.com, www.yourdomain.com, shop.yourdomain.com)\n  Type: CNAME\n  Name: name (prefix only — not the full domain)\n  Value: keylink360.mindflo.today (or value from Show DNS)\n\nRules:\n• Root → A record only\n• Subdomain → CNAME only (never A)\n\nAlways copy live values from Custom Domains → Show DNS.\n\nAfter saving → Test Connection → Verified.",
+      "excerpt": "Root: A @ → platform IP. Subdomain: CNAME → platform hostname. Copy from Show DNS.",
+      "category": "Custom Domains",
+      "readTime": "2 mins"
+    }
+  ],
+  "notifications": [],
+  "subscriptions": {
+    "user_1788641690406_8113f25f": {
+      "planId": "FREE",
+      "status": "FREE",
+      "userId": "user_1788641690406_8113f25f",
+      "planName": "Free Plan",
+      "provider": "manual",
+      "amountInr": 0,
+      "createdAt": "2026-09-05T20:55:14.815Z",
+      "startDate": "2026-09-05T20:55:14.815Z",
+      "updatedAt": "2026-09-05T20:55:14.815Z",
+      "billingInterval": "monthly",
+      "currentPeriodEnd": "2126-08-12T20:55:14.815Z",
+      "cancelAtPeriodEnd": false
+    }
+  },
+  "bio_page_drafts": [],
+  "support_tickets": [],
+  "tracking_pixels": [
+    {
+      "id": "p1",
+      "name": "Main Facebook Pixel",
+      "type": "Facebook Pixel",
+      "status": "Active",
+      "pixelId": "882739401928374"
+    },
+    {
+      "id": "p2",
+      "name": "Google Ads G-Tag",
+      "type": "Google Analytics Tag",
+      "status": "Active",
+      "pixelId": "AW-10928374561"
+    },
+    {
+      "id": "p3",
+      "name": "TikTok Pixel",
+      "type": "TikTok Pixel",
+      "status": "Validation Required",
+      "pixelId": "T-1827463529"
+    }
+  ],
+  "publish_settings": {
+    "updatedAt": "2026-09-06T18:24:14.368Z",
+    "primaryUrl": "https://keylink360.mindflo.today",
+    "visibility": "public",
+    "customDomains": [
+      {
+        "id": "domain_primary",
+        "status": "verified",
+        "hostname": "keylink360.mindflo.today",
+        "createdAt": "2026-09-06T18:24:14.368Z",
+        "updatedAt": "2026-09-06T18:24:14.368Z"
+      }
+    ],
+    "selectedMemberIds": []
+  },
+  "catalog_templates": [
+    {
+      "id": "t-plant-shop",
+      "name": "Plant Shop Natural",
+      "price": "Free",
+      "widgets": 6,
+      "category": "E-commerce",
+      "imageUrl": "https://images.unsplash.com/photo-1466781783364-fc7e94d99b7d?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "48x",
+      "description": "Earthy botanical storefront for plant shops and garden brands."
+    },
+    {
+      "id": "t-photo-portfolio",
+      "name": "Photo Portfolio",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1452587925148-ce544e77ee70?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "61x",
+      "description": "Dark, gallery-style layout for photographers and visual artists."
+    },
+    {
+      "id": "t-book-release",
+      "name": "Book Release Author",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Launch",
+      "imageUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "27x",
+      "description": "Promote a new book with reviews, retailer links, and newsletter signup."
+    },
+    {
+      "id": "t-flower-shop",
+      "name": "Flower Shop",
+      "price": "Free",
+      "widgets": 6,
+      "category": "E-commerce",
+      "imageUrl": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "35x",
+      "description": "Bright floral design for bouquets, events, and same-day delivery."
+    },
+    {
+      "id": "t-travel-blog",
+      "name": "Travel Blog Website",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Personal",
+      "imageUrl": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "44x",
+      "description": "Scenic travel blog with guides, tips, and affiliate links."
+    },
+    {
+      "id": "t-real-estate",
+      "name": "Real Estate",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Real Estate",
+      "imageUrl": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "38x",
+      "description": "Property listings, agent contact, and mortgage resources."
+    },
+    {
+      "id": "t-beauty-clinic",
+      "name": "Beauty Clinic Lifestyle",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "31x",
+      "description": "Luxury purple-toned layout for clinics, spas, and skincare brands."
+    },
+    {
+      "id": "t-product-launch-tech",
+      "name": "Product Launch Tech",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Launch",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "42x",
+      "description": "Futuristic tech launch with waitlist, demo, and feature highlights."
+    },
+    {
+      "id": "t-yoga-studio",
+      "name": "Yoga Studio - Wellness Boutique",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "29x",
+      "description": "Calm wellness layout for yoga studios, spas, and holistic brands."
+    },
+    {
+      "id": "t-coach-mentor",
+      "name": "Coach - Mentor",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "36x",
+      "description": "Professional headshot-led page for coaches and business mentors."
+    },
+    {
+      "id": "t-modern-restaurant",
+      "name": "Modern Restaurant",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "40x",
+      "description": "Dark modern restaurant layout with menu and reservation links."
+    },
+    {
+      "id": "t-artist-designer",
+      "name": "Artist & Designer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "33x",
+      "description": "Creative portfolio for illustrators, designers, and visual artists."
+    },
+    {
+      "id": "t-event-agency",
+      "name": "Event Agency",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Agency",
+      "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "25x",
+      "description": "Vibrant agency page for concerts, launches, and brand activations."
+    },
+    {
+      "id": "t-marketing-pro",
+      "name": "Marketing Professional",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "34x",
+      "description": "Clean corporate bio for marketers, strategists, and consultants."
+    },
+    {
+      "id": "t-musician-profile",
+      "name": "Musician - Personal Profile",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "47x",
+      "description": "Artist-forward layout with music links, tour dates, and merch."
+    },
+    {
+      "id": "t-small-biz-ecom",
+      "name": "Small Business Ecommerce",
+      "price": "Free",
+      "widgets": 6,
+      "category": "E-commerce",
+      "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "52x",
+      "description": "Product grid and checkout links for small online shops."
+    },
+    {
+      "id": "t-dj-performer",
+      "name": "DJ & Performer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1571266028243-e68f8570c9e0?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "28x",
+      "description": "Club-themed page for DJs, performers, and nightlife artists."
+    },
+    {
+      "id": "t-fine-dining",
+      "name": "Fine Dining Restaurant",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "22x",
+      "description": "Elegant dining experience with tasting menu and reservations."
+    },
+    {
+      "id": "t-travel-blogger",
+      "name": "Travel Blogger & Photographer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Personal",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "37x",
+      "description": "Adventure photography blog with guides and print shop links."
+    },
+    {
+      "id": "t-financial-advisor",
+      "name": "Financial Advisor",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "19x",
+      "description": "Trust-focused layout for advisors, planners, and wealth managers."
+    },
+    {
+      "id": "t-fashion-influencer",
+      "name": "Fashion Influencer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Link in Bio",
+      "imageUrl": "https://images.unsplash.com/photo-1483985988354-763728e1935b?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "55x",
+      "description": "Stylish influencer page with collabs, outfits, and affiliate links."
+    },
+    {
+      "id": "t-content-creator",
+      "name": "Content Creator",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Link in Bio",
+      "imageUrl": "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "64x",
+      "description": "All-in-one hub for videos, merch, community, and sponsors."
+    },
+    {
+      "id": "t-digital-artist",
+      "name": "Digital Artist",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "30x",
+      "description": "Showcase digital art, NFT drops, and commission bookings."
+    },
+    {
+      "id": "t-cafe-coffee",
+      "name": "Cafe & Coffee Shop",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "41x",
+      "description": "Warm rustic cafe layout with menu, hours, and loyalty offer."
+    },
+    {
+      "id": "t-freelance-writer",
+      "name": "Freelance Writer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Freelancer",
+      "imageUrl": "https://images.unsplash.com/photo-1455390582260-0446dd291f0a?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "26x",
+      "description": "Minimal writer portfolio with samples, rates, and contact form."
+    },
+    {
+      "id": "t-fitness-coach",
+      "name": "Fitness Coach",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Personal",
+      "imageUrl": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "43x",
+      "description": "High-energy gym layout with programs and coaching signup."
+    },
+    {
+      "id": "t-wedding-photo",
+      "name": "Wedding Photography",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "32x",
+      "description": "Soft elegant design for wedding photographers and studios."
+    },
+    {
+      "id": "t-event-planner",
+      "name": "Event Planner & Decor",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "24x",
+      "description": "Colorful celebratory layout for planners and decor specialists."
+    },
+    {
+      "id": "t-chef-food-blog",
+      "name": "Chef & Food Blog",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "31x",
+      "description": "Culinary blog with recipes, classes, and restaurant links."
+    },
+    {
+      "id": "t-bar-mixology",
+      "name": "Bar & Mixology",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d46?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "21x",
+      "description": "Dark cocktail bar theme with menu, events, and reservations."
+    },
+    {
+      "id": "t-interior-designer",
+      "name": "Interior Designer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "23x",
+      "description": "Home decor portfolio with projects and consultation booking."
+    },
+    {
+      "id": "t-beauty-fashion",
+      "name": "Beauty & Fashion",
+      "price": "Free",
+      "widgets": 6,
+      "category": "E-commerce",
+      "imageUrl": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "46x",
+      "description": "Bright modern influencer shop for beauty and fashion brands."
+    },
+    {
+      "id": "t-saas-startup",
+      "name": "SaaS Startup Launch",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Launch",
+      "imageUrl": "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "19x",
+      "description": "Clean product launch page with demo, pricing, and waitlist signup."
+    },
+    {
+      "id": "t-podcast-show",
+      "name": "Podcast Show Hub",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Personal",
+      "imageUrl": "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "28x",
+      "description": "Episode links, guest spots, and subscribe buttons for podcasters."
+    },
+    {
+      "id": "t-lawyer-firm",
+      "name": "Law Firm Profile",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "17x",
+      "description": "Trust-focused layout for attorneys with practice areas and consult booking."
+    },
+    {
+      "id": "t-dentist-clinic",
+      "name": "Dental Clinic",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Business",
+      "imageUrl": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "22x",
+      "description": "Friendly clinic page for appointments, services, and patient forms."
+    },
+    {
+      "id": "t-pet-grooming",
+      "name": "Pet Grooming Salon",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Business",
+      "imageUrl": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "26x",
+      "description": "Cute pet-care layout for grooming packages and booking links."
+    },
+    {
+      "id": "t-online-tutor",
+      "name": "Online Tutor",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Freelancer",
+      "imageUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "33x",
+      "description": "Education-focused page for courses, slots, and student resources."
+    },
+    {
+      "id": "t-nonprofit-cause",
+      "name": "Nonprofit Cause",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Agency",
+      "imageUrl": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "15x",
+      "description": "Impact-driven layout for donations, volunteer signup, and updates."
+    },
+    {
+      "id": "t-crypto-web3",
+      "name": "Web3 Creator Hub",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Link in Bio",
+      "imageUrl": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "18x",
+      "description": "Modern creator hub for NFT drops, community, and socials."
+    },
+    {
+      "id": "t-handmade-crafts",
+      "name": "Handmade Crafts Shop",
+      "price": "Free",
+      "widgets": 6,
+      "category": "E-commerce",
+      "imageUrl": "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "29x",
+      "description": "Warm handmade storefront for artisans and craft brands."
+    },
+    {
+      "id": "t-architect-studio",
+      "name": "Architecture Studio",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Portfolio",
+      "imageUrl": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "14x",
+      "description": "Minimal studio portfolio for architects and design firms."
+    },
+    {
+      "id": "t-gaming-streamer",
+      "name": "Gaming Streamer",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Link in Bio",
+      "imageUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=500",
+      "suggested": true,
+      "usedCount": "41x",
+      "description": "High-energy streamer page for schedules, merch, and channel links."
+    },
+    {
+      "id": "t-nutritionist",
+      "name": "Nutrition Coach",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1490645935967-10de9cf7d6ea?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "25x",
+      "description": "Wellness coach page for meal plans, programs, and bookings."
+    },
+    {
+      "id": "t-car-dealership",
+      "name": "Car Dealership",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Business",
+      "imageUrl": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "20x",
+      "description": "Automotive showroom links for inventory, test drives, and offers."
+    },
+    {
+      "id": "t-language-school",
+      "name": "Language School",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Business",
+      "imageUrl": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "16x",
+      "description": "School page for course levels, trials, and student enrollment."
+    },
+    {
+      "id": "t-hr-recruiter",
+      "name": "HR Recruiter",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Professional",
+      "imageUrl": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "13x",
+      "description": "Talent recruiter hub for open roles, resume drop, and LinkedIn."
+    },
+    {
+      "id": "t-bakery-cafe",
+      "name": "Bakery & Patisserie",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Restaurants",
+      "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "30x",
+      "description": "Sweet bakery page for menus, catering, and daily specials."
+    },
+    {
+      "id": "t-ux-freelancer",
+      "name": "UX Designer Freelance",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Freelancer",
+      "imageUrl": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "27x",
+      "description": "Portfolio and booking page for UX designers and product freelancers."
+    },
+    {
+      "id": "t-sports-academy",
+      "name": "Sports Academy",
+      "price": "Free",
+      "widgets": 6,
+      "category": "Industry",
+      "imageUrl": "https://images.unsplash.com/photo-1461896836934-ffe607ba6850?auto=format&fit=crop&q=80&w=500",
+      "suggested": false,
+      "usedCount": "21x",
+      "description": "Academy hub for training programs, schedules, and enrollment."
+    }
+  ],
+  "integration_votes": [
+    {
+      "id": "v1",
+      "name": "GetResponse",
+      "voted": true,
+      "votes": 3
+    },
+    {
+      "id": "v2",
+      "name": "Mailchimp",
+      "voted": false,
+      "votes": 1
+    },
+    {
+      "id": "v3",
+      "name": "ConvertKit",
+      "voted": false,
+      "votes": 1
+    },
+    {
+      "id": "v4",
+      "name": "MailerLite",
+      "voted": false,
+      "votes": 1
+    },
+    {
+      "id": "v5",
+      "name": "ActiveCampaign",
+      "voted": false,
+      "votes": 3
+    }
+  ],
+  "bio_page_templates": [],
+  "whatsapp_campaigns": [
+    {
+      "id": "w1",
+      "name": "Summer Sale Update",
+      "status": "Sent",
+      "openRate": "0%",
+      "recipients": "0"
+    },
+    {
+      "id": "w2",
+      "name": "Welcome Sequence",
+      "status": "Active",
+      "openRate": "0%",
+      "recipients": "0/day"
+    }
+  ],
+  "whatsapp_templates": [
+    {
+      "id": "wt1",
+      "name": "Welcome Message",
+      "status": "Approved"
+    },
+    {
+      "id": "wt2",
+      "name": "Order Confirmation",
+      "status": "Approved"
+    }
+  ]
+}
