@@ -33,9 +33,25 @@ async function upsertChunks(
   onConflict = "id"
 ) {
   if (!rows.length) return;
+
+  // Deduplicate rows by the onConflict target key so PostgreSQL never sees
+  // duplicate keys in a single batch, preventing:
+  // "ON CONFLICT DO UPDATE command cannot affect row a second time"
+  const dedupedMap = new Map<string, Record<string, unknown>>();
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const rawVal = row[onConflict];
+    const key = rawVal !== undefined && rawVal !== null ? String(rawVal).trim() : "";
+    if (!key) continue;
+    dedupedMap.set(key, row);
+  }
+
+  const dedupedRows = Array.from(dedupedMap.values());
+  if (!dedupedRows.length) return;
+
   const size = 200;
-  for (let i = 0; i < rows.length; i += size) {
-    const chunk = rows.slice(i, i + size);
+  for (let i = 0; i < dedupedRows.length; i += size) {
+    const chunk = dedupedRows.slice(i, i + size);
     const { error } = await supabase.from(table).upsert(chunk, { onConflict });
     if (error) throw new Error(`${table}: ${error.message}`);
   }
@@ -175,13 +191,13 @@ export async function syncRootToNormalizedTables(
       counts.auth_sessions = mapped.sessions.length;
     }
 
-    const pages = asArray(root.pages_list);
+    const pages = asArray(root.pages_list).filter((p) => p && (p.id || p._id));
     if (pages.length) {
       await upsertChunks(
         supabase,
         "bio_pages",
         pages.map((p) => ({
-          id: String(p.id),
+          id: String(p.id || p._id).trim(),
           title: p.title || "",
           slug: p.slug || "",
           status: p.status || "Draft",
