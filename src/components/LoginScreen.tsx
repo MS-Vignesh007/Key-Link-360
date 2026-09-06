@@ -131,6 +131,12 @@ export default function LoginScreen({
   const modeParam = searchParams.get("mode") || searchParams.get("view");
   const handleParam = searchParams.get("handle") || "";
 
+  const isLocalHost = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const h = window.location.hostname.toLowerCase();
+    return h === "localhost" || h === "127.0.0.1" || h.startsWith("192.168.") || h.endsWith(".local");
+  }, []);
+
   const [view, setView] = useState<AuthView>(() => {
     if (initialVerifyToken) return "verify";
     if (modeParam === "register" || modeParam === "signup") return "register";
@@ -1002,37 +1008,39 @@ export default function LoginScreen({
               </button>
             </form>
 
-            <div className="key-cyber-passcard mt-6">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-2.5">
-                  <div className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 shrink-0">
-                    <KeyRound className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-300">
-                        DEMO ACCOUNT
-                      </span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                        ADMIN
-                      </span>
+            {isLocalHost && Boolean(config?.demoHint) && (
+              <div className="key-cyber-passcard mt-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <div className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 shrink-0">
+                      <KeyRound className="h-4 w-4" />
                     </div>
-                    <p className="text-[11px] font-mono text-slate-300 mt-0.5">
-                      {config?.demoHint?.email || "keylink360@gmail.com"}
-                    </p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-300">
+                          DEMO ACCOUNT
+                        </span>
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                          ADMIN
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-mono text-slate-300 mt-0.5">
+                        {config?.demoHint?.email || "keylink360@gmail.com"}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  type="button"
-                  onClick={handleAutoFillDemo}
-                  className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/50 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-200 hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0 shadow-[0_0_12px_rgba(0,240,255,0.25)] hover:scale-105 active:scale-95"
-                >
-                  <Zap className="h-3 w-3 text-cyan-300" />
-                  Auto-Fill
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleAutoFillDemo}
+                    className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/50 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-200 hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0 shadow-[0_0_12px_rgba(0,240,255,0.25)] hover:scale-105 active:scale-95"
+                  >
+                    <Zap className="h-3 w-3 text-cyan-300" />
+                    Auto-Fill
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
 

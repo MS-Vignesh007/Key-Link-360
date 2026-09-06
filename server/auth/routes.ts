@@ -291,7 +291,7 @@ export function createAuthRouter() {
       emailVerificationRequired: requireEmailVerification(),
       allowDevOAuth: allowDevOAuth(),
       demoHint:
-        process.env.AUTH_SEED_DEMO !== "false"
+        process.env.NODE_ENV !== "production" && process.env.AUTH_SEED_DEMO !== "false"
           ? { email: DEMO_EMAIL, password: DEMO_PASSWORD }
           : null,
       idleTimeoutMs: IDLE_TTL_MS
