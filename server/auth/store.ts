@@ -19,7 +19,7 @@ function writeRootStore(data: Record<string, unknown>) {
   setRootStore(data);
 }
 
-function emptyAuthStore(): AuthStoreShape {
+export function emptyAuthStore(): AuthStoreShape {
   // NOTE: Registered users live in root.auth.users (persisted via rootStore).
   // Admin page to list/manage these records can be added later — do not block signup on that.
   return {

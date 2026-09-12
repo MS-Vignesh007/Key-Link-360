@@ -679,7 +679,7 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
               </h3>
               <div className="space-y-3">
                 {Object.entries(analytics.devices).map(([dev, count]) => {
-                  const pct = Math.round((count / (analytics.totalEvents || 1)) * 100);
+                  const pct = Math.round((Number(count) / (analytics.totalEvents || 1)) * 100);
                   return (
                     <div key={dev}>
                       <div className="flex justify-between text-xs text-slate-300 mb-1">
@@ -701,7 +701,7 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
               </h3>
               <div className="space-y-3">
                 {Object.entries(analytics.browsers).slice(0, 5).map(([b, count]) => {
-                  const pct = Math.round((count / (analytics.totalEvents || 1)) * 100);
+                  const pct = Math.round((Number(count) / (analytics.totalEvents || 1)) * 100);
                   return (
                     <div key={b}>
                       <div className="flex justify-between text-xs text-slate-300 mb-1">
@@ -723,7 +723,7 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
               </h3>
               <div className="space-y-3">
                 {Object.entries(analytics.os).slice(0, 5).map(([os, count]) => {
-                  const pct = Math.round((count / (analytics.totalEvents || 1)) * 100);
+                  const pct = Math.round((Number(count) / (analytics.totalEvents || 1)) * 100);
                   return (
                     <div key={os}>
                       <div className="flex justify-between text-xs text-slate-300 mb-1">

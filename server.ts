@@ -5,7 +5,7 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { createAuthRouter, requireAuth } from "./server/auth/routes";
 import { verifyAccessToken } from "./server/auth/crypto";
-import { getDataStoreStatus, getRootStore, initRootStore, setRootStore } from "./server/db/rootStore";
+import { flushRootStore, getDataStoreStatus, getRootStore, initRootStore, setRootStore } from "./server/db/rootStore";
 import { getSupabase, isSupabaseConfigured } from "./server/db/supabase";
 import {
   mergeBioPageDrafts,

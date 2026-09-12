@@ -109,11 +109,13 @@ export async function listDomains(ownerUserId: string): Promise<CustomDomainReco
     const supabase = getSupabase();
     if (supabase) {
       const { data, error } = await withTimeout(
-        supabase
-          .from("custom_domains")
-          .select("*")
-          .eq("owner_user_id", ownerUserId)
-          .order("created_at", { ascending: false })
+        Promise.resolve(
+          supabase
+            .from("custom_domains")
+            .select("*")
+            .eq("owner_user_id", ownerUserId)
+            .order("created_at", { ascending: false })
+        )
       );
       if (!error && data) {
         return (data as DomainRow[]).map(mapRow);
@@ -133,12 +135,14 @@ export async function findDomainById(
     const supabase = getSupabase();
     if (supabase) {
       const { data, error } = await withTimeout(
-        supabase
-          .from("custom_domains")
-          .select("*")
-          .eq("id", id)
-          .eq("owner_user_id", ownerUserId)
-          .maybeSingle()
+        Promise.resolve(
+          supabase
+            .from("custom_domains")
+            .select("*")
+            .eq("id", id)
+            .eq("owner_user_id", ownerUserId)
+            .maybeSingle()
+        )
       );
       if (!error && data) {
         return mapRow(data as DomainRow);
@@ -158,12 +162,14 @@ export async function findDomainByPageId(
     const supabase = getSupabase();
     if (supabase) {
       const { data, error } = await withTimeout(
-        supabase
-          .from("custom_domains")
-          .select("*")
-          .eq("page_id", pageId)
-          .eq("owner_user_id", ownerUserId)
-          .maybeSingle()
+        Promise.resolve(
+          supabase
+            .from("custom_domains")
+            .select("*")
+            .eq("page_id", pageId)
+            .eq("owner_user_id", ownerUserId)
+            .maybeSingle()
+        )
       );
       if (!error && data) {
         return mapRow(data as DomainRow);
@@ -183,11 +189,13 @@ export async function findDomainByHostname(
     const supabase = getSupabase();
     if (supabase) {
       const { data, error } = await withTimeout(
-        supabase
-          .from("custom_domains")
-          .select("*")
-          .eq("domain_name", normalized)
-          .maybeSingle()
+        Promise.resolve(
+          supabase
+            .from("custom_domains")
+            .select("*")
+            .eq("domain_name", normalized)
+            .maybeSingle()
+        )
       );
       if (!error && data) {
         return mapRow(data as DomainRow);
@@ -227,11 +235,13 @@ export async function findRoutableDomainByHostname(
     if (supabase) {
       for (const candidate of [...new Set(candidates)]) {
         const { data, error } = await withTimeout(
-          supabase
-            .from("custom_domains")
-            .select("*")
-            .eq("domain_name", candidate)
-            .maybeSingle()
+          Promise.resolve(
+            supabase
+              .from("custom_domains")
+              .select("*")
+              .eq("domain_name", candidate)
+              .maybeSingle()
+          )
         );
         if (!error && data) {
           const mapped = mapRow(data as DomainRow);

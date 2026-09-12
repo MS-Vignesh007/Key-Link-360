@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import {
+  AuthStoreShape,
   AuthUserRecord,
   hashPassword,
   hashToken,
@@ -17,6 +18,7 @@ import {
   createId,
   DEMO_EMAIL,
   DEMO_PASSWORD,
+  emptyAuthStore,
   fetchAuthUserByEmailFromSupabase,
   findUserByEmail,
   findUserById,
@@ -24,6 +26,7 @@ import {
   recordLogin,
   writeAuthStore
 } from "./store";
+import { flushRootStore } from "../db/rootStore";
 import {
   isDisposableEmail,
   isValidEmailFormat,
@@ -49,7 +52,7 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_MS = 1000 * 60 * 15;
 const IDLE_TTL_MS = 1000 * 60 * 30;
 
-type AuthedRequest = Request & { authUser?: ReturnType<typeof publicUser>; sessionId?: string };
+export type AuthedRequest = Request & { authUser?: ReturnType<typeof publicUser>; sessionId?: string };
 
 function clientIp(req: Request) {
   const forwarded = req.headers["x-forwarded-for"];

@@ -97,7 +97,7 @@ export function createBillingRouter() {
         });
         orderId = order.id;
         currency = order.currency;
-        amountPaise = order.amount;
+        amountPaise = Number(order.amount);
       } catch (gatewayError) {
         console.warn("[billing] Razorpay gateway create order fallback (test simulation mode):", gatewayError);
       }
