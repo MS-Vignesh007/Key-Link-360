@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { WhatsAppCampaign, WhatsAppTemplate } from "../types";
 import {
   MessageSquare,
@@ -56,6 +57,7 @@ export default function WhatsAppScreen({
   onUpdateCampaign,
   onDeleteCampaign
 }: WhatsAppScreenProps) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | WhatsAppCampaign["status"]>("All");
 
@@ -313,30 +315,32 @@ export default function WhatsAppScreen({
         }
       />
 
-      <StatCardGrid columns="compact">
-        <StatCard
-          label="TOTAL BROADCASTS"
-          value={stats.totalBroadcasts}
-          sub={`${stats.totalRecipients.toLocaleString()} recipients tracked`}
-        />
-        <StatCard
-          label="AVG. OPEN RATE"
-          value={`${stats.avgOpenRate}%`}
-          sub={stats.totalBroadcasts ? "Across all campaigns" : "No campaigns yet"}
-        />
-        <StatCard
-          label="ACTIVE TEMPLATES"
-          value={stats.activeTemplates}
-          sub={`${templates.length} total template${templates.length === 1 ? "" : "s"}`}
-        />
-        <StatCard
-          label="READY TO SEND"
-          value={templates.filter((template) => template.status === "Approved").length}
-          sub="Approved templates"
-        />
-      </StatCardGrid>
+      <div data-aos="fade-up">
+        <StatCardGrid columns="compact">
+          <StatCard
+            label="TOTAL BROADCASTS"
+            value={stats.totalBroadcasts}
+            sub={`${stats.totalRecipients.toLocaleString()} recipients tracked`}
+          />
+          <StatCard
+            label="AVG. OPEN RATE"
+            value={`${stats.avgOpenRate}%`}
+            sub={stats.totalBroadcasts ? "Across all campaigns" : "No campaigns yet"}
+          />
+          <StatCard
+            label="ACTIVE TEMPLATES"
+            value={stats.activeTemplates}
+            sub={`${templates.length} total template${templates.length === 1 ? "" : "s"}`}
+          />
+          <StatCard
+            label="READY TO SEND"
+            value={templates.filter((template) => template.status === "Approved").length}
+            sub="Approved templates"
+          />
+        </StatCardGrid>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 key-workspace-grid">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 key-workspace-grid" data-aos="fade-up">
         <Workspace stack className="lg:col-span-2 min-w-0">
           <SectionCard>
             <Workspace stack>
@@ -611,18 +615,17 @@ export default function WhatsAppScreen({
               <h3 className="font-display font-bold text-gray-950 text-base">Quick Actions</h3>
 
               <div className="space-y-2">
-                <a
-                  href="https://woochat.esowolf.in/login"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setIsConnectionOpen(true)}
                   className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-slate-50 transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <Settings className="h-5 w-5 text-emerald-500" />
-                    <span className="text-sm font-semibold text-gray-700">WOO Chat Settings</span>
+                    <span className="text-sm font-semibold text-gray-700">WhatsApp API Settings</span>
                   </div>
                   <ArrowRight className="h-4 w-4 text-emerald-400" />
-                </a>
+                </button>
 
                 <button
                   type="button"
@@ -843,17 +846,19 @@ export default function WhatsAppScreen({
               <p className="text-sm font-bold text-gray-950">Main Business Account</p>
               <p className="text-xs text-emerald-700 font-semibold">Status: Connected & Active</p>
               <p className="text-xs text-slate-500">
-                Provider: WOO Chat · Messages and billing stay on your WhatsApp Business account.
+                Provider: Meta WhatsApp Business API · Official messaging & template sync.
               </p>
             </div>
-            <a
-              href="https://woochat.esowolf.in/login"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => {
+                setIsConnectionOpen(false);
+                navigate("/integrations");
+              }}
               className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-sm font-semibold"
             >
-              Open WOO Chat Admin
-            </a>
+              Configure in Integrations
+            </button>
             <button
               type="button"
               onClick={() => setIsConnectionOpen(false)}
@@ -919,7 +924,7 @@ export default function WhatsAppScreen({
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 bg-slate-900 text-white border border-slate-800 text-xs font-semibold py-3 px-5 rounded-2xl shadow-2xl z-50">
+        <div className="fixed bottom-6 right-6 bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-semibold py-3 px-5 rounded-2xl shadow-2xl z-50">
           {toast}
         </div>
       )}

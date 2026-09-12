@@ -27,6 +27,7 @@ import {
   writeAuthStore
 } from "./store";
 import { flushRootStore } from "../db/rootStore";
+import { getSupabase, isSupabaseConfigured } from "../db/supabase";
 import {
   isDisposableEmail,
   isValidEmailFormat,
@@ -659,13 +660,18 @@ export function createAuthRouter() {
     res.json({ user: req.authUser });
   });
 
-  router.put("/profile", requireAuth, (req: AuthedRequest, res) => {
+  router.put("/profile", requireAuth, async (req: AuthedRequest, res) => {
     try {
       const store = readAuthStore();
       const user = findUserById(store, req.authUser!.id);
       if (!user) {
         res.status(404).json({ error: "User not found." });
         return;
+      }
+      if (typeof req.body?.name === "string" && req.body.name.trim()) {
+        const parts = req.body.name.trim().split(/\s+/);
+        user.firstName = parts[0] || "";
+        user.lastName = parts.slice(1).join(" ") || "";
       }
       if (typeof req.body?.firstName === "string") user.firstName = req.body.firstName.trim();
       if (typeof req.body?.lastName === "string") user.lastName = req.body.lastName.trim();
@@ -681,6 +687,31 @@ export function createAuthRouter() {
       user.updatedAt = new Date().toISOString();
       audit(store, "user.profile_update", user.id, {});
       writeAuthStore(store);
+      void flushRootStore().catch((err) => console.error("flush after profile-update:", err));
+
+      if (isSupabaseConfigured()) {
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            await supabase
+              .from("auth_users")
+              .update({
+                first_name: user.firstName,
+                last_name: user.lastName,
+                company_name: user.companyName,
+                business_name: user.businessName,
+                phone: user.phone,
+                country: user.country,
+                avatar_url: user.avatarUrl,
+                updated_at: user.updatedAt
+              })
+              .eq("id", user.id);
+          } catch (sbErr) {
+            console.error("Supabase direct auth_users profile update error:", sbErr);
+          }
+        }
+      }
+
       res.json({ success: true, user: publicUser(user) });
     } catch (error) {
       console.error("Profile update error:", error);
@@ -688,7 +719,7 @@ export function createAuthRouter() {
     }
   });
 
-  router.post("/change-password", requireAuth, (req: AuthedRequest, res) => {
+  router.post("/change-password", requireAuth, async (req: AuthedRequest, res) => {
     try {
       const store = readAuthStore();
       const user = findUserById(store, req.authUser!.id);
@@ -720,6 +751,8 @@ export function createAuthRouter() {
       const { salt, hash } = hashPassword(password);
       user.passwordHash = hash;
       user.passwordSalt = salt;
+      user.failedLoginAttempts = 0;
+      user.lockedUntil = null;
       user.updatedAt = new Date().toISOString();
       store.sessions = store.sessions.map((session) =>
         session.userId === user.id && session.id !== req.sessionId
@@ -728,7 +761,29 @@ export function createAuthRouter() {
       );
       audit(store, "user.change_password", user.id, {});
       writeAuthStore(store);
-      res.json({ success: true, message: "Password updated." });
+      void flushRootStore().catch((err) => console.error("flush after change-password:", err));
+
+      if (isSupabaseConfigured()) {
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            await supabase
+              .from("auth_users")
+              .update({
+                password_hash: hash,
+                password_salt: salt,
+                failed_login_attempts: 0,
+                locked_until: null,
+                updated_at: user.updatedAt
+              })
+              .eq("id", user.id);
+          } catch (sbErr) {
+            console.error("Supabase direct auth_users update error:", sbErr);
+          }
+        }
+      }
+
+      res.json({ success: true, message: "Password updated successfully." });
     } catch (error) {
       console.error("Change password error:", error);
       res.status(500).json({ error: "Server error changing password.", code: "SERVER_ERROR" });

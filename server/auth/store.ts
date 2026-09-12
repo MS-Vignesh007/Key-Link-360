@@ -85,7 +85,10 @@ function mapAuthUserRow(row: AuthUserRow): AuthUserRecord | null {
     businessName: String(row.business_name || ""),
     phone: String(row.phone || ""),
     country: String(row.country || ""),
-    avatarUrl: String(row.avatar_url || ""),
+    avatarUrl:
+      typeof row.avatar_url === "string" && !/tapback\.co/i.test(row.avatar_url)
+        ? row.avatar_url
+        : "",
     plan: String(row.plan || "Free Plan"),
     isVerified: Boolean(row.is_verified),
     emailVerified: Boolean(row.email_verified),
@@ -123,11 +126,18 @@ function mergeAuthUsers(existing: AuthUserRecord[], incoming: AuthUserRecord[]):
         id: existingId,
         email,
         passwordHash: user.passwordHash || current.passwordHash,
-        passwordSalt: user.passwordSalt || current.passwordSalt
+        passwordSalt: user.passwordSalt || current.passwordSalt,
+        avatarUrl: user.avatarUrl || current.avatarUrl || ""
       });
       continue;
     }
-    byId.set(user.id, { ...user, email });
+    const current = byId.get(user.id);
+    byId.set(user.id, {
+      ...current,
+      ...user,
+      email,
+      avatarUrl: user.avatarUrl || current?.avatarUrl || ""
+    });
     byEmail.set(email, user.id);
   }
   return Array.from(byId.values());
@@ -266,6 +276,10 @@ function seedDemoUser(store: AuthStoreShape): boolean {
       existing.role = "MAIN_OWNER";
       mutated = true;
     }
+    if (typeof existing.avatarUrl === "string" && /tapback\.co/i.test(existing.avatarUrl)) {
+      existing.avatarUrl = "";
+      mutated = true;
+    }
     if (mutated) existing.updatedAt = now;
     return mutated;
   }
@@ -283,7 +297,7 @@ function seedDemoUser(store: AuthStoreShape): boolean {
     businessName: "KEYLINK360",
     phone: "",
     country: "United States",
-    avatarUrl: buildDefaultAvatarUrl("key"),
+    avatarUrl: "",
     plan: "Free Plan",
     isVerified: true,
     emailVerified: true,

@@ -809,9 +809,9 @@ export default function LinkRotatorScreen({
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="key-btn-chip inline-flex items-center gap-2 px-5 py-2.5 text-xs font-extrabold disabled:opacity-60"
+                  className="key-btn-chip inline-flex items-center gap-2 px-5 py-2.5 text-xs font-extrabold disabled:opacity-60 btn-anim btn-swipe"
                 >
-                  {isSaving ? "Saving…" : editingId ? "Save changes" : "Create rotator"}
+                  <span>{isSaving ? "Saving…" : editingId ? "Save changes" : "Create rotator"}</span>
                 </button>
                 <button
                   type="button"
@@ -819,7 +819,7 @@ export default function LinkRotatorScreen({
                   disabled={isSaving}
                   className="rounded-xl px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100"
                 >
-                  Cancel
+                  <span>Cancel</span>
                 </button>
               </div>
             </form>
@@ -827,7 +827,7 @@ export default function LinkRotatorScreen({
         </Workspace>
 
         {toast && (
-          <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-slate-800 bg-slate-900 px-5 py-3.5 text-sm font-bold text-white shadow-2xl">
+          <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-[var(--key-border)] bg-[var(--key-surface-strong)] px-5 py-3.5 text-sm font-bold text-[var(--key-text)] shadow-2xl">
             {toast}
           </div>
         )}
@@ -1182,7 +1182,7 @@ export default function LinkRotatorScreen({
         </Workspace>
 
         {toast && (
-          <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-slate-800 bg-slate-900 px-5 py-3.5 text-sm font-bold text-white shadow-2xl">
+          <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-[var(--key-border)] bg-[var(--key-surface-strong)] px-5 py-3.5 text-sm font-bold text-[var(--key-text)] shadow-2xl">
             {toast}
           </div>
         )}
@@ -1191,7 +1191,7 @@ export default function LinkRotatorScreen({
   }
 
   return (
-    <PageShell className="font-sans text-slate-800">
+    <PageShell className="font-sans text-[var(--key-text)]">
       <PageHeader
         title="Link Rotator"
         subtitle="Create one shareable URL that randomly redirects by probability."
@@ -1199,15 +1199,15 @@ export default function LinkRotatorScreen({
           <button
             type="button"
             onClick={openCreate}
-            className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold"
+            className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold btn-anim btn-swipe"
           >
             <Plus className="h-4 w-4" />
-            Add Link Rotator
+            <span>Add Link Rotator</span>
           </button>
         }
       />
 
-      <Workspace panel stack>
+      <Workspace panel stack data-aos="fade-up">
         <SectionCard className="p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="key-icon-field flex-1">
@@ -1386,7 +1386,7 @@ export default function LinkRotatorScreen({
       </Workspace>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-slate-800 bg-slate-900 px-5 py-3.5 text-sm font-bold text-white shadow-2xl">
+        <div className="fixed bottom-6 right-6 z-[200] rounded-2xl border border-[var(--key-border)] bg-[var(--key-surface-strong)] px-5 py-3.5 text-sm font-bold text-[var(--key-text)] shadow-2xl">
           {toast}
         </div>
       )}

@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Sparkles,
   BarChart3,
+  User,
   X
 } from "lucide-react";
 import { UserProfile, ScreenId } from "../types";
@@ -560,11 +561,17 @@ export function SuperAdminScreen({ user, onNavigate }: SuperAdminScreenProps) {
                       <tr key={subOwner.id} className="hover:bg-slate-800/30 transition-colors">
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <img
-                              src={subOwner.avatarUrl || "https://tapback.co/api/avatar/key.webp"}
-                              alt={subOwner.name}
-                              className="w-9 h-9 rounded-full object-cover border border-slate-700 shrink-0"
-                            />
+                            {subOwner.avatarUrl && !/tapback\.co/i.test(subOwner.avatarUrl) ? (
+                              <img
+                                src={subOwner.avatarUrl}
+                                alt={subOwner.name}
+                                className="w-9 h-9 rounded-full object-cover border border-slate-700 shrink-0"
+                              />
+                            ) : (
+                              <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 shrink-0">
+                                <User className="w-4 h-4" />
+                              </div>
+                            )}
                             <div>
                               <div className="font-medium text-slate-100 flex items-center gap-1.5">
                                 {subOwner.name}

@@ -388,7 +388,7 @@ export default function QRCodesScreen({
             <button
               type="button"
               onClick={() => setIsAdding(true)}
-              className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold active:scale-95"
+              className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold active:scale-95 btn-anim btn-swipe"
             >
               <Plus className="h-4.5 w-4.5" />
               <span>Generate QR</span>
@@ -785,14 +785,14 @@ export default function QRCodesScreen({
                   }}
                   className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
                 >
-                  Cancel
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="px-5 py-2.5 key-btn-chip disabled:opacity-70 disabled:cursor-not-allowed text-xs font-extrabold"
+                  className="px-5 py-2.5 key-btn-chip disabled:opacity-70 disabled:cursor-not-allowed text-xs font-extrabold btn-anim btn-diagonal"
                 >
-                  {isCreating ? "Creating…" : "Create Dynamic QR"}
+                  <span>{isCreating ? "Creating…" : "Create Dynamic QR"}</span>
                 </button>
               </div>
             </form>
@@ -843,9 +843,9 @@ export default function QRCodesScreen({
               <button
                 type="submit"
                 disabled={isSavingUrl}
-                className="w-full bg-slate-900 hover:bg-slate-950 disabled:opacity-70 text-white py-2.5 rounded-xl font-bold text-xs shadow-sm"
+                className="w-full bg-slate-900 hover:bg-slate-950 disabled:opacity-70 text-white py-2.5 rounded-xl font-bold text-xs shadow-sm btn-anim btn-diagonal"
               >
-                {isSavingUrl ? "Saving…" : "Save Dynamic Destination"}
+                <span>{isSavingUrl ? "Saving…" : "Save Dynamic Destination"}</span>
               </button>
             </form>
           </div>
@@ -1046,15 +1046,15 @@ export default function QRCodesScreen({
                   onClick={() => setDesigningItem(null)}
                   className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
                 >
-                  Discard
+                  <span>Discard</span>
                 </button>
                 <button
                   type="button"
                   disabled={isSavingDesign}
                   onClick={handleSaveDesign}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-950 disabled:opacity-70 text-white rounded-xl text-xs font-black shadow-sm"
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-950 disabled:opacity-70 text-white rounded-xl text-xs font-black shadow-sm btn-anim btn-diagonal"
                 >
-                  {isSavingDesign ? "Saving…" : "Save Style"}
+                  <span>{isSavingDesign ? "Saving…" : "Save Style"}</span>
                 </button>
               </div>
             </div>
@@ -1170,7 +1170,7 @@ export default function QRCodesScreen({
                 type="button"
                 disabled={isPreparingDownload}
                 onClick={() => void triggerDownload()}
-                className="w-full key-btn-chip py-3 font-black text-xs disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                className="w-full key-btn-chip py-3 font-black text-xs disabled:opacity-50 inline-flex items-center justify-center gap-2 btn-anim btn-swipe"
               >
                 {isPreparingDownload ? (
                   <>

@@ -165,17 +165,17 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
 
   return (
     <PageShell>
-      <div className="bg-slate-900 rounded-2xl p-4 sm:p-8 text-center text-white space-y-3 relative overflow-hidden shadow-xl shadow-slate-900/10">
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#FF6B4A]/10 to-[#4F46E5]/20" />
+      <div className="bg-[var(--key-surface-strong)] border border-[var(--key-border)] rounded-2xl p-4 sm:p-8 text-center text-[var(--key-text)] space-y-3 relative overflow-hidden shadow-lg" data-aos="fade-up">
+        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-sky-500/5 to-transparent pointer-events-none" />
         <div className="relative space-y-3 z-10 max-w-lg mx-auto">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl tracking-tight">How can we help?</h2>
-          <p className="text-slate-300 text-sm">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[var(--key-text)]">How can we help?</h2>
+          <p className="text-[var(--key-muted)] text-sm">
             Search support articles or browse topics below.
           </p>
 
           <div className="key-icon-field pt-3">
             <span className="key-icon-field__icon">
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4 text-[var(--key-muted)]" />
             </span>
             <input
               type="search"
@@ -460,7 +460,7 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-slate-900 text-white border border-slate-800 text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
+        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
           {toast}
         </div>
       )}

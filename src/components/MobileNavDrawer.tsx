@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import KeyLogo3D from "./KeyLogo3D";
 import { ScreenId, UserProfile } from "../types";
 import { SidebarNav } from "./Sidebar";
+import { AppTheme } from "../lib/themeStorage";
 
 interface MobileNavDrawerProps {
   isOpen: boolean;
@@ -10,6 +11,8 @@ interface MobileNavDrawerProps {
   currentScreen: ScreenId;
   onScreenChange: (screen: ScreenId) => void;
   user?: UserProfile | null;
+  theme?: AppTheme;
+  onThemeChange?: (theme: AppTheme) => void;
 }
 
 export default function MobileNavDrawer({
@@ -17,7 +20,9 @@ export default function MobileNavDrawer({
   onClose,
   currentScreen,
   onScreenChange,
-  user
+  user,
+  theme,
+  onThemeChange,
 }: MobileNavDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -87,7 +92,7 @@ export default function MobileNavDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        className="absolute inset-y-0 left-0 w-[min(20rem,85vw)] max-w-full key-glass-sidebar shadow-xl flex flex-col animate-in slide-in-from-left duration-300"
+        className="absolute inset-y-0 left-0 w-[min(20rem,85vw)] max-w-full codepen-sidebar key-glass-sidebar shadow-xl flex flex-col animate-in slide-in-from-left duration-300"
       >
         <div className="key-sidebar-brand justify-between w-full">
           <KeyLogo3D size="sm" showLabel />
@@ -110,6 +115,8 @@ export default function MobileNavDrawer({
             showBrand={false}
             showCollapse={false}
             user={user}
+            theme={theme}
+            onThemeChange={onThemeChange}
           />
         </div>
       </div>

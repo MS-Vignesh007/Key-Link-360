@@ -2493,14 +2493,14 @@ export default function BioPagesScreen({
           <>
           <button
             onClick={handleRefresh}
-              className="key-btn-secondary px-4 py-2.5"
+              className="key-btn-secondary btn-swipe-secondary px-4 py-2.5"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
             <span>Refresh</span>
           </button>
           <button
               onClick={() => openCreatePageModal()}
-              className="key-btn-accent px-5 py-2.5"
+              className="key-btn-accent btn-swipe px-5 py-2.5"
           >
             <Plus className="h-4 w-4" />
             <span>New Page</span>
@@ -2560,6 +2560,7 @@ export default function BioPagesScreen({
                     setNewSlug(clean);
                   }}
                   className="key-workflow-modal__input"
+                  autoFocus
                 />
                 <p className="key-workflow-modal__hint">
                   Visitors will see this name. Use your name, shop name, or brand.
@@ -3215,7 +3216,7 @@ export default function BioPagesScreen({
           )}
 
           {/* Editor Body */}
-          <div className="key-editor-body flex-1 overflow-hidden flex flex-col lg:flex-row min-h-0">
+          <div className="key-editor-body flex-1 overflow-hidden flex flex-col lg:flex-row-reverse min-h-0">
             {/* Main: Block library + Page editor */}
             <div
               className={`key-editor-body__main flex-1 overflow-hidden min-h-0 min-w-0 flex flex-col ${

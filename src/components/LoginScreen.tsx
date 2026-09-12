@@ -41,6 +41,7 @@ import {
 } from "../lib/authApi";
 import KeyLogo3D from "./KeyLogo3D";
 import WelcomeModal from "./WelcomeModal";
+import LoginBackground from "./auth/LoginBackground";
 
 type AuthView =
   | "login"
@@ -307,7 +308,7 @@ export default function LoginScreen({
     setEmail(config?.demoHint?.email || "keylink360@gmail.com");
     setPassword(config?.demoHint?.password || "keyslink3601234");
     setError("");
-    setInfo("⚡ KEYCARD DETECTED: Demo credentials auto-filled.");
+    setInfo("⚡ DEMO CREDENTIALS: Auto-filled for localhost development.");
   };
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -655,13 +656,9 @@ export default function LoginScreen({
 
   return (
     <div 
-      style={{ marginTop: "0.7px" }} 
       className="key-auth-canvas min-h-screen w-full flex items-center justify-center py-6 px-3 sm:px-6 select-none relative overflow-x-hidden"
     >
-      <div className="key-auth-orb key-auth-orb--1" aria-hidden />
-      <div className="key-auth-orb key-auth-orb--2" aria-hidden />
-      <div className="key-auth-orb key-auth-orb--3" aria-hidden />
-      <div className="key-auth-grid" aria-hidden />
+      <LoginBackground />
       
       {/* Top-Left Back to Home Button */}
       <a
@@ -674,7 +671,6 @@ export default function LoginScreen({
 
       {/* 2-Column Balanced Responsive Grid */}
       <div 
-        style={{ marginTop: "0.7px" }}
         className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center justify-center relative z-10 my-auto"
       >
         
@@ -756,7 +752,6 @@ export default function LoginScreen({
         {/* ================= RIGHT SIDE: COMPACT AUTH FORM BOX ================= */}
         <div className="lg:col-span-6 flex justify-center lg:justify-end w-full">
           <div
-            style={{ marginTop: "0.7px" }}
             className="w-full max-w-[450px] key-cyber-panel p-5 sm:p-7 relative z-10 shrink-0 animate-in fade-in duration-200"
           >
             <div className="key-cyber-bracket-tl" aria-hidden />
@@ -993,36 +988,44 @@ export default function LoginScreen({
               </button>
             </form>
 
-            {isLocalHost && Boolean(config?.demoHint) && (
-              <div className="key-cyber-passcard mt-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
-                    <div className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 shrink-0">
-                      <KeyRound className="h-4 w-4" />
+            {isLocalHost && (
+              <div className="key-cyber-passcard mt-6 p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20 backdrop-blur-md">
+                <div className="flex items-center justify-between gap-3 mb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 shrink-0">
+                      <KeyRound className="h-3.5 w-3.5" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-300">
-                          DEMO ACCOUNT
-                        </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                          ADMIN
-                        </span>
-                      </div>
-                      <p className="text-[11px] font-mono text-slate-300 mt-0.5">
-                        {config?.demoHint?.email || "keylink360@gmail.com"}
-                      </p>
-                    </div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-300">
+                      LOCALHOST DEMO ACCOUNT
+                    </span>
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      DEV ONLY
+                    </span>
                   </div>
 
                   <button
                     type="button"
                     onClick={handleAutoFillDemo}
-                    className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/50 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-200 hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0 shadow-[0_0_12px_rgba(0,240,255,0.25)] hover:scale-105 active:scale-95"
+                    className="px-2.5 py-1 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400/50 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-200 hover:text-white transition-all flex items-center gap-1 shrink-0 shadow-[0_0_12px_rgba(0,240,255,0.25)] active:scale-95"
                   >
                     <Zap className="h-3 w-3 text-cyan-300" />
                     Auto-Fill
                   </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono bg-slate-950/50 p-2.5 rounded-lg border border-slate-800/80">
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">EMAIL:</span>
+                    <span className="text-slate-200 font-semibold select-all">
+                      {config?.demoHint?.email || "keylink360@gmail.com"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">PASSWORD:</span>
+                    <span className="text-cyan-300 font-semibold select-all">
+                      {config?.demoHint?.password || "keyslink3601234"}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}

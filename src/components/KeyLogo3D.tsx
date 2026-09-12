@@ -42,24 +42,26 @@ export default function KeyLogo3D({
   }
 
   return (
-    <div className={`flex items-center gap-2.5 select-none ${className}`}>
-      {/* 3D Transparent Emblem Icon */}
-      <img
-        src="/logo-icon.png"
-        alt="KEYLINK360 Logo"
-        className={`${iconHeight} w-auto object-contain shrink-0 drop-shadow-[0_8px_16px_rgba(0,240,255,0.25)] transition-transform duration-300 hover:scale-105`}
-        draggable={false}
-      />
+    <div className={`flex items-center gap-2.5 select-none group/logo ${className}`}>
+      {/* 3D Transparent Emblem Icon with smooth flip animation */}
+      <div className="perspective-500 shrink-0">
+        <img
+          src="/logo-icon.png"
+          alt="KEYLINK360 Logo"
+          className={`${iconHeight} w-auto object-contain transition-all duration-500 ease-out group-hover/logo:[transform:rotateY(180deg)_scale(1.06)] drop-shadow-[0_4px_12px_rgba(99,102,241,0.25)]`}
+          draggable={false}
+        />
+      </div>
 
       {showLabel && (
-        <div className="flex flex-col leading-none">
+        <div className="key-logo-label flex flex-col leading-none whitespace-nowrap">
           <span
-            className={`font-sans font-black tracking-tight text-white drop-shadow-md ${text}`}
+            className={`font-sans font-black tracking-tight text-[var(--key-brand-text,#0f172a)] drop-shadow-sm ${text}`}
             style={{
               letterSpacing: "-0.02em"
             }}
           >
-            KeyLink<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">360</span>
+            KeyLink<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500">360</span>
           </span>
         </div>
       )}

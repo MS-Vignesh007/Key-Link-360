@@ -34,7 +34,8 @@ import {
   getStoredAuthUser,
   isPreviewToken,
   logoutRequest,
-  touchActivity
+  touchActivity,
+  updateProfileRequest
 } from "./lib/authApi";
 import { apiUrl } from "./lib/apiBase";
 import {
@@ -108,6 +109,7 @@ import {
 } from "./storage/notificationStorage";
 import { getPublishSettings, persistPublishSettings, PRIMARY_DOMAIN } from "./storage/publishStorage";
 import { AppTheme, getStoredTheme, saveTheme } from "./lib/themeStorage";
+import AOS from "aos";
 import { getBlankTemplate, resolveSystemTemplate } from "./lib/systemTemplates";
 import { APP_ROUTE_ENTRIES, formatDocumentTitle, getScreenTitle, pathToScreen, screenToPath } from "./navigation";
 import {
@@ -270,6 +272,32 @@ export default function App() {
   });
   const [isPagesSyncReady, setIsPagesSyncReady] = useState(false);
   const [workspaceHydrated, setWorkspaceHydrated] = useState(false);
+
+  // Initialize AOS animation system
+  React.useEffect(() => {
+    AOS.init({
+      duration: 450,
+      easing: "ease-out-cubic",
+      once: true,
+      offset: 30,
+    });
+  }, []);
+
+  // Sync theme globally across document root for all devices
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", uiTheme);
+    document.documentElement.classList.remove(
+      "key-theme-light",
+      "key-theme-dark",
+      "key-theme-eyevision",
+      "key-theme-cyberpunk",
+      "key-theme-luxury",
+      "key-theme-synthwave",
+      "key-theme-matrix"
+    );
+    document.documentElement.classList.add(`key-theme-${uiTheme}`);
+    AOS.refresh();
+  }, [uiTheme, location.pathname, currentScreen]);
 
   // Dynamic Browser Tab Document Title sync across all pages & states
   React.useEffect(() => {
@@ -797,9 +825,23 @@ export default function App() {
   React.useEffect(() => writeLocalStorage("keylink360_whatsapp_templates", whatsAppTemplates), [whatsAppTemplates]);
   React.useEffect(() => writeLocalStorage("keylink360_qr_codes", qrCodes), [qrCodes]);
 
-  const [integrations, setIntegrations] = useState<IntegrationItem[]>(() =>
-    readLocalStorage("keylink360_integrations", readLocalStorage("keyslink_integrations", initialIntegrations))
-  );
+  const [integrations, setIntegrations] = useState<IntegrationItem[]>(() => {
+    const raw = readLocalStorage<IntegrationItem[]>(
+      "keylink360_integrations",
+      readLocalStorage("keyslink_integrations", initialIntegrations)
+    );
+    const clean = (Array.isArray(raw) ? raw : initialIntegrations).filter(
+      (i) => i.name !== "WOO Chat" && i.id !== "i1"
+    );
+    const existingIds = new Set(clean.map((i) => i.id));
+    const merged = [...clean];
+    for (const init of initialIntegrations) {
+      if (!existingIds.has(init.id)) {
+        merged.push(init);
+      }
+    }
+    return merged;
+  });
   const [votes, setVotes] = useState<IntegrationVote[]>(() =>
     readLocalStorage("keylink360_integration_votes", readLocalStorage("keyslink_integration_votes", initialVotes))
   );
@@ -1814,8 +1856,37 @@ export default function App() {
     return result;
   };
 
-  const handleUpdateUser = (name: string, email: string, avatarUrl: string) => {
+  const handleUpdateUser = async (name: string, email: string, avatarUrl: string) => {
     setUser((prev) => ({ ...prev, name, email, avatarUrl }));
+    try {
+      const parts = name.trim().split(/\s+/);
+      const firstName = parts[0] || "";
+      const lastName = parts.slice(1).join(" ") || "";
+      const res = await updateProfileRequest({
+        firstName,
+        lastName,
+        name,
+        email,
+        avatarUrl
+      });
+      if (res?.user) {
+        const stored = getStoredAuthUser();
+        if (stored) {
+          const updated = {
+            ...stored,
+            name: `${res.user.firstName} ${res.user.lastName}`.trim() || res.user.name,
+            firstName: res.user.firstName,
+            lastName: res.user.lastName,
+            avatarUrl: res.user.avatarUrl
+          };
+          const rememberMe = Boolean(localStorage.getItem("keylink360_access_token"));
+          const storage = rememberMe ? localStorage : sessionStorage;
+          storage.setItem("keylink360_auth_user", JSON.stringify(updated));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to sync profile update to server:", err);
+    }
   };
 
   const handleUpdateMfa = (enabled: boolean) => {
@@ -2239,8 +2310,14 @@ export default function App() {
     <div
       className={
         isLoggedIn
-          ? `h-screen max-h-[100dvh] w-full overflow-hidden flex font-sans antialiased key-app-shell key-theme-${uiTheme}`
-          : "min-h-screen w-full flex flex-col font-sans antialiased bg-[#05070d]"
+          ? `h-screen max-h-[100dvh] w-full overflow-hidden flex font-sans antialiased key-app-shell ${
+              uiTheme === "light"
+                ? "key-theme-light"
+                : uiTheme === "eyevision"
+                  ? "key-theme-eyevision"
+                  : "key-theme-dark"
+            } key-theme-${uiTheme}`
+          : "min-h-screen w-full flex flex-col font-sans antialiased bg-[var(--key-bg-deep,#05070d)]"
       }
     >
       {isLoggedIn && (
@@ -2259,6 +2336,11 @@ export default function App() {
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
           user={user}
+          theme={uiTheme}
+          onThemeChange={(newTheme) => {
+            setUiTheme(newTheme);
+            saveTheme(newTheme);
+          }}
         />
       )}
 
@@ -2391,6 +2473,11 @@ export default function App() {
           currentScreen={currentScreen}
           onScreenChange={handleScreenChange}
           user={user}
+          theme={uiTheme}
+          onThemeChange={(newTheme) => {
+            setUiTheme(newTheme);
+            saveTheme(newTheme);
+          }}
         />
       )}
 

@@ -214,13 +214,16 @@ export interface TemplateItem {
 export interface IntegrationItem {
   id: string;
   name: string;
-  type: "Messaging" | "Email Marketing" | "Payments";
+  type: "WhatsApp" | "Telegram" | "Email Marketing" | "SMS Messaging" | "Payments" | "Messaging";
   status: "Locked" | "Connected" | "Coming Soon";
   description: string;
   upgradeMessage: string;
   waitlisted?: boolean;
   apiKeyHint?: string;
   connectedAt?: string;
+  iconType?: string;
+  docUrl?: string;
+  badge?: string;
 }
 
 export interface IntegrationVote {

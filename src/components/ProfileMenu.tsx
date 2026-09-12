@@ -12,17 +12,7 @@ interface ProfileMenuProps {
   onLogout: () => void;
 }
 
-function getInitials(name: string): string {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase() || "U"
-  );
-}
+
 
 export default function ProfileMenu({
   user,
@@ -33,8 +23,11 @@ export default function ProfileMenu({
 }: ProfileMenuProps) {
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
-  const initials = getInitials(user.name);
-  const hasProfilePhoto = /^(data:image\/|https?:\/\/)/i.test(user.avatarUrl);
+  const hasProfilePhoto = Boolean(
+    user.avatarUrl &&
+    /^(data:image\/|https?:\/\/)/i.test(user.avatarUrl) &&
+    !/tapback\.co/i.test(user.avatarUrl)
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -85,7 +78,7 @@ export default function ProfileMenu({
               className="h-full w-full object-cover"
             />
           ) : (
-            initials
+            <User className="h-4.5 w-4.5 text-indigo-300" />
           )}
         </div>
       </button>

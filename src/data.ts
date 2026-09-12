@@ -104,36 +104,138 @@ export const initialTemplates: TemplateItem[] = getSystemTemplateCatalog();
 
 export const initialIntegrations: IntegrationItem[] = [
   {
-    id: "i1",
-    name: "WOO Chat",
-    type: "Messaging",
+    id: "i_wa_cloud",
+    name: "WhatsApp Cloud API",
+    type: "WhatsApp",
     status: "Connected",
-    description: "Send form confirmations & broadcasts through your own WOO Chat account. Bring your team, setup auto-replies, and run customer conversations.",
-    upgradeMessage: ""
+    description: "Meta's official WhatsApp Cloud API. Send automated form confirmations, welcome sequences, OTPs, and broadcast campaigns directly from KEYLINK360.",
+    upgradeMessage: "",
+    apiKeyHint: "••••Meta78",
+    connectedAt: "2026-06-15T10:30:00.000Z",
+    badge: "Official Meta",
+    docUrl: "https://developers.facebook.com/docs/whatsapp/cloud-api"
   },
   {
-    id: "i2",
-    name: "Interakt WhatsApp",
-    type: "Messaging",
+    id: "i_wa_biz",
+    name: "Interakt WhatsApp Business",
+    type: "WhatsApp",
+    status: "Connected",
+    description: "Multi-agent WhatsApp Business shared inbox. Sync templates, automated lead capture alerts, and trigger quick-replies.",
+    upgradeMessage: "",
+    apiKeyHint: "••••Intk92",
+    connectedAt: "2026-07-01T14:15:00.000Z",
+    badge: "Verified BSP",
+    docUrl: "https://www.interakt.shop"
+  },
+  {
+    id: "i_telegram",
+    name: "Telegram Bot & Channels",
+    type: "Telegram",
+    status: "Connected",
+    description: "Instantly forward bio page leads, smart form entries, and visitor inquiries directly into your private Telegram Channel or Group Bot in real-time.",
+    upgradeMessage: "",
+    apiKeyHint: "••••Bot01",
+    connectedAt: "2026-07-10T09:00:00.000Z",
+    badge: "Real-time Bot",
+    docUrl: "https://core.telegram.org/bots"
+  },
+  {
+    id: "i_mailchimp",
+    name: "Mailchimp",
+    type: "Email Marketing",
     status: "Locked",
-    description: "Send form confirmations & broadcasts through your own Interakt account — one Secret Key covers sending and template sync.",
-    upgradeMessage: "WhatsApp messaging is part of the Pro Smart Marketing plan."
+    description: "Sync your smart form subscribers and lead magnets directly into customized Mailchimp audiences, tags, and automated drip campaigns.",
+    upgradeMessage: "Email Marketing sync is part of the Pro Smart Marketing plan.",
+    badge: "Popular",
+    docUrl: "https://mailchimp.com"
   },
   {
-    id: "i3",
+    id: "i_convertkit",
+    name: "ConvertKit (Kit)",
+    type: "Email Marketing",
+    status: "Locked",
+    description: "Creator-first email marketing. Automatically tag and add new bio link subscribers into your ConvertKit visual automations.",
+    upgradeMessage: "Email Marketing sync is part of the Pro Smart Marketing plan.",
+    badge: "Creator Pro",
+    docUrl: "https://kit.com"
+  },
+  {
+    id: "i_brevo",
+    name: "Brevo (Sendinblue)",
+    type: "Email Marketing",
+    status: "Locked",
+    description: "Trigger transactional emails, newsletter subscriptions, and automated CRM workflows directly upon bio link engagement.",
+    upgradeMessage: "Email Marketing sync is part of the Pro Smart Marketing plan.",
+    docUrl: "https://www.brevo.com"
+  },
+  {
+    id: "i_flodesk",
     name: "Flodesk",
     type: "Email Marketing",
     status: "Locked",
-    description: "Add Smart Form leads straight to your Flodesk email segments.",
-    upgradeMessage: "Connecting an email-marketing account is part of a paid Smart Marketing plan."
+    description: "Add Smart Form leads straight to your aesthetic Flodesk email segments and high-converting automated nurture workflows.",
+    upgradeMessage: "Email Marketing sync is part of the Pro Smart Marketing plan.",
+    docUrl: "https://flodesk.com"
   },
   {
-    id: "i4",
-    name: "Payments",
+    id: "i_twilio",
+    name: "Twilio SMS",
+    type: "SMS Messaging",
+    status: "Locked",
+    description: "Global SMS gateway. Send instant transactional SMS alerts, OTP verification codes, and appointment reminder texts to bio link visitors.",
+    upgradeMessage: "SMS Gateway integration is part of the Enterprise Marketing plan.",
+    badge: "Global SMS",
+    docUrl: "https://www.twilio.com/en-us/messaging/channels/sms"
+  },
+  {
+    id: "i_fast2sms",
+    name: "Fast2SMS / MSG91",
+    type: "SMS Messaging",
+    status: "Locked",
+    description: "High-speed DLT-approved transactional & quick OTP SMS delivery across India and regional routes for smart form submissions.",
+    upgradeMessage: "SMS Gateway integration is part of the Enterprise Marketing plan.",
+    badge: "DLT Approved",
+    docUrl: "https://www.fast2sms.com"
+  },
+  {
+    id: "i_razorpay",
+    name: "Razorpay",
     type: "Payments",
-    status: "Coming Soon",
-    description: "Take payments on your bio pages via your own Razorpay or Stripe account.",
-    upgradeMessage: ""
+    status: "Locked",
+    description: "Accept seamless payments via UPI, Credit/Debit Cards, NetBanking, and Wallets directly inside your bio pages, tip jars, and digital products.",
+    upgradeMessage: "Payments gateway integration is part of the Pro Commerce plan.",
+    badge: "Zero Setup",
+    docUrl: "https://razorpay.com"
+  },
+  {
+    id: "i_stripe",
+    name: "Stripe",
+    type: "Payments",
+    status: "Locked",
+    description: "Global payment processor supporting 135+ currencies, Apple Pay, Google Pay, and recurring subscription checkouts on your bio links.",
+    upgradeMessage: "Payments gateway integration is part of the Pro Commerce plan.",
+    badge: "Global 135+",
+    docUrl: "https://stripe.com"
+  },
+  {
+    id: "i_phonepe",
+    name: "PhonePe Payment Gateway",
+    type: "Payments",
+    status: "Locked",
+    description: "Instant direct UPI payments with highest success rate, zero merchant downtime, and fast QR code checkouts.",
+    upgradeMessage: "Payments gateway integration is part of the Pro Commerce plan.",
+    badge: "Direct UPI",
+    docUrl: "https://www.phonepe.com/business-solutions/payment-gateway"
+  },
+  {
+    id: "i_paypal",
+    name: "PayPal",
+    type: "Payments",
+    status: "Locked",
+    description: "Accept international payments & PayPal wallet balances from your global audience with one-click smart buttons.",
+    upgradeMessage: "Payments gateway integration is part of the Pro Commerce plan.",
+    badge: "Worldwide",
+    docUrl: "https://www.paypal.com"
   }
 ];
 

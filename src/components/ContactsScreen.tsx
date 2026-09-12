@@ -669,14 +669,16 @@ export default function ContactsScreen({
         </div>
       )}
 
-      <StatCardGrid>
-        <StatCard label="TOTAL" value={stats.total} sub="all-time" />
-        <StatCard label="LAST 7 DAYS" value={stats.last7} sub="new contacts" />
-        <StatCard label="LAST 30 DAYS" value={stats.last30} sub="new contacts" />
-        <StatCard label="MARKETING OPT-INS" value={stats.optIns} sub="consented" />
-      </StatCardGrid>
+      <div data-aos="fade-up">
+        <StatCardGrid>
+          <StatCard label="TOTAL" value={stats.total} sub="all-time" />
+          <StatCard label="LAST 7 DAYS" value={stats.last7} sub="new contacts" />
+          <StatCard label="LAST 30 DAYS" value={stats.last30} sub="new contacts" />
+          <StatCard label="MARKETING OPT-INS" value={stats.optIns} sub="consented" />
+        </StatCardGrid>
+      </div>
 
-      <SectionCard className="key-contacts-panel flex flex-col overflow-hidden">
+      <SectionCard className="key-contacts-panel flex flex-col overflow-hidden" data-aos="fade-up">
         <Workspace className="key-contacts-toolbar border-b border-slate-100 flex flex-col gap-3">
           <div className="key-icon-field w-full">
             <span className="key-icon-field__icon">
@@ -1244,7 +1246,7 @@ export default function ContactsScreen({
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-[100] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-slate-800 text-sm font-bold">
+        <div className="fixed bottom-6 right-6 z-[100] bg-[var(--key-surface-strong)] text-[var(--key-text)] px-5 py-3.5 rounded-2xl shadow-2xl border border-[var(--key-border)] text-sm font-bold">
           {toast}
         </div>
       )}

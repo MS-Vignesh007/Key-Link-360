@@ -23,14 +23,15 @@ import {
 } from "lucide-react";
 import PageShell from "./layout/PageShell";
 import type { AppTheme } from "../lib/themeStorage";
-import { KEYS_AVATAR_PRESETS } from "../lib/avatarPresets";
+import { changePasswordRequest } from "../lib/authApi";
 import BillingPlanSection from "./billing/BillingPlanSection";
+import ImageCropModal from "./ImageCropModal";
 
 interface AccountScreenProps {
   user: UserProfile;
   theme: AppTheme;
   onThemeChange: (theme: AppTheme) => void;
-  onUpdateUser: (name: string, email: string, avatarUrl: string) => void;
+  onUpdateUser: (name: string, email: string, avatarUrl: string) => Promise<void> | void;
   onUpdateMfa: (enabled: boolean) => void;
   onExportData: () => void;
   onImportData: (data: unknown) => boolean;
@@ -63,6 +64,7 @@ export default function AccountScreen({
   const [importStatus, setImportStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [avatarError, setAvatarError] = useState("");
+  const [rawCropImage, setRawCropImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pendingImport, setPendingImport] = useState<unknown | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -74,6 +76,7 @@ export default function AccountScreen({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [mfaCode, setMfaCode] = useState("");
   const [mfaError, setMfaError] = useState("");
@@ -110,13 +113,17 @@ export default function AccountScreen({
       .join("")
       .slice(0, 2)
       .toUpperCase() || "U";
-  const hasProfilePhoto = /^(data:image\/|https?:\/\/)/i.test(avatarUrl);
+  const hasProfilePhoto = Boolean(
+    avatarUrl &&
+    /^(data:image\/|https?:\/\/)/i.test(avatarUrl) &&
+    !/tapback\.co/i.test(avatarUrl)
+  );
   const isDirty =
     name.trim() !== user.name ||
     email.trim() !== user.email ||
     avatarUrl !== user.avatarUrl;
 
-  const handleUpdate = (event: React.FormEvent) => {
+  const handleUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
     setProfileError("");
 
@@ -137,13 +144,16 @@ export default function AccountScreen({
     }
 
     setIsUpdating(true);
-    window.setTimeout(() => {
-      onUpdateUser(trimmedName, trimmedEmail, avatarUrl);
-      setIsUpdating(false);
+    try {
+      await onUpdateUser(trimmedName, trimmedEmail, avatarUrl);
       setSuccess(true);
       triggerToast("Profile saved successfully.");
       window.setTimeout(() => setSuccess(false), 2500);
-    }, 500);
+    } catch (err: any) {
+      setProfileError(err?.message || "Failed to save profile changes.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleResetProfile = () => {
@@ -162,19 +172,25 @@ export default function AccountScreen({
       setAvatarError("Please choose a valid image file.");
       return;
     }
-    if (file.size > 1_000_000) {
-      setAvatarError("Profile image must be smaller than 1 MB.");
+    if (file.size > 10_000_000) {
+      setAvatarError("Image file must be smaller than 10 MB.");
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      setAvatarUrl(String(reader.result || ""));
+      setRawCropImage(String(reader.result || ""));
       setAvatarError("");
     };
     reader.onerror = () => setAvatarError("Could not read that image. Try another file.");
     reader.readAsDataURL(file);
     event.target.value = "";
+  };
+
+  const handleCropComplete = (croppedDataUrl: string) => {
+    setAvatarUrl(croppedDataUrl);
+    setAvatarError("");
+    triggerToast("Photo adjusted. Click 'Save Profile Changes' to save.");
   };
 
   const applyImport = (parsed: unknown) => {
@@ -254,7 +270,7 @@ export default function AccountScreen({
     }, 250);
   };
 
-  const handlePasswordSubmit = (event: React.FormEvent) => {
+  const handlePasswordSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setPasswordError("");
 
@@ -280,14 +296,19 @@ export default function AccountScreen({
     }
 
     setIsSavingPassword(true);
-    window.setTimeout(() => {
-      setIsSavingPassword(false);
-      setShowPasswordModal(false);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+    try {
+      await changePasswordRequest({
+        currentPassword,
+        password: newPassword,
+        confirmPassword
+      });
+      setPasswordSuccess(true);
       triggerToast("Password updated successfully.");
-    }, 500);
+    } catch (err: any) {
+      setPasswordError(err?.message || "Failed to update password. Please check your current password and try again.");
+    } finally {
+      setIsSavingPassword(false);
+    }
   };
 
   const disableMfa = () => {
@@ -354,7 +375,7 @@ export default function AccountScreen({
         <span>Log Out</span>
       </button>
 
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-3xl space-y-6" data-aos="fade-up">
         <div className="key-section-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current plan</p>
@@ -389,55 +410,17 @@ export default function AccountScreen({
         <BillingPlanSection />
 
         <div className="key-section-card p-4 sm:p-6 space-y-6">
-          <h3 className="font-display font-bold text-base flex items-center gap-2">
-            <Palette className="h-5 w-5 text-indigo-400" />
-            Themes
-          </h3>
-          <p className="text-sm key-page-subtitle">
-            Pick how KEYLINK360 looks for you. Your choice is saved on this device.
-          </p>
-          <div className="key-theme-picker">
-            <button
-              type="button"
-              aria-pressed={theme === "dark"}
-              onClick={() => onThemeChange("dark")}
-              className="key-theme-option"
-            >
-              <span className="key-theme-option__swatch key-theme-option__swatch--dark" aria-hidden />
-              <span className="flex items-center gap-1.5 key-theme-option__label">
-                <Moon className="h-4 w-4" />
-                Dark Mode
-              </span>
-              <span className="key-theme-option__hint">Deep glass + colorful glow (default)</span>
-            </button>
-            <button
-              type="button"
-              aria-pressed={theme === "light"}
-              onClick={() => onThemeChange("light")}
-              className="key-theme-option"
-            >
-              <span className="key-theme-option__swatch key-theme-option__swatch--light" aria-hidden />
-              <span className="flex items-center gap-1.5 key-theme-option__label">
-                <Sun className="h-4 w-4" />
-                Light Mode
-              </span>
-              <span className="key-theme-option__hint">Bright white glass + soft color accents</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="key-section-card p-4 sm:p-6 space-y-6">
           <h3 className="font-display font-bold text-gray-950 text-base flex items-center gap-2">
             <User className="h-5 w-5 text-gray-400" />
             Profile Details
           </h3>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-            <div className="h-16 w-16 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-sans font-bold text-xl flex items-center justify-center shadow-inner shrink-0 overflow-hidden">
+            <div className="h-16 w-16 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shadow-inner shrink-0 overflow-hidden">
               {hasProfilePhoto ? (
                 <img src={avatarUrl} alt={`${name} profile`} className="h-full w-full object-cover" />
               ) : (
-                profileInitials
+                <User className="h-8 w-8 text-indigo-500" />
               )}
             </div>
             <div className="min-w-0 flex-1">
@@ -480,39 +463,6 @@ export default function AccountScreen({
               {avatarError}
             </p>
           )}
-
-          <div className="space-y-3">
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Choose 3D avatar
-              </p>
-              <p className="mt-1 text-xs text-slate-500">Round memoji-style picks. Select one, then save your profile.</p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {KEYS_AVATAR_PRESETS.map((avatar, index) => {
-                const selected = avatarUrl === avatar;
-                return (
-                  <button
-                    key={avatar}
-                    type="button"
-                    onClick={() => {
-                      setAvatarUrl(avatar);
-                      setAvatarError("");
-                    }}
-                    className={`h-12 w-12 overflow-hidden rounded-full border-2 bg-slate-100 transition-all shadow-sm ${
-                      selected
-                        ? "border-indigo-600 ring-2 ring-indigo-100 scale-105"
-                        : "border-white/80 hover:border-indigo-200 hover:scale-105"
-                    }`}
-                    aria-label={`Choose 3D avatar ${index + 1}`}
-                    aria-pressed={selected}
-                  >
-                    <img src={avatar} alt="" className="h-full w-full object-cover" loading="lazy" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
 
           {success && (
             <div className="p-3 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-xs font-semibold flex items-center gap-1.5">
@@ -558,7 +508,7 @@ export default function AccountScreen({
               <button
                 type="submit"
                 disabled={isUpdating || !isDirty}
-                className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-100/50 flex items-center gap-2 transition-all disabled:opacity-60 active:scale-95"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-100/50 flex items-center gap-2 transition-all disabled:opacity-60 active:scale-95 btn-anim btn-diagonal"
               >
                 {isUpdating ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : null}
                 <span>{isUpdating ? "Saving…" : "Save Profile Changes"}</span>
@@ -570,7 +520,7 @@ export default function AccountScreen({
                   onClick={handleResetProfile}
                   className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 disabled:opacity-60"
                 >
-                  Discard
+                  <span>Discard</span>
                 </button>
               )}
             </div>
@@ -630,7 +580,7 @@ export default function AccountScreen({
                 type="button"
                 disabled={isExporting}
                 onClick={handleExport}
-                className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-70 text-white font-semibold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
+                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-70 text-white font-semibold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 btn-anim btn-swipe"
               >
                 {isExporting ? (
                   <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -710,6 +660,7 @@ export default function AccountScreen({
               type="button"
               onClick={() => {
                 setPasswordError("");
+                setPasswordSuccess(false);
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
@@ -717,7 +668,7 @@ export default function AccountScreen({
               }}
               className="border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs py-2.5 px-4 rounded-xl"
             >
-              Change password
+              <span>Change password</span>
             </button>
             <button
               type="button"
@@ -729,7 +680,7 @@ export default function AccountScreen({
               className="border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs py-2.5 px-4 rounded-xl inline-flex items-center justify-center gap-1.5"
             >
               <Shield className="h-3.5 w-3.5" />
-              {user.mfaEnabled ? "Manage MFA" : "Configure MFA"}
+              <span>{user.mfaEnabled ? "Manage MFA" : "Configure MFA"}</span>
             </button>
             {onNavigate && (
               <button
@@ -737,7 +688,7 @@ export default function AccountScreen({
                 onClick={() => onNavigate(ScreenId.CONTACT_SUPPORT)}
                 className="text-xs font-semibold text-indigo-600 hover:underline px-2 py-2.5"
               >
-                Need help? Contact support
+                <span>Need help? Contact support</span>
               </button>
             )}
           </div>
@@ -756,79 +707,126 @@ export default function AccountScreen({
             role="dialog"
             aria-modal="true"
             aria-labelledby="password-modal-title"
-            className="key-modal-panel max-w-md w-full"
+            className="key-modal-panel max-w-md w-full p-6"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 id="password-modal-title" className="font-display font-black text-lg text-slate-900">
-                Change password
+                {passwordSuccess ? "Password updated" : "Change password"}
               </h3>
               <button
                 type="button"
-                onClick={() => !isSavingPassword && setShowPasswordModal(false)}
+                onClick={() => {
+                  if (!isSavingPassword) {
+                    setShowPasswordModal(false);
+                    setPasswordSuccess(false);
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  }
+                }}
                 className="text-slate-400 hover:text-slate-600 p-1 rounded-full"
                 aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handlePasswordSubmit} className="space-y-6" noValidate>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
-                  Current password
-                </label>
-                <input
-                  type="password"
-                  autoFocus
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                />
+
+            {passwordSuccess ? (
+              <div className="text-center py-3 space-y-4">
+                <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle className="h-6 w-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-display font-bold text-base text-slate-900">
+                    Password updated successfully
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Your password has been changed. You can now use your new password next time you sign in.
+                  </p>
+                </div>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPasswordSuccess(false);
+                      setShowPasswordModal(false);
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                    }}
+                    className="w-full py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95 btn-anim btn-diagonal"
+                  >
+                    <span>Done</span>
+                  </button>
+                </div>
               </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
-                  New password
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
-                  Confirm new password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                />
-              </div>
-              {passwordError && (
-                <p className="text-xs font-medium text-rose-600" role="alert">
-                  {passwordError}
-                </p>
-              )}
-              <div className="flex justify-end gap-2 pt-1">
-                <button
-                  type="button"
-                  disabled={isSavingPassword}
-                  onClick={() => setShowPasswordModal(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSavingPassword}
-                  className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-70 text-white rounded-xl text-xs font-extrabold"
-                >
-                  {isSavingPassword ? "Updating…" : "Update password"}
-                </button>
-              </div>
-            </form>
+            ) : (
+              <form onSubmit={handlePasswordSubmit} className="space-y-5" noValidate>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                    Current password
+                  </label>
+                  <input
+                    type="password"
+                    autoFocus
+                    value={currentPassword}
+                    onChange={(event) => setCurrentPassword(event.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                    New password
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                    Confirm new password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                  />
+                </div>
+                {passwordError && (
+                  <p className="text-xs font-medium text-rose-600" role="alert">
+                    {passwordError}
+                  </p>
+                )}
+                <div className="flex justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    disabled={isSavingPassword}
+                    onClick={() => setShowPasswordModal(false)}
+                    className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
+                  >
+                    <span>Cancel</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingPassword}
+                    className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-70 text-white rounded-xl text-xs font-extrabold flex items-center gap-2 btn-anim btn-diagonal"
+                  >
+                    {isSavingPassword ? (
+                      <>
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        <span>Updating…</span>
+                      </>
+                    ) : (
+                      <span>Update password</span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -866,7 +864,7 @@ export default function AccountScreen({
                   onClick={disableMfa}
                   className="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-100 py-2.5 rounded-xl text-xs font-extrabold disabled:opacity-70"
                 >
-                  {isSavingMfa ? "Disabling…" : "Disable MFA"}
+                  <span>{isSavingMfa ? "Disabling…" : "Disable MFA"}</span>
                 </button>
               </div>
             ) : (
@@ -893,7 +891,7 @@ export default function AccountScreen({
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 pt-1"
                   >
                     {copiedBackup ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                    Copy backup codes
+                    <span>Copy backup codes</span>
                   </button>
                 </div>
                 <div>
@@ -923,14 +921,14 @@ export default function AccountScreen({
                     onClick={() => setShowMfaModal(false)}
                     className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
                   >
-                    Cancel
+                    <span>Cancel</span>
                   </button>
                   <button
                     type="submit"
                     disabled={isSavingMfa}
-                    className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-70 text-white rounded-xl text-xs font-extrabold"
+                    className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-70 text-white rounded-xl text-xs font-extrabold btn-anim btn-diagonal"
                   >
-                    {isSavingMfa ? "Enabling…" : "Enable MFA"}
+                    <span>{isSavingMfa ? "Enabling…" : "Enable MFA"}</span>
                   </button>
                 </div>
               </form>
@@ -1014,8 +1012,15 @@ export default function AccountScreen({
         </div>
       )}
 
+      <ImageCropModal
+        isOpen={Boolean(rawCropImage)}
+        imageSrc={rawCropImage || ""}
+        onClose={() => setRawCropImage(null)}
+        onCropComplete={handleCropComplete}
+      />
+
       {toast && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-slate-900 text-white border border-slate-800 text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
+        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
           {toast}
         </div>
       )}

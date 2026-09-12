@@ -421,9 +421,9 @@ export default function LinksScreen({
   };
 
   return (
-    <PageShell className="font-sans text-slate-800">
+    <PageShell className="font-sans text-[var(--key-text)]">
       {toast && (
-        <div className="fixed bottom-6 right-6 bg-slate-900 text-white border border-slate-800 text-xs font-bold py-3 px-5 rounded-2xl shadow-2xl z-50">
+        <div className="fixed bottom-6 right-6 bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-bold py-3 px-5 rounded-2xl shadow-2xl z-50">
           {toast}
         </div>
       )}
@@ -435,7 +435,7 @@ export default function LinksScreen({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold active:scale-95"
+            className="flex items-center gap-2 key-btn-chip px-5 py-2.5 text-xs font-extrabold active:scale-95 btn-anim btn-swipe"
           >
             <Plus className="h-4.5 w-4.5" />
             <span>Shorten a Link</span>
@@ -452,7 +452,7 @@ export default function LinksScreen({
         <p className="text-xs font-semibold text-slate-400">Loading short links…</p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6" data-aos="fade-up">
         <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between min-w-0">
           <div className="min-w-0">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Links</p>
@@ -1123,14 +1123,14 @@ export default function LinksScreen({
                   disabled={isCreating}
                   className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
                 >
-                  Cancel
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="px-5 py-2.5 key-btn-chip disabled:opacity-70 disabled:cursor-not-allowed text-xs font-extrabold"
+                  className="px-5 py-2.5 key-btn-chip disabled:opacity-70 disabled:cursor-not-allowed text-xs font-extrabold btn-anim btn-swipe"
                 >
-                  {isCreating ? "Creating…" : "Create Short Link"}
+                  <span>{isCreating ? "Creating…" : "Create Short Link"}</span>
                 </button>
               </div>
             </form>
@@ -1290,14 +1290,14 @@ export default function LinksScreen({
                   disabled={isSavingEdit}
                   className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl disabled:opacity-60"
                 >
-                  Discard
+                  <span>Discard</span>
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-950 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl text-xs font-black shadow-sm"
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-950 disabled:opacity-70 disabled:cursor-not-allowed text-white rounded-xl text-xs font-black shadow-sm btn-anim btn-diagonal"
                 >
-                  {isSavingEdit ? "Saving…" : "Save Configuration"}
+                  <span>{isSavingEdit ? "Saving…" : "Save Configuration"}</span>
                 </button>
               </div>
             </form>

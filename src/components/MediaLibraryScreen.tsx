@@ -313,7 +313,7 @@ export default function MediaLibraryScreen({
         }
       />
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6" data-aos="fade-up">
         <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total files</p>
           <p className="font-display font-black text-2xl text-slate-900 mt-1">{files.length}</p>
@@ -662,7 +662,7 @@ export default function MediaLibraryScreen({
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-slate-900 text-white border border-slate-800 text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
+        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
           {toast}
         </div>
       )}

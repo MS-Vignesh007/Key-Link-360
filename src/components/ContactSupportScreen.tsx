@@ -285,22 +285,22 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
         }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="lg:col-span-2 bg-[#0F172A] text-white rounded-3xl p-4 sm:p-6 md:p-5 shadow-2xl border border-slate-800 space-y-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 h-44 w-44 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6" data-aos="fade-up">
+        <div className="lg:col-span-2 key-section-card rounded-3xl p-5 sm:p-6 space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 h-44 w-44 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
           <div>
-            <h3 className="font-display font-bold text-xl tracking-tight text-white flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-[#FF6B4A]" />
+            <h3 className="font-display font-bold text-xl tracking-tight text-[var(--key-text)] flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-indigo-500" />
               Contact Support
             </h3>
-            <p className="text-slate-400 text-xs mt-1">
+            <p className="text-[var(--key-muted)] text-xs mt-1">
               Need personalized assistance? Complete the ticket details below.
             </p>
           </div>
 
           {successTicketId && (
-            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl text-xs font-semibold flex items-start gap-2">
+            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-2xl text-xs font-semibold flex items-start gap-2">
               <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
                 Ticket submitted successfully! Reference{" "}
@@ -313,16 +313,16 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                   Ticket category
                 </label>
                 <select
                   value={category}
                   onChange={(event) => setCategory(event.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                  className="w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
                   {CATEGORIES.map((item) => (
-                    <option key={item} value={item}>
+                    <option key={item} value={item} className="bg-[var(--key-bg-deep)] text-[var(--key-text)]">
                       {item}
                     </option>
                   ))}
@@ -330,7 +330,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                   Contact email
                 </label>
                 <input
@@ -339,13 +339,13 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@company.com"
-                  className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                 Subject
               </label>
               <input
@@ -354,12 +354,12 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 placeholder="e.g. Domain pending propagation"
                 value={subject}
                 onChange={(event) => setSubject(event.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                 Detailed explanation
               </label>
               <textarea
@@ -368,12 +368,12 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 placeholder="Briefly state the steps to reproduce or custom values..."
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none leading-relaxed"
+                className="w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none leading-relaxed"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                 Screenshots / documents
               </label>
               <input
@@ -403,10 +403,10 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 className={`w-full border border-dashed rounded-2xl p-4 text-center cursor-pointer transition-colors ${
                   isDragging
                     ? "border-indigo-400 bg-indigo-500/10"
-                    : "border-slate-800 bg-slate-950/40 hover:border-slate-600"
+                    : "border-[var(--key-border)] bg-[var(--key-bg-deep)]/40 hover:border-indigo-400"
                 }`}
               >
-                <span className="text-slate-500 text-[11px] flex items-center justify-center gap-1.5">
+                <span className="text-[var(--key-muted)] text-[11px] flex items-center justify-center gap-1.5">
                   <Paperclip className="h-3.5 w-3.5" />
                   {attachments.length
                     ? `${attachments.length} file${attachments.length === 1 ? "" : "s"} attached`
@@ -414,7 +414,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 </span>
               </button>
               {attachmentError && (
-                <p className="mt-2 text-xs font-medium text-rose-300" role="alert">
+                <p className="mt-2 text-xs font-medium text-rose-400" role="alert">
                   {attachmentError}
                 </p>
               )}
@@ -423,11 +423,11 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                   {attachments.map((file) => (
                     <li
                       key={`${file.name}-${file.size}`}
-                      className="flex items-center justify-between gap-3 text-[11px] text-slate-400"
+                      className="flex items-center justify-between gap-3 text-[11px] text-[var(--key-muted)]"
                     >
                       <span className="truncate">
                         {file.name}{" "}
-                        <span className="text-slate-600">
+                        <span className="opacity-60">
                           ({Math.max(1, Math.round(file.size / 1024))} KB)
                         </span>
                       </span>
@@ -438,7 +438,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                             current.filter((candidate) => candidate !== file)
                           )
                         }
-                        className="shrink-0 text-rose-300 hover:text-rose-200"
+                        className="shrink-0 text-rose-400 hover:text-rose-300"
                         aria-label={`Remove ${file.name}`}
                       >
                         Remove
@@ -450,7 +450,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
             </div>
 
             {formError && (
-              <p className="text-xs font-medium text-rose-300" role="alert">
+              <p className="text-xs font-medium text-rose-400" role="alert">
                 {formError}
               </p>
             )}
@@ -460,14 +460,14 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 type="button"
                 disabled={isSubmitting}
                 onClick={resetForm}
-                className="sm:w-auto px-4 py-3 rounded-xl text-xs font-bold text-slate-400 hover:bg-slate-900 disabled:opacity-60"
+                className="sm:w-auto px-4 py-3 rounded-xl text-xs font-bold text-[var(--key-muted)] hover:bg-[var(--key-bg-soft)] disabled:opacity-60 transition-colors"
               >
                 Clear form
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-70 disabled:cursor-not-allowed text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-indigo-950/20 flex items-center justify-center gap-1.5 transition-all"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5 transition-all"
               >
                 <Send className="h-3.5 w-3.5" />
                 <span>{isSubmitting ? "Submitting…" : "Submit Ticket"}</span>
@@ -477,10 +477,10 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white border border-gray-100 rounded-3xl p-4 sm:p-6 shadow-sm space-y-6">
+          <div className="key-section-card rounded-3xl p-4 sm:p-6 shadow-sm space-y-6">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="font-display font-bold text-gray-950 text-base">Your Active Tickets</h3>
-              <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">
+              <h3 className="font-display font-bold text-[var(--key-text)] text-base">Your Active Tickets</h3>
+              <span className="text-[10px] font-bold text-[var(--key-muted)] bg-[var(--key-bg-soft)] px-2 py-0.5 rounded-full border border-[var(--key-border)]">
                 {openCount} open
               </span>
             </div>
@@ -497,7 +497,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                     onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder="Search tickets..."
                     aria-label="Search tickets"
-                    className="key-icon-field__input w-full bg-slate-50 border border-slate-200 rounded-xl py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                    className="key-icon-field__input w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <select
@@ -506,7 +506,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                     setStatusFilter(event.target.value as typeof statusFilter)
                   }
                   aria-label="Filter tickets by status"
-                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none"
+                  className="w-full bg-[var(--key-input-bg)] border border-[var(--key-border)] text-[var(--key-text)] rounded-xl px-3 py-2 text-xs font-medium focus:outline-none"
                 >
                   <option value="All">All statuses</option>
                   <option value="Submitted">Submitted</option>
@@ -520,21 +520,21 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
             <div className="space-y-3 max-h-[28rem] overflow-y-auto pr-1">
               {tickets.length === 0 ? (
                 <div className="text-center py-12 space-y-2">
-                  <p className="text-xs text-slate-500">No tickets yet.</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-[var(--key-muted)]">No tickets yet.</p>
+                  <p className="text-[11px] text-[var(--key-muted)] opacity-80">
                     Submit a request and it will appear here.
                   </p>
                 </div>
               ) : filteredTickets.length === 0 ? (
                 <div className="text-center py-6 space-y-2">
-                  <p className="text-xs text-slate-500">No tickets match your filters.</p>
+                  <p className="text-xs text-[var(--key-muted)]">No tickets match your filters.</p>
                   <button
                     type="button"
                     onClick={() => {
                       setSearchQuery("");
                       setStatusFilter("All");
                     }}
-                    className="text-[#4F46E5] text-xs font-semibold hover:underline"
+                    className="text-indigo-500 text-xs font-semibold hover:underline"
                   >
                     Clear filters
                   </button>
@@ -545,10 +545,10 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                     key={ticket.id}
                     type="button"
                     onClick={() => setSelectedTicket(ticket)}
-                    className="w-full text-left border border-gray-100 rounded-2xl p-4 space-y-2 hover:border-indigo-100 hover:shadow-sm transition-all"
+                    className="w-full text-left border border-[var(--key-border)] rounded-2xl p-4 space-y-2 bg-[var(--key-bg-deep)]/40 hover:border-indigo-400/50 hover:shadow-sm transition-all"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded">
+                      <span className="text-[10px] bg-[var(--key-bg-soft)] text-[var(--key-muted)] font-bold px-2 py-0.5 rounded border border-[var(--key-border)]">
                         {ticket.category}
                       </span>
                       <span
@@ -557,18 +557,18 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                         {ticket.status}
                       </span>
                     </div>
-                    <h4 className="font-sans font-bold text-gray-900 text-xs leading-snug">
+                    <h4 className="font-sans font-bold text-[var(--key-text)] text-xs leading-snug">
                       {ticket.subject}
                     </h4>
-                    <p className="text-gray-400 text-[11px] line-clamp-2">{ticket.message}</p>
+                    <p className="text-[var(--key-muted)] text-[11px] line-clamp-2">{ticket.message}</p>
                     {ticket.attachments.length > 0 && (
-                      <p className="text-[10px] text-slate-400 inline-flex items-center gap-1">
+                      <p className="text-[10px] text-[var(--key-muted)] inline-flex items-center gap-1">
                         <Paperclip className="h-3 w-3" />
                         {ticket.attachments.length} attachment
                         {ticket.attachments.length === 1 ? "" : "s"}
                       </p>
                     )}
-                    <span className="text-[10px] text-gray-400 font-mono block pt-1.5 border-t border-gray-50">
+                    <span className="text-[10px] text-[var(--key-muted)] opacity-70 font-mono block pt-1.5 border-t border-[var(--key-border)]">
                       Created {ticket.createdAt}
                     </span>
                   </button>
@@ -577,12 +577,12 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
             </div>
           </div>
 
-          <div className="bg-[#FF6B4A]/5 border border-[#FF6B4A]/10 rounded-3xl p-4 sm:p-6 shadow-sm space-y-3">
-            <h4 className="font-display font-bold text-[#FF6B4A] text-sm flex items-center gap-1.5">
+          <div className="bg-indigo-500/5 border border-indigo-500/15 rounded-3xl p-4 sm:p-6 shadow-sm space-y-3">
+            <h4 className="font-display font-bold text-indigo-500 text-sm flex items-center gap-1.5">
               <ShieldCheck className="h-4.5 w-4.5" />
               SLA Priority Included
             </h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-xs text-[var(--key-muted)] leading-relaxed">
               Your workspace is tracked under Standard Priority Developer Support with answers
               targeted within 2 hours during business days.
             </p>
@@ -591,17 +591,17 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
       </div>
 
       {selectedTicket && (
-        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="ticket-detail-title"
-            className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto"
+            className="key-section-card bg-[var(--key-surface-strong)] rounded-3xl max-w-lg w-full shadow-2xl border border-[var(--key-border)] max-h-[90vh] overflow-y-auto"
           >
-            <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-3 sticky top-0 bg-white">
+            <div className="p-5 border-b border-[var(--key-border)] flex items-start justify-between gap-3 sticky top-0 bg-[var(--key-surface-strong)] backdrop-blur-md">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded">
+                  <span className="text-[10px] bg-[var(--key-bg-soft)] text-[var(--key-muted)] font-bold px-2 py-0.5 rounded border border-[var(--key-border)]">
                     {selectedTicket.category}
                   </span>
                   <span
@@ -612,18 +612,18 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 </div>
                 <h3
                   id="ticket-detail-title"
-                  className="font-display font-bold text-lg text-slate-900 leading-snug"
+                  className="font-display font-bold text-lg text-[var(--key-text)] leading-snug"
                 >
                   {selectedTicket.subject}
                 </h3>
-                <p className="text-[11px] text-slate-400 font-mono mt-1">
+                <p className="text-[11px] text-[var(--key-muted)] font-mono mt-1">
                   {selectedTicket.id} · Created {selectedTicket.createdAt}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedTicket(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-full shrink-0"
+                className="text-[var(--key-muted)] hover:text-[var(--key-text)] p-1 rounded-full shrink-0"
                 aria-label="Close ticket"
               >
                 <X className="h-5 w-5" />
@@ -631,40 +631,40 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
             </div>
 
             <div className="p-5 space-y-6">
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2 text-sm">
+              <div className="bg-[var(--key-bg-soft)] border border-[var(--key-border)] rounded-2xl p-4 space-y-2 text-sm">
                 <div className="flex justify-between gap-3 text-xs">
-                  <span className="text-slate-400 font-medium">Contact</span>
-                  <span className="font-semibold text-slate-700 break-all text-right">
+                  <span className="text-[var(--key-muted)] font-medium">Contact</span>
+                  <span className="font-semibold text-[var(--key-text)] break-all text-right">
                     {selectedTicket.email || "—"}
                   </span>
                 </div>
-                <div className="flex items-start gap-2 text-xs text-slate-500">
-                  <Clock className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 text-xs text-[var(--key-muted)]">
+                  <Clock className="h-3.5 w-3.5 shrink-0 mt-0.5 text-indigo-500" />
                   <span>We typically reply within 2 hours on business days.</span>
                 </div>
               </div>
 
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                <p className="text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                   Message
                 </p>
-                <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                <div className="p-4 bg-[var(--key-bg-deep)]/60 border border-[var(--key-border)] rounded-2xl text-xs text-[var(--key-text)] leading-relaxed whitespace-pre-wrap">
                   {selectedTicket.message}
-                </p>
+                </div>
               </div>
 
               {selectedTicket.attachments.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                  <p className="text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-widest mb-1.5">
                     Attachments
                   </p>
                   <ul className="space-y-1">
                     {selectedTicket.attachments.map((name) => (
                       <li
                         key={name}
-                        className="text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 flex items-center gap-1.5"
+                        className="text-xs text-[var(--key-text)] bg-[var(--key-bg-soft)] border border-[var(--key-border)] rounded-lg px-3 py-2 flex items-center gap-1.5"
                       >
-                        <Paperclip className="h-3.5 w-3.5 text-slate-400" />
+                        <Paperclip className="h-3.5 w-3.5 text-[var(--key-muted)]" />
                         {name}
                       </li>
                     ))}
@@ -672,12 +672,12 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+              <div className="flex flex-wrap gap-2 pt-3 border-t border-[var(--key-border)]">
                 {selectedTicket.status !== "Resolved" && selectedTicket.status !== "Closed" && (
                   <button
                     type="button"
                     onClick={() => updateTicketStatus(selectedTicket, "Resolved")}
-                    className="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    className="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
                   >
                     Mark resolved
                   </button>
@@ -686,7 +686,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                   <button
                     type="button"
                     onClick={() => updateTicketStatus(selectedTicket, "Closed")}
-                    className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200"
+                    className="px-3 py-2 rounded-xl text-xs font-bold bg-[var(--key-bg-soft)] text-[var(--key-text)] border border-[var(--key-border)] hover:bg-[var(--key-bg-deep)] transition-colors"
                   >
                     Close ticket
                   </button>
@@ -694,7 +694,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
                 <button
                   type="button"
                   onClick={() => deleteTicket(selectedTicket)}
-                  className="px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-100 inline-flex items-center gap-1"
+                  className="px-3 py-2 rounded-xl text-xs font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20 transition-colors inline-flex items-center gap-1"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Delete
@@ -706,7 +706,7 @@ export default function ContactSupportScreen({ user, onNavigate }: ContactSuppor
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-slate-900 text-white border border-slate-800 text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
+        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-bold py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
           {toast}
         </div>
       )}
