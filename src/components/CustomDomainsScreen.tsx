@@ -836,7 +836,7 @@ export default function CustomDomainsScreen({
           <HowItWorksDialog
             open={howItWorksOpen}
             onClose={() => setHowItWorksOpen(false)}
-            cnameTarget={platformConfig?.cnameTarget || platformConfig?.platformUrl || "keylink360.mindflo.today"}
+            cnameTarget={platformConfig?.cnameTarget || platformConfig?.platformUrl || "keylink360.in"}
             aRecordTarget={platformConfig?.aRecordTarget || "69.46.46.98"}
           />,
           document.body

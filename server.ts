@@ -33,6 +33,8 @@ import { createLinkRotatorsRouter } from "./server/linkRotators/routes";
 import { createPaymentsRouter } from "./server/payments/routes";
 import { createAdminRouter } from "./server/admin/routes";
 import { createBillingRouter } from "./server/billing/routes";
+import { createAiRouter } from "./server/ai/routes";
+import { createWhatsAppRouter } from "./server/whatsapp/routes";
 import { checkResourceQuota } from "./server/billing/quotaGuard";
 import {
   recordLinkRotatorClick,
@@ -242,6 +244,8 @@ app.use("/api/short-links", createShortLinksRouter());
 app.use("/api/payments", createPaymentsRouter());
 app.use("/api/admin", createAdminRouter());
 app.use("/api/billing", createBillingRouter());
+app.use("/api/ai", createAiRouter());
+app.use("/api/whatsapp", createWhatsAppRouter());
 
 /** Authenticated QR list — includes exact server-side scan counts. */
 app.get("/api/qr-codes", requireAuth, (req, res) => {

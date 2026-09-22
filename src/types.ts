@@ -1,4 +1,5 @@
 export enum ScreenId {
+  HOME = "HOME",
   LOGIN = "LOGIN",
   DASHBOARD = "DASHBOARD",
   BIO_PAGES = "BIO_PAGES",
@@ -12,6 +13,7 @@ export enum ScreenId {
   PIXELS = "PIXELS",
   MEDIA_LIBRARY = "MEDIA_LIBRARY",
   CUSTOM_DOMAINS = "CUSTOM_DOMAINS",
+  SETTINGS = "SETTINGS",
   HELP_CENTER = "HELP_CENTER",
   CONTACT_SUPPORT = "CONTACT_SUPPORT",
   ACCOUNT = "ACCOUNT",
@@ -28,6 +30,15 @@ export interface UserProfile {
   mfaEnabled?: boolean;
 }
 
+export type DeviceViewportMode = "mobile" | "tablet" | "laptop" | "desktop";
+
+export type DeviceTargetScope =
+  | "mobile_only"
+  | "mobile_tablet"
+  | "mobile_tablet_laptop"
+  | "all_devices"
+  | "auto_adaptive";
+
 export interface BioPage {
   id: string;
   title: string;
@@ -40,6 +51,8 @@ export interface BioPage {
   handle?: string;
   /** Bio link page (default) or full customizable Thanks page after form/button submit. */
   pageKind?: "bio" | "thanks";
+  /** Target device scope: Mobile only, Mobile+Tablet, Mobile+Tablet+Laptop, All Devices, or Auto-Adaptive. */
+  deviceScope?: DeviceTargetScope;
   /** True while editing a template before Save Draft / Publish — hidden from Bio Pages history. */
   isUncommitted?: boolean;
 }
@@ -322,7 +335,7 @@ export interface CustomDomainPlatformConfig {
   registrars: { id: string; name: string; dnsHelpUrl: string }[];
 }
 
-/** Free tier address: {slug}.keylink360.mindflo.today */
+/** Free tier address: {slug}.keylink360.in */
 export interface PlatformSubdomain {
   id: string;
   slug: string;
@@ -341,14 +354,85 @@ export interface HelpArticle {
   excerpt: string;
   readTime: string;
   content?: string;
+  lang?: "en" | "ta" | "hi";
+  translations?: {
+    ta?: { title: string; excerpt: string; content: string };
+    hi?: { title: string; excerpt: string; content: string };
+  };
 }
 
-/** Bio Page Editor block — supports extra widget fields via index signature */
+export type BlockDeviceVisibility = "all" | "mobile_only" | "desktop_only";
+export type BlockColumnSpan = "full" | "half";
+
+/** Bricks Builder & WordPress Developer-grade block visual styles */
+export interface BlockDeveloperStyles {
+  // Spacing (Box Model)
+  marginTop?: number;
+  marginRight?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  paddingTop?: number;
+  paddingRight?: number;
+  paddingBottom?: number;
+  paddingLeft?: number;
+  isPaddingLinked?: boolean;
+  isMarginLinked?: boolean;
+
+  // Typography
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: string;
+  lineHeight?: number;
+  letterSpacing?: number;
+  textTransform?: "none" | "uppercase" | "lowercase" | "capitalize";
+  textAlign?: "left" | "center" | "right" | "justify";
+  textColor?: string;
+
+  // Background
+  bgType?: "default" | "solid" | "gradient" | "glass" | "transparent";
+  bgColor?: string;
+  bgGradientFrom?: string;
+  bgGradientTo?: string;
+  bgGradientAngle?: number;
+  bgBackdropBlur?: number;
+
+  // Border & Radius
+  borderStyle?: "none" | "solid" | "dashed" | "dotted";
+  borderWidth?: number;
+  borderColor?: string;
+  borderRadiusTopLeft?: number;
+  borderRadiusTopRight?: number;
+  borderRadiusBottomRight?: number;
+  borderRadiusBottomLeft?: number;
+  isRadiusLinked?: boolean;
+
+  // Box Shadow
+  boxShadowPreset?: "none" | "subtle" | "soft" | "deep" | "glow-cyan" | "glow-purple" | "custom";
+  shadowX?: number;
+  shadowY?: number;
+  shadowBlur?: number;
+  shadowSpread?: number;
+  shadowColor?: string;
+
+  // Developer Controls (Blocks Edit Component Locking & Custom CSS)
+  customCssClass?: string;
+  customInlineCss?: string;
+  customAriaLabel?: string;
+  isLocked?: boolean;
+  isHidden?: boolean;
+}
+
+/** Bio Page Editor block — supports extra widget fields via index signature and developer styles */
 export interface BioEditorBlock {
   id: string;
   type: string;
   label: string;
   value: string;
+  deviceVisibility?: BlockDeviceVisibility;
+  colSpan?: BlockColumnSpan;
+  styles?: BlockDeveloperStyles;
+  isLocked?: boolean;
+  isHidden?: boolean;
   [key: string]: unknown;
 }
 
@@ -365,7 +449,12 @@ export type BioPagePreviewTheme =
   | "slate"
   | "gold"
   | "coral"
-  | "arctic";
+  | "arctic"
+  | "glass_dark"
+  | "glass_neon"
+  | "cyberpunk"
+  | "aurora"
+  | "emerald_luxe";
 
 export type CoverFitMode = "cover" | "contain" | "fill";
 export type CoverFocusPoint = "center" | "top" | "bottom" | "left" | "right";
@@ -392,6 +481,20 @@ export interface BioCoverPhotoSettings {
   marginY: number;
 }
 
+export interface BioAiAssistantSettings {
+  enabled: boolean;
+  botName?: string;
+  welcomeMessage?: string;
+  avatarUrl?: string;
+  primaryColor?: string;
+  businessName?: string;
+  businessDescription?: string;
+  customFaqs?: Array<{ question: string; answer: string }>;
+  contactPhone?: string;
+  contactEmail?: string;
+  autoLeadCapture?: boolean;
+}
+
 export interface BioPagePreviewDetails {
   title: string;
   bio: string;
@@ -412,6 +515,10 @@ export interface BioPagePreviewDetails {
   /** Amount in INR rupees (e.g. 499). Server converts to paise. */
   paymentAmountInr?: number;
   paymentDescription?: string;
+  /** AI Sales & Lead Capture Assistant */
+  aiAssistant?: BioAiAssistantSettings;
+  /** Target device scope: Mobile only, Mobile+Tablet, Mobile+Tablet+Laptop, All Devices, or Auto-Adaptive. */
+  deviceScope?: DeviceTargetScope;
 }
 
 /** Full restorable editor state for drafts and templates */
@@ -430,6 +537,8 @@ export interface BioEditorState {
     paymentEnabled?: boolean;
     paymentAmountInr?: number;
     paymentDescription?: string;
+    aiAssistant?: BioAiAssistantSettings;
+    deviceScope?: DeviceTargetScope;
   };
   blocks: BioEditorBlock[];
   thankYouBlocks?: BioEditorBlock[];
@@ -479,25 +588,52 @@ export interface PublishSettings {
   updatedAt: string;
 }
 
+export type NotificationStatus =
+  | "completed"
+  | "pending"
+  | "waiting"
+  | "canceled"
+  | "loading"
+  | "processing"
+  | "proceed"
+  | "delivered"
+  | "upcoming"
+  | "awaiting"
+  | "missing";
+
+export type NotificationStage =
+  | "before_build"
+  | "building"
+  | "after_publish"
+  | "workspace_activity";
+
 export type NotificationType =
   | "page_published"
   | "draft_saved"
   | "template_saved"
   | "template_used"
   | "page_duplicated"
+  | "page_created"
+  | "page_deleted"
   | "contact_added"
   | "analytics_event"
   | "qr_generated"
   | "pixel_added"
+  | "domain_updated"
+  | "campaign_status"
+  | "workspace_sync"
   | "general";
 
 export interface AppNotification {
   id: string;
   type: NotificationType;
+  status?: NotificationStatus;
+  stage?: NotificationStage;
   title: string;
   message: string;
   read: boolean;
   createdAt: string;
   targetScreen?: ScreenId;
+  actionLabel?: string;
   meta?: Record<string, string>;
 }

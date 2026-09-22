@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Smartphone,
   Link2,
@@ -28,9 +28,14 @@ import {
   Heart,
   ShieldCheck,
   Zap,
-  Star
+  Star,
+  Bot,
+  MessageCircle,
+  Languages,
+  Send
 } from "lucide-react";
 import KeyLogo3D from "./KeyLogo3D";
+import HeroGroupDevicesMockup from "./HeroGroupDevicesMockup";
 
 interface LandingPageProps {
   onGetStarted?: () => void;
@@ -59,16 +64,30 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const groupDevicesVideoRef = useRef<HTMLVideoElement>(null);
 
   // Guarantee video playback immediately on load
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch((err) => {
-        console.log("Autoplay handled:", err);
+        console.log("Autoplay handled 1:", err);
+      });
+    }
+    if (groupDevicesVideoRef.current) {
+      groupDevicesVideoRef.current.play().catch((err) => {
+        console.log("Autoplay handled group devices:", err);
       });
     }
   }, []);
 
+
+  // Continuous Non-Stop Auto-Slider for Live Templates / Devices Mockup
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTemplate((prev) => (prev + 1) % 7);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [activeTemplate]);
 
   // Auto-rotate testimonials when not hovered
   useEffect(() => {
@@ -445,6 +464,14 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
       a: "Yes, absolutely! You can link any domain you already own (like yourname.com or links.yourname.com). KeyLink360 automatically gives you free lifetime SSL security so all your visitors see a secure green padlock."
     },
     {
+      q: "How does the AI Sales Assistant on my Bio Page work?",
+      a: "Powered by Google Gemini 1.5 Flash (Free Tier), your AI Sales Assistant greets visitors 24/7, answers product & pricing queries using your custom FAQs, recommends items, and captures visitor phone numbers directly into your KeyLink360 CRM at ₹0 platform cost."
+    },
+    {
+      q: "How does WhatsApp Automation work (Cloud API & QR Bot)?",
+      a: "KeyLink360 gives you two flexible options: Connect Meta's Official WhatsApp Cloud API (with 1,000 free monthly conversations) for official automated payment & order alerts, OR connect in 10 seconds via WhatsApp Web QR Scanner for instant automated replies with human-like anti-spam delays."
+    },
+    {
       q: "What if I print my QR code on 10,000 product boxes and want to change the link later?",
       a: "That's the magic of KeyLink360 Dynamic QR codes! You can change the target website or offer link anytime right from your dashboard. Even after you print thousands of boxes, flyers, or business cards, the QR code instantly opens your newest page without reprinting a single box."
     },
@@ -453,8 +480,12 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
       a: "It takes just 1 minute! Simply add your Razorpay details, and your customers can pay you directly using Google Pay, PhonePe, Paytm, UPI, Debit/Credit Cards, or Net Banking on your page. The money goes directly into your bank account."
     },
     {
+      q: "Are tutorials available in Tamil and Hindi?",
+      a: "Yes! Our integrated Help Center and User Guides are fully available in English, தமிழ் (Tamil), and हिन्दी (Hindi) with step-by-step instructions for Bio AI Chat, WhatsApp Cloud API, and QR Bot setup."
+    },
+    {
       q: "Is the Starter Free plan truly free forever without hidden charges?",
-      a: "Yes! The Starter Free plan is 100% free forever. You get unlimited bio pages, your free yourname.keylink360.today address, dynamic QR codes, short links, and customer lead forms with zero credit card needed."
+      a: "Yes! The Starter Free plan is 100% free forever. You get unlimited bio pages, your free yourname.keylink360.today address, dynamic QR codes, short links, AI Chat Widget, and customer lead forms with zero credit card needed."
     },
     {
       q: "Can I manage multiple businesses or client brands under one account?",
@@ -527,7 +558,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
           preload="auto"
           className="w-full h-full object-cover opacity-60 filter brightness-95 contrast-110 scale-105"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
+          <source src="/herobg1-video.mp4" type="video/mp4" />
         </video>
         {/* Cinematic Soft Dark Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-slate-950/40 to-[#05070d]" />
@@ -644,7 +675,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
             <button
               type="button"
               onClick={() => scrollToSection("pricing")}
-              className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-black text-slate-950 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 shadow-[0_0_24px_rgba(0,240,255,0.45)] transition-all transform hover:scale-[1.02] cursor-pointer"
+              className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-black text-slate-950 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
             >
               <span>Get Started Free</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -730,12 +761,84 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
       </header>
 
       {/* ===================== HERO SECTION ===================== */}
-      {/* Left: SAMSUNG GALAXY S22 ULTRA Skin | Right: Deeply Human, Touching Headline & Claim Input */}
-      <section className="relative pt-24 pb-20 sm:pt-28 sm:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10">
+      {/* Left: Deeply Human, Touching Headline & Claim Input | Right: SAMSUNG GALAXY S22 ULTRA Skin */}
+      <section className="relative pt-24 pb-4 sm:pt-28 sm:pb-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* LEFT COLUMN: REAL SAMSUNG GALAXY S22 ULTRA SKIN (SCREEN BEZEL ONLY, NO BACKCASE LOOK) */}
+          
+          {/* LEFT COLUMN: Deeply Human, Touching Headline & Claim Input */}
+          <div className="lg:col-span-7 space-y-7 text-center lg:text-left order-1">
+            {/* Live Status Beacon */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-cyan-300 text-xs font-semibold tracking-wider uppercase backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+              </span>
+              <span>CRAFTED FOR CREATORS, SELLERS & PASSIONATE BUILDERS</span>
+            </div>
+
+            {/* Main Headline (Touching, Inspiring & Clear) */}
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.12] text-white">
+              Your Life's Work, Products & Passion{" "}
+              <br className="hidden sm:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400">
+                All in One Beautiful Link.
+              </span>
+            </h1>
+
+            {/* Emotionally Resonant Subtitle */}
+            <p className="text-base sm:text-lg text-slate-300/95 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+              You pour your heart and soul into what you create. KeyLink360 gives you a stunning, personalized mobile home to share your story, showcase your products, book appointments, and collect instant UPI payments —  completely on your own terms.
+            </p>
+
+            {/* Username Claim Form (Fresh Page Navigation) */}
+            <form
+              onSubmit={handleClaim}
+              className="max-w-xl mx-auto lg:mx-0 p-1.5 sm:p-2 bg-slate-900/90 border border-slate-700/80 rounded-2xl sm:rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-2xl flex flex-col sm:flex-row items-center gap-2 group hover:border-cyan-500/60 transition-all duration-300"
+            >
+              <div className="flex items-center w-full px-4 py-2 sm:py-1">
+                <span className="text-slate-400 font-mono text-sm sm:text-base select-none shrink-0">
+                  keylink360.today/
+                </span>
+                <input
+                  type="text"
+                  value={handleInput}
+                  onChange={(e) => setHandleInput(e.target.value)}
+                  placeholder="yourname"
+                  className="w-full bg-transparent border-none outline-none font-bold text-white placeholder-slate-500 text-sm sm:text-base px-1.5"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl sm:rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 font-black text-sm whitespace-nowrap shadow-[0_0_24px_rgba(0,240,255,0.45)] transition-all transform hover:scale-[1.02] cursor-pointer"
+              >
+                Create Your Free Link in 2 Mins →
+              </button>
+            </form>
+
+            {/* Trust & Guarantee Badges */}
+            <div className="pt-1 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs sm:text-sm text-slate-300 font-medium">
+              <span className="flex items-center gap-1.5">
+                <Heart className="w-4 h-4 text-pink-400 shrink-0 fill-pink-400/20" />
+                100% Free Forever Plan
+              </span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                Custom Domain with Free SSL
+              </span>
+              <span className="flex items-center gap-1.5">
+                <QrCode className="w-4 h-4 text-cyan-400 shrink-0" />
+                Dynamic QR Codes That Never Expire
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+                Instant UPI & Razorpay Payments
+              </span>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: REAL SAMSUNG GALAXY S22 ULTRA SKIN (SCREEN BEZEL ONLY, NO BACKCASE LOOK) */}
           <div
-            className="lg:col-span-5 flex flex-col items-center justify-center relative select-none order-2 lg:order-1"
+            className="lg:col-span-5 flex flex-col items-center justify-center relative select-none order-2"
             onMouseEnter={() => setIsHoveringPhone(true)}
             onMouseLeave={() => setIsHoveringPhone(false)}
           >
@@ -758,17 +861,17 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               {/* 4K 3D GLOSSY SAMSUNG S22 ULTRA CHASSIS — matches reference exactly */}
               <div className="relative w-[252px] sm:w-[270px]">
 
-                {/* â”€â”€ RIGHT: Volume Up & Down (extruded metal with specular) â”€â”€ */}
+                {/* ── RIGHT: Volume Up & Down (extruded metal with specular) ── */}
                 <div className="absolute -right-[4px] top-[86px] w-[4px] h-7 z-40"
                   style={{ background: "linear-gradient(to right, #1a1a1a, #444, #2a2a2a)", borderRadius: "0 3px 3px 0", boxShadow: "inset -1px 0 1px rgba(255,255,255,0.18), 1px 0 3px rgba(0,0,0,0.8)" }} />
                 <div className="absolute -right-[4px] top-[124px] w-[4px] h-12 z-40"
                   style={{ background: "linear-gradient(to right, #1a1a1a, #444, #2a2a2a)", borderRadius: "0 3px 3px 0", boxShadow: "inset -1px 0 1px rgba(255,255,255,0.18), 1px 0 3px rgba(0,0,0,0.8)" }} />
 
-                {/* â”€â”€ LEFT: Power/Bixby Button â”€â”€ */}
+                {/* ── LEFT: Power/Bixby Button ── */}
                 <div className="absolute -left-[4px] top-[104px] w-[4px] h-10 z-40"
                   style={{ background: "linear-gradient(to left, #1a1a1a, #444, #2a2a2a)", borderRadius: "3px 0 0 3px", boxShadow: "inset 1px 0 1px rgba(255,255,255,0.18), -1px 0 3px rgba(0,0,0,0.8)" }} />
 
-                {/* â”€â”€ OUTER BODY: Deep 4K Gloss Black Glass Frame â”€â”€ */}
+                {/* ── OUTER BODY: Deep 4K Gloss Black Glass Frame ── */}
                 <div style={{
                   borderRadius: "36px",
                   padding: "5px",
@@ -776,7 +879,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
                   boxShadow: "0 40px 90px -15px rgba(0,0,0,0.99), 0 0 0 0.5px rgba(255,255,255,0.06), inset 0 1.5px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,1), inset 2px 0 4px rgba(255,255,255,0.03), inset -2px 0 4px rgba(255,255,255,0.03)"
                 }}>
 
-                  {/* â”€â”€ TOP GLASS SPECULAR REFLECTION (4K depth effect) â”€â”€ */}
+                  {/* ── TOP GLASS SPECULAR REFLECTION (4K depth effect) ── */}
                   <div style={{
                     position: "absolute", top: "5px", left: "18px", right: "18px", height: "45%",
                     borderRadius: "32px 32px 50% 50%",
@@ -784,7 +887,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
                     pointerEvents: "none", zIndex: 50
                   }} />
 
-                  {/* â”€â”€ INNER BEZEL: Pure Pitch Black â”€â”€ */}
+                  {/* ── INNER BEZEL: Pure Pitch Black ── */}
                   <div style={{
                     borderRadius: "31px",
                     padding: "2px",
@@ -792,12 +895,12 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
                     boxShadow: "inset 0 0 8px rgba(0,0,0,0.95)"
                   }}>
 
-                    {/* â”€â”€ AMOLED DISPLAY GLASS â”€â”€ */}
+                    {/* ── AMOLED DISPLAY GLASS ── */}
                     <div
                       className={`w-full flex flex-col text-slate-200 transition-colors duration-500 bg-gradient-to-b ${currentTemplate.themeBg}`}
                       style={{ height: "530px", borderRadius: "29px", overflow: "hidden" }}
                     >
-                      {/* â”€ Status Bar â”€ */}
+                      {/* ── Status Bar ── */}
                       <div className="w-full shrink-0 flex items-center justify-between px-4 pt-3 pb-1 z-30">
                         {/* Live Real Time */}
                         <span className="text-[11px] font-bold text-white tracking-tight tabular-nums">{liveTime}</span>
@@ -887,81 +990,45 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Deeply Human, Touching Headline & Claim Input */}
-          <div className="lg:col-span-7 space-y-7 text-center lg:text-left order-1 lg:order-2">
-            {/* Cyberpunk Live Status Beacon (Blinking Radar - NO emoji) */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/50 text-cyan-300 text-xs font-extrabold tracking-wider uppercase shadow-[0_0_24px_rgba(0,240,255,0.35)] backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-80"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400 shadow-[0_0_10px_#00f0ff]"></span>
-              </span>
-              <span>CRAFTED FOR CREATORS, SELLERS & PASSIONATE BUILDERS</span>
-            </div>
+        </div>
+      </section>
 
-            {/* Main Headline (Touching, Inspiring & Clear) */}
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.12] text-white">
-              Your Life's Work, Products & Passion{" "}
-              <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400 drop-shadow-[0_0_35px_rgba(0,240,255,0.45)]">
-                All in One Beautiful Link.
-              </span>
-            </h1>
+      {/* ===================== GROUP DEVICES SECTION (HEROBG2 VIDEO BACKGROUND) ===================== */}
+      <section id="group-devices" className="relative pt-0 pb-8 sm:pt-0 sm:pb-12 overflow-hidden bg-[#05070d] z-10">
+        {/* Background HD Video */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <video
+            ref={groupDevicesVideoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover opacity-60 filter brightness-95 contrast-110 scale-105"
+          >
+            <source src="/herobg2-video.mp4" type="video/mp4" />
+          </video>
+          {/* Seamless Cinematic Soft Dark Gradient Overlay (Zero Border Lines) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070d] via-slate-950/40 to-[#05070d]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-slate-950/40 to-[#05070d]" />
+        </div>
 
-            {/* Emotionally Resonant Subtitle */}
-            <p className="text-base sm:text-lg text-slate-300/95 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              You pour your heart and soul into what you create. KeyLink360 gives you a stunning, personalized mobile home to share your story, showcase your products, book appointments, and collect instant UPI payments — completely on your own terms.
-            </p>
-
-            {/* Username Claim Form (Fresh Page Navigation) */}
-            <form
-              onSubmit={handleClaim}
-              className="max-w-xl mx-auto lg:mx-0 p-1.5 sm:p-2 bg-slate-900/90 border border-slate-700/80 rounded-2xl sm:rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-2xl flex flex-col sm:flex-row items-center gap-2 group hover:border-cyan-500/60 transition-all duration-300"
-            >
-              <div className="flex items-center w-full px-4 py-2 sm:py-1">
-                <span className="text-slate-400 font-mono text-sm sm:text-base select-none shrink-0">
-                  keylink360.today/
-                </span>
-                <input
-                  type="text"
-                  value={handleInput}
-                  onChange={(e) => setHandleInput(e.target.value)}
-                  placeholder="yourname"
-                  className="w-full bg-transparent border-none outline-none font-bold text-white placeholder-slate-500 text-sm sm:text-base px-1.5"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl sm:rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 font-black text-sm whitespace-nowrap shadow-[0_0_24px_rgba(0,240,255,0.45)] transition-all transform hover:scale-[1.02] cursor-pointer"
-              >
-                Create Your Free Link in 2 Mins →
-              </button>
-            </form>
-
-            {/* Trust & Guarantee Badges */}
-            <div className="pt-1 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs sm:text-sm text-slate-300 font-medium">
-              <span className="flex items-center gap-1.5">
-                <Heart className="w-4 h-4 text-pink-400 shrink-0 fill-pink-400/20" />
-                100% Free Forever Plan
-              </span>
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                Custom Domain with Free SSL
-              </span>
-              <span className="flex items-center gap-1.5">
-                <QrCode className="w-4 h-4 text-cyan-400 shrink-0" />
-                Dynamic QR Codes That Never Expire
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Zap className="w-4 h-4 text-amber-400 shrink-0" />
-                Instant UPI & Razorpay Payments
-              </span>
-            </div>
-          </div>
+        {/* Group Devices Content Container */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+          <HeroGroupDevicesMockup
+            templates={templates}
+            currentTemplate={currentTemplate}
+            activeTemplateIndex={activeTemplate}
+            onNextTemplate={nextTemplate}
+            onPrevTemplate={prevTemplate}
+            onSelectTemplate={(idx) => setActiveTemplate(idx)}
+            onGetStarted={handleGoToRegister}
+          />
         </div>
       </section>
 
       {/* ===================== WHO IT'S FOR (3 VISUAL STORY CARDS) ===================== */}
-      <section id="solutions" className="py-24 border-t border-slate-800/80 bg-slate-950/60 relative z-10">
+      <section id="solutions" className="py-24 bg-slate-950/60 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
@@ -1246,9 +1313,171 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
         </div>
       </section>
 
+      {/* ===================== AI SALES & WHATSAPP AUTOMATION SHOWCASE ===================== */}
+      <section id="ai-automation" className="py-24 bg-gradient-to-b from-slate-950 via-[#060a14] to-slate-950 relative z-10 overflow-hidden border-y border-cyan-500/15">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-400/40 text-cyan-300 text-xs font-bold tracking-wide shadow-[0_0_15px_rgba(6,182,212,0.25)]">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>₹0 PLATFORM COST • NEXT-GEN AUTOMATION</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+              AI Sales Rep & <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-300 to-sky-400">WhatsApp Automation</span>
+            </h2>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Engage website visitors 24/7 with a smart AI sales agent, send instant Razorpay payment alerts, and automate customer chats on WhatsApp with zero extra software costs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Card 1: Bio AI Sales Assistant */}
+            <div className="p-7 rounded-3xl bg-slate-900/90 border border-cyan-500/40 hover:border-cyan-400 transition-all duration-300 hover:-translate-y-2 shadow-2xl flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-13 h-13 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/40 group-hover:scale-110 transition-transform">
+                    <Bot className="w-7 h-7" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-500/40">
+                    GEMINI 1.5 FLASH FREE
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                  Bio Website AI Sales Assistant
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                  A floating AI rep on your bio page that answers customer questions, explains pricing, recommends your products, and collects lead phone numbers automatically.
+                </p>
+                <ul className="space-y-2.5 text-xs text-slate-300/90 border-t border-slate-800 pt-4">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>24/7 Intelligent FAQs & Consultation</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>Auto Lead Sync to KeyLink360 CRM</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>Custom Welcome Greeting & Personality</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800/80">
+                <span className="text-[11px] font-semibold text-cyan-400 flex items-center gap-1">
+                  100% Free Google Gemini Free Tier →
+                </span>
+              </div>
+            </div>
+
+            {/* Card 2: Official WhatsApp Cloud API */}
+            <div className="p-7 rounded-3xl bg-slate-900/90 border border-emerald-500/40 hover:border-emerald-400 transition-all duration-300 hover:-translate-y-2 shadow-2xl flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-13 h-13 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40 group-hover:scale-110 transition-transform">
+                    <MessageCircle className="w-7 h-7" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500/40">
+                    META BYOK (1,000 FREE)
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                  Official WhatsApp Cloud API
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                  Connect your own Meta Cloud API credentials to send automated WhatsApp order confirmations, UPI payment receipts, and webhook auto-responders.
+                </p>
+                <ul className="space-y-2.5 text-xs text-slate-300/90 border-t border-slate-800 pt-4">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>1,000 Free Chats/Month from Meta</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Razorpay & UPI Payment Alert Webhooks</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Official Verified Business Number</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800/80">
+                <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+                  Zero Extra Markup — Pay Meta Directly →
+                </span>
+              </div>
+            </div>
+
+            {/* Card 3: 1-Click WhatsApp QR Bot */}
+            <div className="p-7 rounded-3xl bg-slate-900/90 border border-sky-500/40 hover:border-sky-400 transition-all duration-300 hover:-translate-y-2 shadow-2xl flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-13 h-13 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center border border-sky-500/40 group-hover:scale-110 transition-transform">
+                    <QrCode className="w-7 h-7" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-sky-950/90 text-sky-300 border border-sky-500/40">
+                    10-SEC QR CONNECT
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors">
+                  Instant WhatsApp QR Bot
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                  Scan 1 QR code right from your KeyLink360 dashboard to connect any personal or business WhatsApp number with smart anti-spam rate limiting.
+                </p>
+                <ul className="space-y-2.5 text-xs text-slate-300/90 border-t border-slate-800 pt-4">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                    <span>1-Click QR Code Scanner in Dashboard</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                    <span>Anti-Spam Safety Guard & Jitter Delays</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                    <span>Daily Safe Message Limit Tracker</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800/80">
+                <span className="text-[11px] font-semibold text-sky-400 flex items-center gap-1">
+                  100% Free & No Setup Fees →
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Multilingual Support Banner */}
+          <div className="mt-12 p-6 rounded-2xl bg-slate-900/70 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30 shrink-0">
+                <Languages className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Full Multi-Language Setup Guides Available</p>
+                <p className="text-xs text-slate-400">Step-by-step documentation with screenshots in <strong className="text-cyan-400">English</strong>, <strong className="text-amber-400">தமிழ் (Tamil)</strong>, and <strong className="text-emerald-400">हिन्दी (Hindi)</strong>.</p>
+              </div>
+            </div>
+            <Link
+              to="/support"
+              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors shrink-0 flex items-center gap-1.5"
+            >
+              <span>Explore Help Guides</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
 
       {/* ===================== DEEP REAL-TIME ANALYTICS SECTION (Go Deeper Than Any Spreadsheet) ===================== */}
-      <section className="py-20 border-t border-slate-800/80 bg-slate-950/40 relative z-10">
+      <section className="py-20 bg-slate-950/40 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
@@ -1364,17 +1593,18 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
       </section>
 
       {/* ===================== SIMPLE TRANSPARENT PRICING ===================== */}
-      <section id="pricing" className="py-20 bg-slate-950/70 border-t border-slate-800/80 relative z-10">
+      <section id="pricing" className="py-20 bg-slate-950/70 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/70 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
-              <span>Fair & Transparent</span>
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Fair, Transparent & Scalable</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
               Start Free. <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400">Upgrade When You Grow.</span>
             </h2>
             <p className="text-slate-400 text-sm sm:text-base">
-              No hidden fees, no credit card required. We believe every entrepreneur deserves great tools from day one.
+              No hidden fees, no surprise charges. Powering individual creators, fast-growing brands, and scaling enterprises from day one.
             </p>
 
             {/* Monthly / Yearly Switcher */}
@@ -1386,6 +1616,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
                 type="button"
                 onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
                 className="w-14 h-7 rounded-full bg-slate-800 p-1 relative border border-slate-700 transition-colors cursor-pointer"
+                aria-label="Toggle Monthly or Yearly Billing"
               >
                 <div
                   className={`w-5 h-5 rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-transform ${billingCycle === "yearly" ? "translate-x-7" : "translate-x-0"
@@ -1394,15 +1625,50 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               </button>
               <span className={`text-xs font-bold flex items-center gap-1.5 ${billingCycle === "yearly" ? "text-white" : "text-slate-400"}`}>
                 Yearly
-                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                  Save 50%
+                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                  Save up to 50%
                 </span>
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-            {/* Free Plan */}
+          {/* ================= SPECIAL 1ST-TIME USER TRIAL OFFER BOX ================= */}
+          <div className="max-w-4xl mx-auto mb-10 p-6 sm:p-7 rounded-3xl bg-slate-900/60 border border-slate-800 relative overflow-hidden backdrop-blur-xl hover:border-slate-700/80 transition-colors">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/80 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <span>EXCLUSIVE 1ST-TIME REGISTER SPECIAL OFFER</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white">
+                  Get Full Pro Business Access for Just <span className="text-amber-300">₹7</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+                  New to KeyLink360? Test-drive all <span className="text-cyan-300 font-semibold">₹199/month Pro features</span> (Custom Domains, Instant UPI, A/B Rotators, Pixels) for <span className="text-amber-300 font-bold">7 full days at just ₹7</span>. 1-time starter trial for newly registered accounts.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center md:items-end gap-3 shrink-0">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-amber-300">₹7</span>
+                  <span className="text-lg font-semibold text-slate-500 line-through">₹199</span>
+                  <span className="text-xs font-semibold text-slate-400">/ 7 days trial</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGoToRegister}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md transition-all transform hover:scale-[1.02] cursor-pointer"
+                >
+                  Claim ₹7 Trial Now →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ================= 3-COLUMN PLANS GRID ================= */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto items-stretch">
+            
+            {/* 1. Starter Free */}
             <div className="p-7 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between hover:border-slate-700 transition-colors">
               <div className="space-y-5">
                 <div>
@@ -1454,10 +1720,10 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               </div>
             </div>
 
-            {/* Pro Plan */}
+            {/* 2. Pro Business (Popular) */}
             <div className="p-7 sm:p-8 rounded-3xl bg-slate-900/90 border-2 border-cyan-500/60 shadow-[0_0_50px_rgba(0,240,255,0.2)] flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-gradient-to-l from-cyan-400 to-indigo-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-md">
-                Recommended
+                Most Popular
               </div>
 
               <div className="space-y-5">
@@ -1528,23 +1794,99 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
                 </button>
               </div>
             </div>
+
+            {/* 3. Enterprises Businesses */}
+            <div className="p-7 sm:p-8 rounded-3xl bg-slate-900/80 border-2 border-fuchsia-500/50 shadow-[0_0_40px_rgba(217,70,239,0.15)] flex flex-col justify-between relative overflow-hidden hover:border-fuchsia-500/80 transition-colors">
+              <div className="absolute top-0 right-0 bg-gradient-to-l from-fuchsia-500 to-purple-600 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-md">
+                VIP Enterprise
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <span>Enterprises Businesses</span>
+                    <Sparkles className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">For multi-brand agencies, high-traffic companies, and enterprise teams.</p>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 via-pink-400 to-purple-300">
+                      {billingCycle === "monthly" ? "₹299" : "₹2,999"}
+                    </span>
+                    <span className="text-lg sm:text-xl font-semibold text-slate-500 line-through">
+                      {billingCycle === "monthly" ? "₹799" : "₹5,000"}
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium">
+                      {billingCycle === "monthly" ? "/ month" : "/ year"}
+                    </span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-fuchsia-950/80 border border-fuchsia-500/30 text-fuchsia-300 text-[11px] font-bold">
+                    <span>Enterprise Deal {billingCycle === "monthly" ? "— Save 62%" : "— Save 40%"}</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-2.5 text-xs sm:text-sm text-slate-200">
+                  <li className="flex items-center gap-2 font-semibold text-white">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>Everything in Pro Business, plus:</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>Unlimited Custom Domains with Automated SSL</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>Multi-User Team Seats & Role Permissions</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>Dedicated 24/7 VIP Concierge & Account Manager</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>Custom White-Labeling (Remove KeyLink360 Branding)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>High-Volume Fast API & Real-Time Webhooks</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                    <span>99.99% Guaranteed SLA Uptime & Priority Link Routing</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-6">
+                <button
+                  type="button"
+                  onClick={handleGoToRegister}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-black text-sm shadow-[0_0_24px_rgba(217,70,239,0.4)] transition-all transform hover:scale-[1.02] cursor-pointer"
+                >
+                  Scale with Enterprises →
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* ===================== HUMAN-CENTRIC INTERACTIVE TESTIMONIALS SLIDER (6 REVIEWS) ===================== */}
+      {/* ===================== TYPICAL USE CASES & USER JOURNEYS (6 WORKFLOWS) ===================== */}
       <section className="py-24 bg-slate-950/50 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
-              <Heart className="w-3.5 h-3.5 text-pink-400 fill-pink-400/20" />
-              <span>Real People, Real Success</span>
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>TYPICAL USE CASES • USER JOURNEYS</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Loved by Thousands of <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400">Growing Businesses</span>
+              How KeyLink360 Powers <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400">Different Workflows</span>
             </h2>
             <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-              Hear directly from real founders, content creators, doctors, and brand owners who transformed their online revenue using KeyLink360.
+              Explore how creators, brands, local stores, and professional studios organize links, dynamic QRs, and direct checkouts.
             </p>
           </div>
 
@@ -1559,8 +1901,8 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               type="button"
               onClick={() => setTestimonialIndex((prev) => (prev - 1 + 6) % 6)}
               className="absolute -left-2 sm:left-0 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/95 hover:bg-slate-800 border border-slate-700 text-white flex items-center justify-center shadow-2xl backdrop-blur-xl transition-all transform hover:scale-110 hover:border-cyan-400 cursor-pointer active:scale-95"
-              title="Previous Review"
-              aria-label="Previous Review"
+              title="Previous Workflow"
+              aria-label="Previous Workflow"
             >
               <ChevronLeft className="w-6 h-6 text-cyan-400" />
             </button>
@@ -1570,63 +1912,63 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               {[0, 1, 2].map((offset) => {
                 const reviewList = [
                   {
-                    name: "Priya Sharma",
-                    role: "Founder, Aura Apparels",
+                    name: "D2C Brand Workflow",
+                    role: "Direct Mobile Commerce",
                     avatarBg: "from-cyan-500 to-indigo-600",
-                    initials: "PS",
-                    headline: '"Our online sales tripled within 3 weeks"',
-                    text: "As a solo fashion brand founder, KeyLink360 made my storefront look like a luxury mobile app. Customers love paying directly with Google Pay and UPI right on my bio page!",
-                    verified: "Verified Brand Founder",
+                    initials: "D2C",
+                    headline: "Unified bio storefront with direct UPI checkout",
+                    text: "Direct-to-consumer fashion and lifestyle brands use KeyLink360 to replace multi-step web checkouts with mobile-friendly bio catalogs and instant UPI payment links.",
+                    verified: "Fashion & Retail",
                     tagColor: "text-cyan-400 bg-cyan-950/80 border-cyan-500/30"
                   },
                   {
-                    name: "MS Vigensh",
-                    role: "Tech Creator (450k Subs)",
+                    name: "Content Creator Workflow",
+                    role: "Video & Affiliate Publishing",
                     avatarBg: "from-pink-500 to-orange-500",
-                    initials: "VR",
-                    headline: '"Dynamic QR codes saved us ₹45,000 in reprinting"',
-                    text: "I printed KeyLink360 dynamic QR codes on 15,000 product boxes. Whenever I launch a new YouTube video or discount preset, I update the link in seconds without reprinting anything!",
-                    verified: "Verified Creator",
+                    initials: "CC",
+                    headline: "Dynamic QR codes and organized affiliate cards",
+                    text: "YouTubers and reviewers use KeyLink360 to curate sponsor discount codes and print dynamic QR codes on merch packaging that can be updated anytime without reprinting.",
+                    verified: "Creator Economy",
                     tagColor: "text-pink-400 bg-pink-950/80 border-pink-500/30"
                   },
                   {
-                    name: "Dr. Rajesh",
-                    role: "Dermatologist & Studio Lead",
+                    name: "Healthcare & Studio Workflow",
+                    role: "Appointments & Consultations",
                     avatarBg: "from-emerald-500 to-teal-600",
-                    initials: "AD",
-                    headline: '"Clients book appointments 24/7 without phone calls"',
-                    text: "Our front desk used to get 50+ phone calls daily for appointment bookings. Now patients tap our KeyLink360 link on Instagram, pick a slot, and deposit advance fees seamlessly.",
-                    verified: "Verified Healthcare Studio",
+                    initials: "HS",
+                    headline: "Advance booking fee collection & reduced no-shows",
+                    text: "Clinics and advisory studios share a single booking hub where clients submit intake questions and confirm consultation slots with advance UPI deposits.",
+                    verified: "Healthcare & Studios",
                     tagColor: "text-emerald-400 bg-emerald-950/80 border-emerald-500/30"
                   },
                   {
-                    name: "Rajesh & Sneha Mehta",
-                    role: "Co-Founders, SpiceBistro",
+                    name: "Local Food & Retail Workflow",
+                    role: "Direct WhatsApp Ordering",
                     avatarBg: "from-amber-500 to-orange-600",
-                    initials: "RM",
-                    headline: '"Direct UPI orders saved us 30% Swiggy commission"',
-                    text: "KeyLink360 allowed us to share our direct digital food menu with dynamic UPI QR codes. We now process 200+ direct orders daily and save thousands in commission fees.",
-                    verified: "Verified Food Brand",
+                    initials: "LR",
+                    headline: "Digital menus and counter QR ordering",
+                    text: "Local cafes, bakeries, and neighborhood shops place dynamic QR stands on checkout counters, enabling walk-ins to view daily specials and order directly via WhatsApp.",
+                    verified: "Local Dining & Retail",
                     tagColor: "text-amber-400 bg-amber-950/80 border-amber-500/30"
                   },
                   {
-                    name: "MS Vignesh",
-                    role: "Founder & Lead Architect",
+                    name: "Digital Team & Agency Workflow",
+                    role: "Custom Domain Routing",
                     avatarBg: "from-cyan-500 via-indigo-500 to-violet-600",
-                    initials: "MV",
-                    headline: '"Connecting custom domains took less than 2 minutes"',
-                    text: "Managing 20+ client bio pages under individual custom domains was a nightmare until we found KeyLink360. The A/B link rotator alone doubled our ad campaign conversion rates.",
-                    verified: "Verified Agency Lead",
+                    initials: "DA",
+                    headline: "Multi-brand domain management and campaign stats",
+                    text: "Agencies and marketing teams connect custom subdomains with automated SSL and monitor real-time click telemetry across all active client campaigns.",
+                    verified: "Marketing & Agencies",
                     tagColor: "text-indigo-400 bg-indigo-950/80 border-indigo-500/30"
                   },
                   {
-                    name: "Krishna",
-                    role: "Handmade Jewelry Artisan",
+                    name: "Artisan & Solo Merchant Workflow",
+                    role: "Independent Storefronts",
                     avatarBg: "from-sky-500 to-cyan-600",
-                    initials: "KN",
-                    headline: '"My bio link feels like a luxury mobile shopping app"',
-                    text: "I used to send messy Google Drive links to buyers. KeyLink360 gave me a gorgeous mobile storefront with discount code popups. My customers are constantly complimenting it!",
-                    verified: "Verified Artisan Seller",
+                    initials: "AM",
+                    headline: "Mobile product showcases with copyable promo codes",
+                    text: "Independent artists and craft sellers build clean mobile storefronts featuring high-resolution galleries, customer inquiry forms, and one-tap discount codes.",
+                    verified: "Artisans & Crafts",
                     tagColor: "text-sky-400 bg-sky-950/80 border-sky-500/30"
                   }
                 ];
@@ -1681,8 +2023,8 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
               type="button"
               onClick={() => setTestimonialIndex((prev) => (prev + 1) % 6)}
               className="absolute -right-2 sm:right-0 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/95 hover:bg-slate-800 border border-slate-700 text-white flex items-center justify-center shadow-2xl backdrop-blur-xl transition-all transform hover:scale-110 hover:border-cyan-400 cursor-pointer active:scale-95"
-              title="Next Review"
-              aria-label="Next Review"
+              title="Next Workflow"
+              aria-label="Next Workflow"
             >
               <ChevronRight className="w-6 h-6 text-cyan-400" />
             </button>
@@ -1797,29 +2139,34 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">FEATURES</h4>
             <ul className="space-y-1.5 text-slate-400 text-xs">
               <li>
-                <button type="button" onClick={() => scrollToSection("features")} className="hover:text-cyan-400 transition-colors cursor-pointer">
-                  Mobile Bio Websites
-                </button>
+                <Link to="/features/bio-websites" className="hover:text-cyan-400 transition-colors">
+                  Mobile Bio Websites & AI Sales
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("features")} className="hover:text-cyan-400 transition-colors cursor-pointer">
-                  Short Links & Click Stats
-                </button>
+                <Link to="/support" className="hover:text-cyan-400 transition-colors">
+                  WhatsApp Cloud API & QR Bot
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("features")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/features/qr-studio" className="hover:text-cyan-400 transition-colors">
                   Dynamic QR Code Studio
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("features")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/features/short-links" className="hover:text-cyan-400 transition-colors">
+                  Short Links & Link Rotator
+                </Link>
+              </li>
+              <li>
+                <Link to="/features/razorpay-payments" className="hover:text-cyan-400 transition-colors">
                   Razorpay Direct Payments
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("pricing")} className="hover:text-cyan-400 transition-colors cursor-pointer">
-                  Custom Domain Names
-                </button>
+                <Link to="/features/custom-domains" className="hover:text-cyan-400 transition-colors">
+                  Custom Domain Names & SSL
+                </Link>
               </li>
             </ul>
           </div>
@@ -1829,24 +2176,24 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">SOLUTIONS</h4>
             <ul className="space-y-1.5 text-slate-400 text-xs">
               <li>
-                <button type="button" onClick={() => scrollToSection("solutions")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/solutions/creators" className="hover:text-cyan-400 transition-colors">
                   For Content Creators & Artists
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("solutions")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/solutions/marketplace-sellers" className="hover:text-cyan-400 transition-colors">
                   For Amazon & Marketplace Sellers
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("solutions")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/solutions/local-shops-d2c" className="hover:text-cyan-400 transition-colors">
                   For Local Shops & D2C Brands
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("solutions")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/solutions/service-studios" className="hover:text-cyan-400 transition-colors">
                   For Doctors, Salons & Studios
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -1856,19 +2203,19 @@ export default function LandingPage({ onGetStarted, onSignIn }: LandingPageProps
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">ACCOUNT</h4>
             <ul className="space-y-1.5 text-slate-400 text-xs">
               <li>
-                <button type="button" onClick={handleGoToLogin} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/login" className="hover:text-cyan-400 transition-colors">
                   Sign In to Dashboard
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={handleGoToRegister} className="hover:text-cyan-400 transition-colors font-bold text-cyan-400 cursor-pointer">
+                <Link to="/login?mode=register" className="hover:text-cyan-400 transition-colors font-bold text-cyan-400">
                   Create Free Account
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => scrollToSection("faq")} className="hover:text-cyan-400 transition-colors cursor-pointer">
+                <Link to="/support" className="hover:text-cyan-400 transition-colors">
                   Help & Support FAQ
-                </button>
+                </Link>
               </li>
             </ul>
           </div>

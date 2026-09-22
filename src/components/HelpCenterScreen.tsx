@@ -13,67 +13,53 @@ import {
   Clock,
   ThumbsUp,
   ThumbsDown,
-  CreditCard
+  CreditCard,
+  Sparkles,
+  Languages,
+  Check
 } from "lucide-react";
+import InteractiveSetupGuideModal from "./guides/InteractiveSetupGuideModal";
 import PageShell from "./layout/PageShell";
 
 function HelpArticleBody({ content }: { content: string }) {
-  const parts: Array<{ type: "text" | "table"; value: string }> = [];
-  const chunks = content.split(/\n(?=TABLE:)/);
-  for (const chunk of chunks) {
-    if (!chunk.startsWith("TABLE:")) {
-      if (chunk.trim()) parts.push({ type: "text", value: chunk.trim() });
-      continue;
-    }
-    const lines = chunk.split("\n");
-    const tableLines: string[] = [];
-    const rest: string[] = [];
-    let inTable = true;
-    for (let i = 1; i < lines.length; i += 1) {
-      const line = lines[i];
-      if (inTable && line.includes("|")) tableLines.push(line);
-      else {
-        inTable = false;
-        if (line.trim()) rest.push(line);
+  const parts: Array<{ type: "text" | "table" | "heading"; value: string }> = [];
+  const lines = content.split("\n");
+
+  let currentBlock: string[] = [];
+  for (const line of lines) {
+    if (line.startsWith("━━━━━━━━━━━━━━━━━━━━")) {
+      if (currentBlock.length) {
+        parts.push({ type: "text", value: currentBlock.join("\n").trim() });
+        currentBlock = [];
       }
+    } else if (line.startsWith("STEP ") || line.startsWith("HOW ") || line.startsWith("OVERVIEW") || line.startsWith("KEY BENEFIT") || line.startsWith("CRM ") || line.startsWith("ANTI-SPAM")) {
+      if (currentBlock.length) {
+        parts.push({ type: "text", value: currentBlock.join("\n").trim() });
+        currentBlock = [];
+      }
+      parts.push({ type: "heading", value: line });
+    } else {
+      currentBlock.push(line);
     }
-    if (tableLines.length >= 2) {
-      parts.push({ type: "table", value: tableLines.join("\n") });
-    }
-    if (rest.length) parts.push({ type: "text", value: rest.join("\n").trim() });
+  }
+  if (currentBlock.length) {
+    parts.push({ type: "text", value: currentBlock.join("\n").trim() });
   }
 
   return (
     <div className="space-y-4">
       {parts.map((part, index) => {
-        if (part.type === "table") {
-          const rows = part.value.split("\n").map((line) => line.split("|").map((cell) => cell.trim()));
-          const [header, ...body] = rows;
+        if (part.type === "heading") {
           return (
-            <div key={index} className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-              <table className="key-help-table">
-                <thead>
-                  <tr>
-                    {header.map((cell) => (
-                      <th key={cell}>{cell}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {body.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={`${rowIndex}-${cellIndex}`}>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div key={index} className="pt-2 border-b border-[var(--key-border)] pb-1">
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 font-mono">
+                {part.value}
+              </span>
             </div>
           );
         }
         return (
-          <p key={index} className="text-sm text-slate-700 leading-relaxed whitespace-pre-line font-medium">
+          <p key={index} className="text-xs sm:text-sm text-[var(--key-text)] leading-relaxed whitespace-pre-line font-medium opacity-90">
             {part.value}
           </p>
         );
@@ -91,18 +77,23 @@ const CATEGORY_META: Record<
   string,
   { icon: typeof BookOpen; color: string }
 > = {
-  "Getting Started": { icon: BookOpen, color: "text-blue-600 bg-blue-50" },
-  "Custom Domains": { icon: Globe, color: "text-emerald-600 bg-emerald-50" },
-  "APIs & Webhooks": { icon: Key, color: "text-purple-600 bg-purple-50" },
-  "Security & Privacy": { icon: Shield, color: "text-rose-500 bg-rose-50" },
-  Billing: { icon: CreditCard, color: "text-amber-600 bg-amber-50" }
+  "AI & Automation": { icon: Sparkles, color: "text-emerald-400 bg-emerald-500/15" },
+  "Getting Started": { icon: BookOpen, color: "text-blue-400 bg-blue-500/15" },
+  "Custom Domains": { icon: Globe, color: "text-teal-400 bg-teal-500/15" },
+  "APIs & Webhooks": { icon: Key, color: "text-purple-400 bg-purple-500/15" },
+  "Security & Privacy": { icon: Shield, color: "text-rose-400 bg-rose-500/15" },
+  Billing: { icon: CreditCard, color: "text-amber-400 bg-amber-500/15" }
 };
+
+type LanguageMode = "en" | "ta" | "hi";
 
 export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScreenProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
+  const [selectedLang, setSelectedLang] = useState<LanguageMode>("en");
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -132,24 +123,46 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
         name,
         count,
         icon: CATEGORY_META[name]?.icon || BookOpen,
-        color: CATEGORY_META[name]?.color || "text-slate-600 bg-slate-50"
+        color: CATEGORY_META[name]?.color || "text-slate-400 bg-slate-500/15"
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [articles]);
 
+  const getLocalizedArticle = (art: HelpArticle, lang: LanguageMode) => {
+    if (lang === "en" || !art.translations || !art.translations[lang]) {
+      return {
+        ...art,
+        displayTitle: art.title,
+        displayExcerpt: art.excerpt,
+        displayContent: art.content || art.excerpt
+      };
+    }
+    const t = art.translations[lang]!;
+    return {
+      ...art,
+      displayTitle: t.title || art.title,
+      displayExcerpt: t.excerpt || art.excerpt,
+      displayContent: t.content || art.content || art.excerpt
+    };
+  };
+
+  const localizedArticles = useMemo(() => {
+    return articles.map((art) => getLocalizedArticle(art, selectedLang));
+  }, [articles, selectedLang]);
+
   const filteredArticles = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    return articles.filter((article) => {
+    return localizedArticles.filter((article) => {
       const matchesCategory = !activeCategory || article.category === activeCategory;
       const matchesSearch =
         !query ||
-        article.title.toLowerCase().includes(query) ||
-        article.excerpt.toLowerCase().includes(query) ||
+        article.displayTitle.toLowerCase().includes(query) ||
+        article.displayExcerpt.toLowerCase().includes(query) ||
         article.category.toLowerCase().includes(query) ||
-        (article.content || "").toLowerCase().includes(query);
+        article.displayContent.toLowerCase().includes(query);
       return matchesCategory && matchesSearch;
     });
-  }, [articles, searchQuery, activeCategory]);
+  }, [localizedArticles, searchQuery, activeCategory]);
 
   const openArticle = (article: HelpArticle) => {
     setSelectedArticle(article);
@@ -163,46 +176,128 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
 
   const hasFilters = searchQuery.trim().length > 0 || activeCategory !== null;
 
+  const activeLocalizedSelected = selectedArticle
+    ? getLocalizedArticle(selectedArticle, selectedLang)
+    : null;
+
   return (
-    <PageShell>
-      <div className="bg-[var(--key-surface-strong)] border border-[var(--key-border)] rounded-2xl p-4 sm:p-8 text-center text-[var(--key-text)] space-y-3 relative overflow-hidden shadow-lg" data-aos="fade-up">
-        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-sky-500/5 to-transparent pointer-events-none" />
-        <div className="relative space-y-3 z-10 max-w-lg mx-auto">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[var(--key-text)]">How can we help?</h2>
-          <p className="text-[var(--key-muted)] text-sm">
-            Search support articles or browse topics below.
+    <PageShell className="font-sans text-[var(--key-text)]">
+      {/* Header Banner with Language Switcher */}
+      <div className="bg-[var(--key-surface-strong)] border border-[var(--key-border)] rounded-2xl p-6 sm:p-8 text-center text-[var(--key-text)] space-y-4 relative overflow-hidden shadow-lg" data-aos="fade-up">
+        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-emerald-500/5 to-transparent pointer-events-none" />
+        
+        <div className="relative space-y-3 z-10 max-w-xl mx-auto">
+          {/* Multi-Language Switcher Pills */}
+          <div className="inline-flex items-center gap-1.5 p-1 bg-[var(--key-surface)] rounded-2xl border border-[var(--key-border)] mb-2 shadow-inner">
+            <span className="text-[10px] font-bold text-[var(--key-muted)] uppercase tracking-wider px-2 flex items-center gap-1">
+              <Languages className="h-3.5 w-3.5 text-indigo-400" /> Language:
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedLang("en")}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                selectedLang === "en"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-[var(--key-muted)] hover:text-[var(--key-text)]"
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLang("ta")}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                selectedLang === "ta"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-[var(--key-muted)] hover:text-[var(--key-text)]"
+              }`}
+            >
+              தமிழ் (Tamil)
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLang("hi")}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                selectedLang === "hi"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-[var(--key-muted)] hover:text-[var(--key-text)]"
+              }`}
+            >
+              हिन्दी (Hindi)
+            </button>
+          </div>
+
+          <h2 className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[var(--key-text)]">
+            {selectedLang === "ta"
+              ? "நாங்கள் உங்களுக்கு எவ்வாறு உதவலாம்?"
+              : selectedLang === "hi"
+                ? "हम आपकी कैसे मदद कर सकते हैं?"
+                : "How can we help you?"}
+          </h2>
+          <p className="text-[var(--key-muted)] text-xs sm:text-sm">
+            {selectedLang === "ta"
+              ? "AI Sales Bot, WhatsApp Cloud API, QR ஸ்கேனர் மற்றும் டொமைன் அமைவு வழிகாட்டிகள்."
+              : selectedLang === "hi"
+                ? "AI सेल्स बॉट, व्हाट्सएप ऑटोमेशन, QR कोड और डोमेन सेटअप के आसान गाइड्स।"
+                : "Explore step-by-step setup guides for AI Sales Assistant, WhatsApp Cloud API, and Bio Websites."}
           </p>
 
-          <div className="key-icon-field pt-3">
-            <span className="key-icon-field__icon">
-              <Search className="h-4 w-4 text-[var(--key-muted)]" />
-            </span>
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search guides, setup answers..."
-              aria-label="Search help articles"
-              className="key-icon-field__input w-full bg-white text-slate-900 border border-transparent rounded-2xl py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/30 transition-all shadow-inner"
-            />
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setIsGuideModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 hover:from-indigo-400 hover:to-cyan-400 text-white font-bold text-xs shadow-md transition-all hover:scale-105 cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 text-cyan-300" />
+              <span>
+                {selectedLang === "ta"
+                  ? "நேரடி செயல்முறை வழிகாட்டியைத் திற (Interactive Visual Guide) →"
+                  : selectedLang === "hi"
+                    ? "इंटरएक्टिव विजुअल गाइड खोलें (Visual Setup Guide) →"
+                    : "Launch Interactive Step-by-Step Visual Guide →"}
+              </span>
+            </button>
+          </div>
+
+          <div className="pt-2 max-w-md mx-auto">
+            <div className="relative">
+              <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--key-muted)]" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={
+                  selectedLang === "ta"
+                    ? "வழிகாட்டிகள், AI, WhatsApp அல்லது DNS தேடவும்..."
+                    : selectedLang === "hi"
+                      ? "गाइड्स, AI, WhatsApp या DNS सर्च करें..."
+                      : "Search guides, AI bot, WhatsApp setup, domains..."
+                }
+                className="w-full bg-[var(--key-input-bg)] text-[var(--key-text)] border border-[var(--key-input-border)] rounded-2xl pl-10 pr-4 py-3 text-xs placeholder-[var(--key-muted)] focus:outline-none focus:border-indigo-500 shadow-inner"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-6">
+      {/* Category Grid */}
+      <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h3 className="font-display font-bold text-lg text-gray-900 tracking-tight">Browse Categories</h3>
+          <h3 className="font-display font-bold text-base text-[var(--key-text)] tracking-tight">
+            Browse Knowledge Categories
+          </h3>
           {hasFilters && (
             <button
               type="button"
               onClick={clearFilters}
-              className="text-xs font-bold text-[#4F46E5] hover:underline self-start sm:self-auto"
+              className="text-xs font-bold text-indigo-400 hover:underline self-start sm:self-auto"
             >
               Clear filters
             </button>
           )}
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categories.map((cat) => {
             const CatIcon = cat.icon;
             const isActive = activeCategory === cat.name;
@@ -210,28 +305,27 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
               <button
                 key={cat.name}
                 type="button"
-                aria-pressed={isActive}
                 onClick={() =>
                   setActiveCategory((current) => (current === cat.name ? null : cat.name))
                 }
-                className={`key-glass-card p-4 sm:p-8 text-left transition-all flex flex-col justify-between min-w-0 ${
+                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                   isActive
-                    ? "border-[#4F46E5] ring-2 ring-indigo-100 shadow-md"
-                    : "border-gray-100 hover:border-indigo-150 hover:shadow-md"
+                    ? "bg-indigo-600/15 border-indigo-500 ring-2 ring-indigo-500/20 shadow-md"
+                    : "bg-[var(--key-surface-strong)] border-[var(--key-border)] hover:border-indigo-500/40 hover:bg-[var(--key-surface-hover)]"
                 }`}
               >
                 <div>
                   <div
-                    className={`h-10 w-10 rounded-xl ${cat.color} flex items-center justify-center shrink-0 mb-3 sm:mb-4`}
+                    className={`h-9 w-9 rounded-xl ${cat.color} flex items-center justify-center shrink-0 mb-3`}
                   >
-                    <CatIcon className="h-5 w-5" />
+                    <CatIcon className="h-4 w-4" />
                   </div>
-                  <h4 className="font-display font-semibold text-sm text-gray-950 leading-tight">
+                  <h4 className="font-display font-bold text-xs text-[var(--key-text)] leading-tight">
                     {cat.name}
                   </h4>
                 </div>
-                <span className="text-[11px] text-gray-400 font-semibold block mt-3 sm:mt-4">
-                  {cat.count} article{cat.count === 1 ? "" : "s"}
+                <span className="text-[10px] text-[var(--key-muted)] font-semibold block mt-3">
+                  {cat.count} guide{cat.count === 1 ? "" : "s"}
                 </span>
               </button>
             );
@@ -239,73 +333,69 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
         </div>
       </div>
 
-      <div className="space-y-6">
-        <h3 className="font-display font-bold text-lg text-gray-900 tracking-tight">
+      {/* Articles Grid */}
+      <div className="space-y-4">
+        <h3 className="font-display font-bold text-base text-[var(--key-text)] tracking-tight">
           {searchQuery
             ? `Search results for "${searchQuery}"`
             : activeCategory
               ? activeCategory
-              : "Frequently Asked Questions"}
+              : "Recommended Setup Guides"}
         </h3>
 
         {filteredArticles.length === 0 ? (
-          <div className="key-glass-card border-dashed p-5 sm:p-6 text-center space-y-3">
-            <p className="text-sm text-gray-500">
-              No articles found{searchQuery ? ` matching "${searchQuery}"` : ""}.
+          <div className="rounded-2xl border border-dashed border-[var(--key-border)] p-8 text-center space-y-3 bg-[var(--key-surface-strong)]">
+            <p className="text-xs text-[var(--key-muted)]">
+              No guides found{searchQuery ? ` matching "${searchQuery}"` : ""}.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {hasFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="text-[#4F46E5] text-sm font-semibold hover:underline"
-                >
-                  Clear filters
-                </button>
-              )}
-              {onNavigate && (
-                <button
-                  type="button"
-                  onClick={() => onNavigate(ScreenId.CONTACT_SUPPORT)}
-                  className="inline-flex items-center gap-1.5 bg-[#4F46E5] text-white px-4 py-2 rounded-xl text-xs font-bold"
-                >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  Contact support
-                </button>
-              )}
-            </div>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="text-indigo-400 text-xs font-bold hover:underline"
+              >
+                Clear search filters
+              </button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredArticles.map((art) => (
               <article
                 key={art.id}
-                className="key-glass-card p-4 sm:p-6 hover:shadow-md hover:border-indigo-50 transition-all flex flex-col justify-between min-w-0"
+                className="rounded-2xl border border-[var(--key-border)] bg-[var(--key-surface-strong)] p-5 hover:border-indigo-500/40 hover:shadow-lg transition-all flex flex-col justify-between"
               >
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="bg-indigo-50 text-[#4F46E5] text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {art.category}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 font-semibold">
+                    <span className="inline-flex items-center gap-1 text-[10px] text-[var(--key-muted)] font-mono">
                       <Clock className="h-3 w-3" />
                       {art.readTime}
                     </span>
                   </div>
-                  <h4 className="font-display font-semibold text-gray-900 text-base mt-2.5 leading-snug">
-                    {art.title}
+
+                  <h4 className="font-display font-bold text-[var(--key-text)] text-sm leading-snug">
+                    {art.displayTitle}
                   </h4>
-                  <p className="text-gray-500 text-xs mt-2 leading-relaxed line-clamp-3">
-                    {art.excerpt}
+                  <p className="text-[var(--key-muted)] text-xs leading-relaxed line-clamp-3">
+                    {art.displayExcerpt}
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => openArticle(art)}
-                  className="text-xs font-bold text-[#4F46E5] hover:text-[#4338CA] flex items-center gap-1 mt-4 transition-colors self-start"
+                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-4 transition-colors self-start"
                 >
-                  <span>Read article</span>
+                  <span>
+                    {selectedLang === "ta"
+                      ? "முழு வழிகாட்டியைப் படிக்கவும்"
+                      : selectedLang === "hi"
+                        ? "पूरा गाइड पढ़ें"
+                        : "Read interactive guide"}
+                  </span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </article>
@@ -314,49 +404,32 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
         )}
       </div>
 
-      <div className="key-section-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div className="min-w-0">
-          <h3 className="font-display font-bold text-gray-950 text-base">Still need help?</h3>
-          <p className="text-gray-500 text-xs mt-1">
-            Reach our support team for account, billing, or setup questions.
-          </p>
-        </div>
-        {onNavigate ? (
-          <button
-            type="button"
-            onClick={() => onNavigate(ScreenId.CONTACT_SUPPORT)}
-            className="inline-flex items-center justify-center gap-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm shrink-0"
-          >
-            <MessageSquare className="h-4 w-4" />
-            Contact Support
-          </button>
-        ) : null}
-      </div>
-
-      {selectedArticle && (
-        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      {/* Article Detail Modal */}
+      {selectedArticle && activeLocalizedSelected && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[100] flex items-center justify-center p-4">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="help-article-title"
-            className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col overflow-hidden"
+            className="bg-[var(--key-surface-strong)] rounded-2xl max-w-2xl w-full shadow-2xl border border-[var(--key-border)] max-h-[90vh] flex flex-col overflow-hidden text-[var(--key-text)] animate-in zoom-in-95 duration-200"
           >
-            <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-3 shrink-0">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="bg-indigo-50 text-[#4F46E5] text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-[var(--key-border)] flex items-start justify-between gap-3 shrink-0">
+              <div className="min-w-0 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                     {selectedArticle.category}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 font-semibold">
+                  <span className="inline-flex items-center gap-1 text-[10px] text-[var(--key-muted)] font-mono">
                     <Clock className="h-3 w-3" />
                     {selectedArticle.readTime}
                   </span>
                 </div>
                 <h3
                   id="help-article-title"
-                  className="font-display font-bold text-lg text-slate-900 leading-snug"
+                  className="font-display font-bold text-base sm:text-lg text-[var(--key-text)] leading-snug"
                 >
-                  {selectedArticle.title}
+                  {activeLocalizedSelected.displayTitle}
                 </h3>
               </div>
               <button
@@ -369,31 +442,31 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
                     setSearchParams(next, { replace: true });
                   }
                 }}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-full shrink-0"
-                aria-label="Close article"
+                className="text-[var(--key-muted)] hover:text-[var(--key-text)] p-1 rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-5 overflow-y-auto space-y-6 flex-1">
-              <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 sm:p-5">
-                <HelpArticleBody content={selectedArticle.content || selectedArticle.excerpt} />
+            {/* Modal Content */}
+            <div className="p-5 overflow-y-auto space-y-5 flex-1">
+              <div className="rounded-2xl bg-[var(--key-surface)] border border-[var(--key-border)] p-4 sm:p-5">
+                <HelpArticleBody content={activeLocalizedSelected.displayContent} />
               </div>
 
-              <div className="pt-3 border-t border-slate-100">
-                <p className="text-xs font-semibold text-slate-500 mb-2">Was this article helpful?</p>
+              <div className="pt-2 border-t border-[var(--key-border)] flex items-center justify-between">
+                <p className="text-xs font-semibold text-[var(--key-muted)]">Was this guide helpful?</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       setFeedback("up");
-                      triggerToast("Thanks for the feedback.");
+                      triggerToast("Thanks for the feedback!");
                     }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       feedback === "up"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                        : "bg-[var(--key-surface)] text-[var(--key-muted)] border-[var(--key-border)] hover:bg-[var(--key-surface-hover)]"
                     }`}
                   >
                     <ThumbsUp className="h-3.5 w-3.5" />
@@ -403,12 +476,12 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
                     type="button"
                     onClick={() => {
                       setFeedback("down");
-                      triggerToast("Thanks — we’ll use this to improve our docs.");
+                      triggerToast("Thanks — we’ll refine this guide.");
                     }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       feedback === "down"
-                        ? "bg-rose-50 text-rose-700 border-rose-200"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                        ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                        : "bg-[var(--key-surface)] text-[var(--key-muted)] border-[var(--key-border)] hover:bg-[var(--key-surface-hover)]"
                     }`}
                   >
                     <ThumbsDown className="h-3.5 w-3.5" />
@@ -418,52 +491,46 @@ export default function HelpCenterScreen({ articles, onNavigate }: HelpCenterScr
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 shrink-0">
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-[var(--key-border)] flex items-center justify-between shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedArticle(null)}
-                className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 rounded-xl"
+                className="px-4 py-2 text-xs font-bold text-[var(--key-muted)] hover:text-[var(--key-text)] rounded-xl"
               >
-                Close
+                Close Guide
               </button>
-              <div className="flex flex-wrap items-center gap-2">
-                {onNavigate && selectedArticle.category === "Custom Domains" && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedArticle(null);
-                      onNavigate(ScreenId.CUSTOM_DOMAINS);
-                    }}
-                    className="inline-flex items-center gap-1.5 border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 px-4 py-2.5 rounded-xl text-xs font-bold"
-                  >
-                    <Globe className="h-3.5 w-3.5" />
-                    Open Custom Domains
-                  </button>
-                )}
-                {onNavigate && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedArticle(null);
-                      onNavigate(ScreenId.CONTACT_SUPPORT);
-                    }}
-                    className="inline-flex items-center gap-1.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white px-4 py-2.5 rounded-xl text-xs font-bold"
-                  >
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    Still need help?
-                  </button>
-                )}
-              </div>
+              {onNavigate && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedArticle(null);
+                    onNavigate(ScreenId.CONTACT_SUPPORT);
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Ask Support Team
+                </button>
+              )}
             </div>
           </div>
         </div>
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-black py-3 px-5 rounded-2xl shadow-2xl z-50 max-w-sm sm:ml-auto">
+        <div className="fixed bottom-6 right-6 bg-[var(--key-surface-strong)] text-[var(--key-text)] border border-[var(--key-border)] text-xs font-bold py-3 px-5 rounded-2xl shadow-2xl z-[150] animate-in slide-in-from-bottom-4 flex items-center gap-2">
+          <Check className="h-4 w-4 text-emerald-400" />
           {toast}
         </div>
       )}
+
+      {/* Multi-Language Interactive Setup Guide Modal */}
+      <InteractiveSetupGuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        initialLanguage={selectedLang}
+      />
     </PageShell>
   );
 }

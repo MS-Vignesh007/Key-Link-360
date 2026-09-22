@@ -935,3 +935,528 @@ export function getStatItems(block: BlockRecord): StatItemRecord[] {
 export function createDefaultGalleryBlockFields(): Record<string, unknown> {
   return { galleryItems: createDefaultGalleryItems() };
 }
+
+// ==================== DEVELOPER-GRADE BLOCKS DATA HELPERS ====================
+
+// 1. Split Hero
+export function createDefaultSplitHeroFields() {
+  return {
+    headline: "Scale Your Business With High-Converting Sites",
+    subheadline: "Build developer-grade responsive landing pages and biolinks in minutes. Zero coding required.",
+    primaryCtaLabel: "Get Started Free",
+    primaryCtaUrl: "https://keylink360.in",
+    secondaryCtaLabel: "Book a Demo",
+    secondaryCtaUrl: "https://keylink360.in/demo",
+    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
+    badgeText: "🚀 Next-Gen Micro-Site Builder"
+  };
+}
+
+// 2. Video Hero
+export function createDefaultVideoHeroFields() {
+  return {
+    headline: "The Modern Creative Agency",
+    subheadline: "Watch how we transform digital brand experiences through design and code.",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    ctaLabel: "Start Your Project",
+    ctaUrl: "https://keylink360.in",
+    badgeText: "🎬 Featured Reel 2026"
+  };
+}
+
+// 3. Glow Badge
+export function createDefaultGlowBadgeFields() {
+  return {
+    badgeText: "⚡ Introducing Multi-Device Responsive Sites · See What's New →",
+    badgeLink: "https://keylink360.in",
+    badgeStyle: "purple" // purple | emerald | amber | cyan
+  };
+}
+
+// 4. Feature Hero
+export function createDefaultFeatureHeroFields() {
+  return {
+    headline: "Built For High Performance & Conversions",
+    subheadline: "Everything you need to turn visitors into paying customers seamlessly.",
+    featureItems: [
+      { icon: "⚡", title: "Ultra Fast Loading", desc: "Sub-second load times across 4G & 5G networks." },
+      { icon: "📱", title: "Universal Responsive", desc: "Pixel-perfect mockups on phones, tablets, & 4K screens." },
+      { icon: "🔒", title: "Bank-Grade Security", desc: "Integrated payment gateways with SSL protection." }
+    ]
+  };
+}
+
+// 5. Toggle Pricing Table
+export function createDefaultTogglePricingFields() {
+  return {
+    discountBadge: "Save 20% Yearly",
+    monthlyPlans: [
+      {
+        id: "plan_m1",
+        name: "Starter",
+        price: "₹499",
+        period: "/mo",
+        description: "Best for individual creators and solopreneurs.",
+        features: ["1 Custom Domain", "Unlimited Bio Links", "Standard Analytics", "Mobile Optimized"],
+        url: "https://keylink360.in/checkout?plan=starter_m",
+        highlighted: false
+      },
+      {
+        id: "plan_m2",
+        name: "Pro Agency",
+        price: "₹1,499",
+        period: "/mo",
+        description: "Ideal for growing businesses and agencies.",
+        features: ["5 Custom Domains", "AI Sales Bot", "Multi-Device Responsive", "Priority 24/7 Support", "Zero KeyLink Branding"],
+        url: "https://keylink360.in/checkout?plan=pro_m",
+        highlighted: true
+      }
+    ],
+    annualPlans: [
+      {
+        id: "plan_y1",
+        name: "Starter",
+        price: "₹399",
+        period: "/mo (billed annually)",
+        description: "Best for individual creators and solopreneurs.",
+        features: ["1 Custom Domain", "Unlimited Bio Links", "Standard Analytics", "Mobile Optimized"],
+        url: "https://keylink360.in/checkout?plan=starter_y",
+        highlighted: false
+      },
+      {
+        id: "plan_y2",
+        name: "Pro Agency",
+        price: "₹1,199",
+        period: "/mo (billed annually)",
+        description: "Ideal for growing businesses and agencies.",
+        features: ["5 Custom Domains", "AI Sales Bot", "Multi-Device Responsive", "Priority 24/7 Support", "Zero KeyLink Branding"],
+        url: "https://keylink360.in/checkout?plan=pro_y",
+        highlighted: true
+      }
+    ]
+  };
+}
+
+// 6. Product Showcase
+export function createDefaultProductShowcaseFields() {
+  return {
+    productName: "Studio Wireless Noise-Cancelling Headphones",
+    price: "₹4,999",
+    originalPrice: "₹8,999",
+    discountPercent: "45% OFF",
+    imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=500",
+    buyUrl: "https://amazon.in",
+    rating: "4.9",
+    reviewCount: "1,420",
+    stockUrgency: "⚡ Only 7 units remaining in stock",
+    features: ["40h Battery Life", "Active Noise Cancellation", "Fast USB-C Charging", "1 Year Warranty"]
+  };
+}
+
+// 7. Feature Comparison Table
+export function createDefaultComparisonTableFields() {
+  return {
+    tierLabels: ["Free", "Pro", "Business"],
+    features: [
+      { name: "Custom Domain Connection", free: false, pro: true, biz: true },
+      { name: "Multi-Device Layouts", free: false, pro: true, biz: true },
+      { name: "Lead Capture Forms", free: true, pro: true, biz: true },
+      { name: "AI Sales Chat Assistant", free: false, pro: false, biz: true },
+      { name: "Zero Platform Branding", free: false, pro: true, biz: true },
+      { name: "Dedicated Account Manager", free: false, pro: false, biz: true }
+    ]
+  };
+}
+
+// 8. Payment Button
+export function createDefaultPaymentButtonFields() {
+  return {
+    buttonText: "Pay ₹999 Now · Instant Access",
+    amount: "999",
+    currency: "INR",
+    gatewayLabel: "Secured by Razorpay · UPI, Cards & NetBanking",
+    guaranteeText: "🛡️ 100% Money Back Guarantee within 7 days",
+    paymentUrl: "https://rzp.io/l/demo-checkout"
+  };
+}
+
+// 9. Brand Logos
+export function createDefaultBrandLogosFields() {
+  return {
+    title: "Trusted by 5,000+ Fast-Growing Companies",
+    displayMode: "marquee", // marquee | grid
+    logos: [
+      { name: "Google", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/google.svg" },
+      { name: "Stripe", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/stripe.svg" },
+      { name: "Meta", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/meta.svg" },
+      { name: "Amazon", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/amazon.svg" },
+      { name: "Spotify", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/spotify.svg" },
+      { name: "Shopify", logoUrl: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/shopify.svg" }
+    ]
+  };
+}
+
+// 10. Star Ratings & Authority
+export function createDefaultStarRatingsFields() {
+  return {
+    ratingScore: "4.9",
+    maxScore: "5.0",
+    reviewCount: "2,840+ Happy Clients",
+    headline: "Overwhelmingly 5-Star Rated Worldwide",
+    subtitle: "Consistently rated #1 for conversion rate and ease of use.",
+    avatars: [
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100"
+    ]
+  };
+}
+
+// 11. Press Mentions
+export function createDefaultPressMentionsFields() {
+  return {
+    headline: "As Featured In Top Media",
+    items: [
+      { name: "TechCrunch", quote: "The easiest way to turn social bios into full ecommerce powerhouses." },
+      { name: "Forbes", quote: "Top 10 essential SaaS tools for digital creators in 2026." },
+      { name: "ProductHunt", quote: "#1 Product of the Week with over 1,500 upvotes." }
+    ]
+  };
+}
+
+// 12. Before / After Comparison Slider
+export function createDefaultBeforeAfterFields() {
+  return {
+    beforeImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600",
+    afterImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
+    beforeLabel: "Before",
+    afterLabel: "After",
+    caption: "Dramatic Transformation in 30 Days"
+  };
+}
+
+// 13. Portfolio Gallery
+export function createDefaultPortfolioFields() {
+  return {
+    headline: "Our Creative Portfolio",
+    activeCategory: "All",
+    categories: ["All", "Web Design", "Branding", "Mobile Apps"],
+    projects: [
+      {
+        id: "p1",
+        title: "Fintech Dashboard UI",
+        category: "Web Design",
+        imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400",
+        linkUrl: "https://keylink360.in"
+      },
+      {
+        id: "p2",
+        title: "Modern Coffee Co Brand Identity",
+        category: "Branding",
+        imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=400",
+        linkUrl: "https://keylink360.in"
+      },
+      {
+        id: "p3",
+        title: "Fitness Companion iOS App",
+        category: "Mobile Apps",
+        imageUrl: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&q=80&w=400",
+        linkUrl: "https://keylink360.in"
+      }
+    ]
+  };
+}
+
+// 14. Video Showcase / Playlist
+export function createDefaultVideoShowcaseFields() {
+  return {
+    title: "Masterclass: How to 10X Your Online Conversions",
+    featuredVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    playlist: [
+      { id: "v1", title: "Lesson 1: The High-Converting Hero Hook", duration: "12:45" },
+      { id: "v2", title: "Lesson 2: Irresistible Offer Architecture", duration: "18:20" },
+      { id: "v3", title: "Lesson 3: Social Proof & Objection Handling", duration: "15:10" }
+    ]
+  };
+}
+
+// 15. Audio / Podcast Player
+export function createDefaultAudioPlayerFields() {
+  return {
+    title: "Ep. 42: Scaling From Zero to 100K Users",
+    podcastName: "The Founder's Playbook",
+    artist: "Vignesh & Team KeyLink",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    coverImage: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&q=80&w=300",
+    listenOnSpotifyUrl: "https://spotify.com",
+    listenOnAppleUrl: "https://apple.com"
+  };
+}
+
+// 16. Multi-Step Form
+export function createDefaultMultiStepFormFields() {
+  return {
+    formTitle: "Get Your Free Strategy Consultation",
+    steps: [
+      {
+        stepNumber: 1,
+        stepTitle: "Your Contact",
+        fields: [
+          { id: "f1", label: "Full Name", type: "text", placeholder: "e.g. John Doe", required: true },
+          { id: "f2", label: "Email Address", type: "email", placeholder: "john@example.com", required: true }
+        ]
+      },
+      {
+        stepNumber: 2,
+        stepTitle: "Your Project",
+        fields: [
+          { id: "f3", label: "Estimated Monthly Budget", type: "select", options: ["₹10,000 - ₹25,000", "₹25,000 - ₹50,000", "₹50,000+"], required: true },
+          { id: "f4", label: "What is your main business goal?", type: "text", placeholder: "e.g. Increase sales leads by 50%", required: true }
+        ]
+      },
+      {
+        stepNumber: 3,
+        stepTitle: "Confirmation",
+        fields: [
+          { id: "f5", label: "Phone / WhatsApp", type: "tel", placeholder: "+91 98765 43210", required: true }
+        ]
+      }
+    ],
+    submitButtonText: "Book My Free Strategy Session 🚀"
+  };
+}
+
+// 17. Lead Magnet Download
+export function createDefaultLeadMagnetFields() {
+  return {
+    badgeText: "🎁 FREE EBOOK / PDF GUIDE",
+    title: "The Ultimate 2026 Bio-Link Conversion Blueprint",
+    description: "Download our step-by-step 48-page playbook that helped 1,200+ creators generate over ₹1 Crore in sales.",
+    coverImage: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=400",
+    fileSize: "14.2 MB PDF",
+    buttonText: "Instant Free Download",
+    downloadUrl: "https://example.com/blueprint.pdf"
+  };
+}
+
+// 18. Meeting Booker / Calendly Embed
+export function createDefaultMeetingBookerFields() {
+  return {
+    hostName: "Vignesh (Founder)",
+    hostRole: "Growth & Product Strategist",
+    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+    meetingTitle: "15-Minute 1-on-1 Growth Discovery Call",
+    description: "Let's review your landing page and discuss how KeyLink360 can double your visitor conversions.",
+    durationMinutes: "15 mins",
+    bookingUrl: "https://calendly.com",
+    buttonText: "Schedule Call Now 🗓️"
+  };
+}
+
+// 19. Newsletter Box
+export function createDefaultNewsletterFields() {
+  return {
+    title: "Join The Weekly Growth Dispatch",
+    subtitle: "Every Tuesday, get 1 actionable marketing tip to grow your brand. No spam, ever.",
+    buttonLabel: "Subscribe Free",
+    subscriberBadge: "Join 12,400+ smart founders & creators",
+    successMessage: "🎉 You're in! Check your inbox for the welcome issue."
+  };
+}
+
+// 20. Navbar Block (Header navigation bar with logo, links, CTA)
+export function createDefaultNavbarFields() {
+  return {
+    brandLogo: "",
+    brandName: "KEYLINKS 360",
+    tagline: "High-Converting Micro Sites",
+    navLinks: [
+      { id: "nl_1", label: "Features", url: "#features" },
+      { id: "nl_2", label: "Pricing", url: "#pricing" },
+      { id: "nl_3", label: "Reviews", url: "#reviews" }
+    ],
+    ctaLabel: "Get Started Free ⚡",
+    ctaUrl: "https://keylink360.in",
+    isGlassmorphic: true,
+    isSticky: false
+  };
+}
+
+// 21. Footer Block (Clean multi-link footer with copyright, socials, legal links)
+export function createDefaultFooterFields() {
+  return {
+    brandName: "KeyLinks360 Studio",
+    tagline: "The #1 biolink & landing page engine for creators and high-growth businesses.",
+    copyrightText: `© ${new Date().getFullYear()} KeyLinks360. All rights reserved.`,
+    supportEmail: "support@keylinks360.in",
+    footerLinks: [
+      { id: "fl_1", label: "Privacy Policy", url: "https://keylink360.in/privacy" },
+      { id: "fl_2", label: "Terms of Service", url: "https://keylink360.in/terms" },
+      { id: "fl_3", label: "Help & Docs", url: "https://keylink360.in/docs" },
+      { id: "fl_4", label: "Contact Us", url: "https://keylink360.in/contact" }
+    ],
+    badgeText: "⚡ Powered by KeyLinks360"
+  };
+}
+
+// 22. Main Feature Block (Hero Grid with feature pills and CTA)
+export function createDefaultMainFeatureFields() {
+  return {
+    badge: "🔥 Supercharged Features",
+    headline: "Everything Built For Unstoppable Business Growth",
+    subheadline: "Replace 10+ expensive tools with one blazing fast, all-in-one conversion machine.",
+    features: [
+      { id: "mf_1", icon: "⚡", title: "Instant Fast Loading", desc: "Built with Next-Gen edge CDN for sub-second speeds worldwide." },
+      { id: "mf_2", icon: "💳", title: "Razorpay & UPI Payments", desc: "Accept 1-click payments directly on your biolink without friction." },
+      { id: "mf_3", icon: "🤖", title: "24/7 AI Sales Bot", desc: "Automate customer inquiries and capture warm buyer leads 24/7." },
+      { id: "mf_4", icon: "🌐", title: "Custom Domain Connection", desc: "Map your own .com or .in domain with automatic SSL security." }
+    ],
+    ctaText: "Explore All Features →",
+    ctaUrl: "https://keylink360.in"
+  };
+}
+
+// 23. Image Auto Slider / Carousel Block
+export function createDefaultAutoSliderFields() {
+  return {
+    autoplay: true,
+    intervalSeconds: 4,
+    showDots: true,
+    showArrows: true,
+    aspectRatio: "16/9",
+    slides: [
+      {
+        id: "sl_1",
+        imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
+        title: "High Converting Analytics Dashboard",
+        caption: "Track real-time visitor traffic, clicks, and sales.",
+        linkUrl: "https://keylink360.in"
+      },
+      {
+        id: "sl_2",
+        imageUrl: "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&q=80&w=800",
+        title: "Developer Grade Responsive Mockups",
+        caption: "Pixel-perfect mobile, tablet, and 4K desktop previews.",
+        linkUrl: "https://keylink360.in"
+      },
+      {
+        id: "sl_3",
+        imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
+        title: "Direct E-Commerce & Product Checkout",
+        caption: "Sell digital downloads, courses, and physical merchandise.",
+        linkUrl: "https://keylink360.in"
+      }
+    ]
+  };
+}
+
+// 24. Google Form / Embedded Form Block
+export function createDefaultGoogleFormFields() {
+  return {
+    formTitle: "Official Client Inquiry & Feedback Form",
+    formDescription: "Fill out the quick questionnaire below and our team will get back to you within 2 hours.",
+    embedUrl: "", // Users can paste Google Form embed URL or public iframe URL
+    fallbackFields: [
+      { id: "gf_1", label: "Full Name", type: "text", required: true, placeholder: "e.g. Vignesh" },
+      { id: "gf_2", label: "Email Address", type: "email", required: true, placeholder: "name@company.com" },
+      { id: "gf_3", label: "WhatsApp / Phone", type: "tel", required: true, placeholder: "+91 98765 43210" },
+      { id: "gf_4", label: "Your Requirement / Message", type: "textarea", required: true, placeholder: "Describe what you need..." }
+    ],
+    submitButtonText: "Submit Inquiry 🚀",
+    successMessage: "🎉 Thanks! We have received your response and will contact you shortly."
+  };
+}
+
+// 25. Flash Offer / Promotion / Coupon Countdown Block
+export function createDefaultFlashOfferFields() {
+  return {
+    badgeText: "⚡ LIMITED TIME SPECIAL OFFER",
+    discountHeadline: "FLAT 50% OFF TODAY ONLY",
+    offerDescription: "Upgrade your biolink to Pro Plan & get free custom domain + AI Sales Bot included!",
+    couponCode: "SUPER50",
+    discountAmount: "50% OFF",
+    originalPrice: "₹1,999",
+    salePrice: "₹999",
+    expiryDate: defaultCountdownEndAt(3), // 3 days from now
+    ctaLabel: "Claim Discount Now 🛒",
+    ctaUrl: "https://keylink360.in/checkout?coupon=SUPER50",
+    termsNote: "* Applicable for first 100 users only. 7-day money-back guarantee."
+  };
+}
+
+// 26. Community Hub Block (Discord / WhatsApp / Telegram Group)
+export function createDefaultCommunityHubFields() {
+  return {
+    communityPlatform: "whatsapp", // whatsapp | telegram | discord | general
+    groupName: "KeyLinks VIP Founders Community",
+    memberCount: "4,820+ Active Creators",
+    onlineCount: "340 Online Now",
+    groupDescription: "Get daily marketing tips, launch feedback, and connect directly with high-earning founders.",
+    perks: [
+      "🔥 Daily Growth Hacks & Video Tutorials",
+      "🤝 1-on-1 Feedback from top Creators",
+      "🎁 Exclusive Pro Themes & Free Templates"
+    ],
+    inviteUrl: "https://chat.whatsapp.com/invite-demo",
+    joinButtonLabel: "Join Free WhatsApp Group 🚀"
+  };
+}
+
+// 27. YouTube Channel / Video Stream Block
+export function createDefaultYouTubeChannelFields() {
+  return {
+    channelName: "Vignesh Tech & Business",
+    channelHandle: "@keylinks360",
+    channelAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+    subscriberCount: "125K Subscribers",
+    videoCount: "340 Videos",
+    videoTitle: "How to Build a ₹1 Lakh/Month Bio-Link Business in 2026",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    youtubeEmbedId: "dQw4w9WgXcQ",
+    subscribeUrl: "https://youtube.com/@keylinks360?sub_confirmation=1",
+    subscribeButtonLabel: "Subscribe on YouTube 🔴"
+  };
+}
+
+// 28. Instagram Feed Grid Block
+export function createDefaultInstagramFeedFields() {
+  return {
+    instagramHandle: "@keylinks360.official",
+    followerCount: "84.5K Followers",
+    profileUrl: "https://instagram.com/keylinks360",
+    followButtonLabel: "Follow on Instagram 📸",
+    posts: [
+      {
+        id: "ig_1",
+        imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400",
+        likes: "2.4K",
+        comments: "142",
+        postUrl: "https://instagram.com"
+      },
+      {
+        id: "ig_2",
+        imageUrl: "https://images.unsplash.com/photo-1626278664285-f7c05fd17571?auto=format&fit=crop&q=80&w=400",
+        likes: "1.8K",
+        comments: "98",
+        postUrl: "https://instagram.com"
+      },
+      {
+        id: "ig_3",
+        imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400",
+        likes: "3.1K",
+        comments: "210",
+        postUrl: "https://instagram.com"
+      },
+      {
+        id: "ig_4",
+        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
+        likes: "4.5K",
+        comments: "330",
+        postUrl: "https://instagram.com"
+      }
+    ]
+  };
+}
+
+

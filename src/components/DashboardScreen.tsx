@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { ScreenId, BioPage, UserProfile } from "../types";
-import { Smartphone, Link2, QrCode, FileText, ArrowRight } from "lucide-react";
+import { Smartphone, Link2, QrCode, FileText, ArrowRight, Bot, Sparkles, BookOpen } from "lucide-react";
+import InteractiveSetupGuideModal from "./guides/InteractiveSetupGuideModal";
 import PageShell, { StatCard, StatCardGrid, Workspace } from "./layout/PageShell";
+import { useLanguage } from "../lib/languageContext";
 
 interface DashboardScreenProps {
   onNavigate: (screen: ScreenId) => void;
@@ -41,6 +43,8 @@ function getRangeStart(range: TimeRange): number | null {
 
 export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics, pages }: DashboardScreenProps) {
   const [timeRange, setTimeRange] = useState<TimeRange>("30D");
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+  const { t, tr, language } = useLanguage();
   const eventsList = (metrics.events || []) as AnalyticsEvent[];
   const rangeStart = getRangeStart(timeRange);
   const filteredEvents = useMemo(
@@ -86,8 +90,8 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
   const quickAccess = [
     {
       id: ScreenId.BIO_PAGES,
-      label: "Bio Pages",
-      sub: "Build landing pages",
+      label: t("nav.bio_pages", "Bio Pages"),
+      sub: language === "ta" ? "லேண்டிங் பக்கங்கள் உருவாக்கு" : "Build landing pages",
       icon: Smartphone,
       color: "from-indigo-50 to-indigo-100/50",
       iconColor: "text-indigo-600",
@@ -95,8 +99,8 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
     },
     {
       id: ScreenId.LINKS,
-      label: "Links",
-      sub: "Smart short URLs",
+      label: t("nav.links", "Links"),
+      sub: language === "ta" ? "ஸ்மார்ட் குறுக்கு URLs" : "Smart short URLs",
       icon: Link2,
       color: "from-indigo-50 to-indigo-100/50",
       iconColor: "text-indigo-600",
@@ -104,8 +108,8 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
     },
     {
       id: ScreenId.QR_CODES,
-      label: "QR Codes",
-      sub: "Generate & track",
+      label: t("nav.qr_codes", "QR Codes"),
+      sub: language === "ta" ? "உருவாக்கு & கண்காணி" : "Generate & track",
       icon: QrCode,
       color: "from-indigo-50 to-indigo-100/50",
       iconColor: "text-indigo-600",
@@ -113,8 +117,8 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
     },
     {
       id: ScreenId.TEMPLATES,
-      label: "Templates",
-      sub: "Ready-made designs",
+      label: t("nav.templates", "Templates"),
+      sub: language === "ta" ? "மாதிரி வடிவமைப்புகள்" : "Ready-made designs",
       icon: FileText,
       color: "from-indigo-50 to-indigo-100/50",
       iconColor: "text-indigo-600",
@@ -128,12 +132,12 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="min-w-0">
           <h2 className="key-page-title text-2xl sm:text-3xl flex flex-wrap items-center gap-x-2 gap-y-1">
-            Welcome back, <span className="text-indigo-600">{user.name.split(/\s+/)[0] || "there"}</span>
+            {t("dash.welcome_back", "Welcome back,")} <span className="text-indigo-600">{user.name.split(/\s+/)[0] || "there"}</span>
           </h2>
           <p className="text-slate-500 text-sm mt-1">
             {hasEventHistory
-              ? `Showing ${timeRange === "All" ? "all recorded" : `the last ${timeRange}`} visitor activity.`
-              : "Your activity will appear here as soon as visitors interact with your pages."}
+              ? `${t("dash.visitor_activity", "Showing visitor activity.")} (${timeRange === "All" ? "All" : `Last ${timeRange}`})`
+              : language === "ta" ? "பார்வையாளர்கள் பக்கங்களை பார்வையிடும் போது விவரங்கள் இங்கு தோன்றும்." : "Your activity will appear here as soon as visitors interact with your pages."}
           </p>
         </div>
 
@@ -155,26 +159,66 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
         </div>
       </div>
 
+      {/* Interactive Multilingual Setup Guides Banner */}
+      <div
+        className="bg-[var(--key-surface-strong)] border border-[var(--key-border)] rounded-2xl p-6 sm:p-7 relative overflow-hidden shadow-lg mb-6"
+        data-aos="fade-up"
+      >
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -z-0" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center border border-indigo-500/30 shrink-0 shadow-sm">
+              <Bot className="w-6 h-6 text-indigo-500" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h4 className="font-extrabold text-base sm:text-lg text-[var(--key-text)]">
+                  {t("dash.interactive_guides", "Interactive Setup Guides & Documentation")}
+                </h4>
+                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-500 border border-indigo-500/30">
+                  EN / தமிழ் / हिन्दी
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[var(--key-muted)]">
+                {language === "ta"
+                  ? "Bio AI Sales Agent, Meta WhatsApp Cloud API, மற்றும் 1-Click QR Bot அமைப்புகளுக்கான விரிவான நேரடி செயல்முறை வழிகாட்டிகள்."
+                  : "Step-by-step visual tutorials with screenshot mockups for Bio AI Sales Agent (Gemini 1.5 Free), Meta WhatsApp Cloud API, and 1-Click QR Bot."}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsGuideModalOpen(true)}
+            className="self-start md:self-auto px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 font-bold text-xs shadow-md transition-all hover:scale-105 cursor-pointer flex items-center gap-2 shrink-0"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>{t("dash.explore_guides", "Explore Visual Guides →")}</span>
+          </button>
+        </div>
+      </div>
+
       {/* Statistics Grid */}
       <div data-aos="fade-up">
         <StatCardGrid>
           <StatCard
-            label="Total Views (Impression)"
+            label={t("dash.total_views", "Total Views")}
             value={rangeMetrics.views.toLocaleString()}
             sub={hasEventHistory ? `${timeRange} visitor activity` : "Live impression count"}
           />
           <StatCard
-            label="Total Clicks (Ads/Social)"
+            label={t("dash.total_clicks", "Total Clicks")}
             value={rangeMetrics.clicks.toLocaleString()}
             sub={hasEventHistory ? `${timeRange} click activity` : "Dynamic click logs"}
           />
           <StatCard
-            label="Registrations (Leads Form)"
+            label={t("dash.registrations", "Registrations")}
             value={rangeMetrics.registers.toLocaleString()}
             sub={hasEventHistory ? `${timeRange} form submissions` : "New leads form submissions"}
           />
           <StatCard
-            label="Active Bio Pages"
+            label={t("dash.active_pages", "Active Bio Pages")}
             value={metrics.activePages.toLocaleString()}
             sub={`${metrics.activePages} page(s) live`}
           />
@@ -186,7 +230,7 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
         {/* Click Performance Graph */}
         <Workspace className="lg:col-span-8 key-section-card flex flex-col relative overflow-hidden min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <h3 className="font-bold text-[var(--key-text)]">Click Performance</h3>
+            <h3 className="font-bold text-[var(--key-text)]">{t("dash.click_performance", "Click Performance")}</h3>
             <div className="key-segment-control self-start" aria-label="Traffic date range">
               {ranges.map((range) => (
                 <button
@@ -241,7 +285,7 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
         {/* Recent Activity / Top Bio Pages */}
         <Workspace className="lg:col-span-4 key-section-card flex flex-col justify-between min-w-0">
           <div>
-            <h3 className="font-bold text-[var(--key-text)] mb-6">Top Bio Pages</h3>
+            <h3 className="font-bold text-[var(--key-text)] mb-6">{t("dash.top_pages", "Top Bio Pages")}</h3>
             <div className="space-y-4">
               {pages.length === 0 ? (
                 <div className="text-center py-12 text-[var(--key-muted)] text-xs">
@@ -276,7 +320,7 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
             onClick={() => onNavigate(ScreenId.BIO_PAGES)}
             className="mt-6 w-full py-2.5 text-xs font-semibold text-indigo-500 hover:bg-indigo-500/10 rounded-xl transition-colors border border-indigo-500/20 btn-anim btn-swipe-secondary"
           >
-            <span>View All Pages</span>
+            <span>{t("common.view_all", "View All Pages")}</span>
           </button>
         </Workspace>
       </div>
@@ -394,6 +438,13 @@ export default function DashboardScreen({ onNavigate, onOpenPage, user, metrics,
           })}
         </div>
       </div>
+
+      {/* Multi-Language Interactive Setup Guide Modal */}
+      <InteractiveSetupGuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        initialTopic="bio_ai"
+      />
     </PageShell>
   );
 }

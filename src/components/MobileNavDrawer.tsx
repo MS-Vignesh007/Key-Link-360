@@ -95,7 +95,7 @@ export default function MobileNavDrawer({
         className="absolute inset-y-0 left-0 w-[min(20rem,85vw)] max-w-full codepen-sidebar key-glass-sidebar shadow-xl flex flex-col animate-in slide-in-from-left duration-300"
       >
         <div className="key-sidebar-brand justify-between w-full">
-          <KeyLogo3D size="sm" showLabel />
+          <KeyLogo3D size="sm" showLabel textClassName="text-xl font-black" />
           <button
             ref={closeButtonRef}
             type="button"

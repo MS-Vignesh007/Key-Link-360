@@ -1,4 +1,7 @@
+import bcrypt from "bcryptjs";
 import { createHmac, randomBytes, randomInt, scryptSync, timingSafeEqual, createHash } from "crypto";
+
+export const BCRYPT_SALT_ROUNDS = 12;
 
 const DEV_FALLBACK_SECRET = "KEYLINK360-dev-secret-change-me-in-production";
 
@@ -25,21 +28,183 @@ export function getAuthSecret() {
   return AUTH_SECRET;
 }
 
-export function hashPassword(password: string): { salt: string; hash: string } {
-  const salt = randomBytes(16).toString("hex");
-  const hash = scryptSync(password, salt, 64).toString("hex");
-  return { salt, hash };
-}
-
-export function verifyPassword(password: string, salt: string, hash: string): boolean {
+/**
+ * Constant-time string comparison to prevent timing side-channel attacks.
+ * Never uses standard '===' or '!==' for security credentials.
+ */
+export function constantTimeCompare(a: string, b: string): boolean {
   try {
-    const hashed = scryptSync(password, salt, 64);
-    const expected = Buffer.from(hash, "hex");
-    if (hashed.length !== expected.length) return false;
-    return timingSafeEqual(hashed, expected);
+    const bufA = Buffer.from(String(a), "utf8");
+    const bufB = Buffer.from(String(b), "utf8");
+    if (bufA.length !== bufB.length) {
+      // Execute dummy comparison of identical buffers to maintain constant timing
+      timingSafeEqual(bufA, bufA);
+      return false;
+    }
+    return timingSafeEqual(bufA, bufB);
   } catch {
     return false;
   }
+}
+
+/**
+ * Validates whether a hash string is a secure bcrypt hash with at least the required rounds.
+ */
+export function isBcryptHash(hash: string | null | undefined, minRounds = BCRYPT_SALT_ROUNDS): boolean {
+  if (!hash || typeof hash !== "string") return false;
+  const match = hash.match(/^\$2[aby]\$(\d{2})\$/);
+  if (!match) return false;
+  const rounds = parseInt(match[1], 10);
+  return !isNaN(rounds) && rounds >= minRounds;
+}
+
+/**
+ * Hashes a plaintext password using bcrypt with a salt round of at least 12.
+ */
+export function hashPassword(password: string, rounds = BCRYPT_SALT_ROUNDS): { salt: string; hash: string } {
+  if (!password || typeof password !== "string") {
+    throw new Error("Cannot hash an empty or invalid password.");
+  }
+  const effectiveRounds = Math.max(12, rounds);
+  const salt = bcrypt.genSaltSync(effectiveRounds);
+  const hash = bcrypt.hashSync(password, salt);
+  return { salt, hash };
+}
+
+export type PasswordAlgorithm =
+  | "bcrypt"
+  | "bcrypt_low_cost"
+  | "legacy_scrypt"
+  | "legacy_sha256"
+  | "legacy_sha1"
+  | "legacy_md5"
+  | "legacy_plaintext";
+
+export interface PasswordVerificationResult {
+  valid: boolean;
+  needsRehash: boolean;
+  matchedAlgorithm?: PasswordAlgorithm;
+  upgraded?: { salt: string; hash: string };
+}
+
+/**
+ * Verifies a candidate password against stored hashes with constant-time comparison.
+ * Seamlessly detects legacy hashes (scrypt, sha256, sha1, md5, plaintext, low-round bcrypt)
+ * and produces an upgraded bcrypt(12) hash for on-login migration.
+ */
+export function verifyAndUpgradePassword(
+  password: string,
+  salt?: string | null,
+  hash?: string | null
+): PasswordVerificationResult {
+  if (!password || !hash || typeof password !== "string" || typeof hash !== "string") {
+    return { valid: false, needsRehash: false };
+  }
+
+  // 1. Standard Bcrypt check ($2a$, $2b$, $2y$)
+  if (/^\$2[aby]\$\d{2}\$/.test(hash)) {
+    try {
+      const valid = bcrypt.compareSync(password, hash);
+      if (!valid) {
+        return { valid: false, needsRehash: false };
+      }
+      const match = hash.match(/^\$2[aby]\$(\d{2})\$/);
+      const rounds = match ? parseInt(match[1], 10) : 0;
+      const isLowCost = rounds < BCRYPT_SALT_ROUNDS;
+      return {
+        valid: true,
+        needsRehash: isLowCost,
+        matchedAlgorithm: isLowCost ? "bcrypt_low_cost" : "bcrypt",
+        upgraded: isLowCost ? hashPassword(password, BCRYPT_SALT_ROUNDS) : undefined
+      };
+    } catch {
+      return { valid: false, needsRehash: false };
+    }
+  }
+
+  // 2. Legacy Scrypt check (128-character hex hash with salt)
+  if (salt && hash.length === 128 && /^[0-9a-fA-F]+$/.test(hash)) {
+    try {
+      const hashed = scryptSync(password, salt, 64);
+      const expected = Buffer.from(hash, "hex");
+      if (hashed.length === expected.length && timingSafeEqual(hashed, expected)) {
+        return {
+          valid: true,
+          needsRehash: true,
+          matchedAlgorithm: "legacy_scrypt",
+          upgraded: hashPassword(password, BCRYPT_SALT_ROUNDS)
+        };
+      }
+    } catch {
+      // fall through
+    }
+  }
+
+  // 3. Legacy SHA-256 / SHA-1 / MD5 check (with/without salt)
+  const algorithms = [
+    { name: "sha256" as const, len: 64, type: "legacy_sha256" as const },
+    { name: "sha1" as const, len: 40, type: "legacy_sha1" as const },
+    { name: "md5" as const, len: 32, type: "legacy_md5" as const }
+  ];
+
+  for (const { name, len, type } of algorithms) {
+    if (hash.length === len && /^[0-9a-fA-F]+$/.test(hash)) {
+      try {
+        // Without salt
+        const digestNoSalt = createHash(name).update(password).digest("hex");
+        if (constantTimeCompare(digestNoSalt.toLowerCase(), hash.toLowerCase())) {
+          return {
+            valid: true,
+            needsRehash: true,
+            matchedAlgorithm: type,
+            upgraded: hashPassword(password, BCRYPT_SALT_ROUNDS)
+          };
+        }
+        // With salt
+        if (salt) {
+          const digestWithSalt1 = createHash(name).update(password + salt).digest("hex");
+          if (constantTimeCompare(digestWithSalt1.toLowerCase(), hash.toLowerCase())) {
+            return {
+              valid: true,
+              needsRehash: true,
+              matchedAlgorithm: type,
+              upgraded: hashPassword(password, BCRYPT_SALT_ROUNDS)
+            };
+          }
+          const digestWithSalt2 = createHash(name).update(salt + password).digest("hex");
+          if (constantTimeCompare(digestWithSalt2.toLowerCase(), hash.toLowerCase())) {
+            return {
+              valid: true,
+              needsRehash: true,
+              matchedAlgorithm: type,
+              upgraded: hashPassword(password, BCRYPT_SALT_ROUNDS)
+            };
+          }
+        }
+      } catch {
+        // fall through
+      }
+    }
+  }
+
+  // 4. Legacy plaintext check (using constant-time comparison)
+  if (constantTimeCompare(password, hash)) {
+    return {
+      valid: true,
+      needsRehash: true,
+      matchedAlgorithm: "legacy_plaintext",
+      upgraded: hashPassword(password, BCRYPT_SALT_ROUNDS)
+    };
+  }
+
+  return { valid: false, needsRehash: false };
+}
+
+/**
+ * Standard password verification helper.
+ */
+export function verifyPassword(password: string, salt?: string | null, hash?: string | null): boolean {
+  return verifyAndUpgradePassword(password, salt, hash).valid;
 }
 
 export function randomToken(bytes = 32): string {

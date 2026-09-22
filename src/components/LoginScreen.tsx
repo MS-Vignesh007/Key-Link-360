@@ -671,11 +671,11 @@ export default function LoginScreen({
 
       {/* 2-Column Balanced Responsive Grid */}
       <div 
-        className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center justify-center relative z-10 my-auto"
+        className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start justify-center relative z-10 my-auto"
       >
         
         {/* ================= LEFT SIDE: ULTRA-CRISP HD BRAND SHOWCASE ================= */}
-        <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 select-none pr-0 lg:pr-2">
+        <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 select-none pr-0 lg:pr-2 lg:sticky lg:top-8">
           
           {/* OG Brand Logo (100% untouched original file) */}
           <div className="flex items-center justify-center">

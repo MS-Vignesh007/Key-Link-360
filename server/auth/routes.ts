@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import {
   AuthStoreShape,
   AuthUserRecord,
+  BCRYPT_SALT_ROUNDS,
   hashPassword,
   hashToken,
   publicUser,
@@ -9,6 +10,7 @@ import {
   randomToken,
   signAccessToken,
   verifyAccessToken,
+  verifyAndUpgradePassword,
   verifyPassword
 } from "./crypto";
 import { defaultAvatarUrlForEmail } from "./avatars";
@@ -466,13 +468,14 @@ export function createAuthRouter() {
       const ip = clientIp(req);
       const ua = userAgent(req);
 
-      const rate = checkRateLimit(store, `login:${ip}:${email}`, 20, 60_000);
-      if (!rate.allowed) {
+      // 1. Strict IP Rate Limiting: Max 10 requests per IP per minute
+      const ipRate = checkRateLimit(store, `login:ip:${ip}`, 10, 60_000);
+      if (!ipRate.allowed) {
         writeAuthStore(store);
         res.status(429).json({
-          error: "Too many login attempts. Please wait and try again.",
+          error: "Too many login requests from this IP. Please try again in a minute.",
           code: "RATE_LIMITED",
-          retryAfterSec: rate.retryAfterSec
+          retryAfterSec: ipRate.retryAfterSec
         });
         return;
       }
@@ -503,7 +506,6 @@ export function createAuthRouter() {
         const recovered = await fetchAuthUserByEmailFromSupabase(email);
         if (recovered) {
           user = recovered;
-          // Refresh store reference after recovery write.
           Object.assign(store, readAuthStore());
           user = findUserByEmail(store, email) || recovered;
         }
@@ -512,6 +514,29 @@ export function createAuthRouter() {
       if (!user || !user.passwordHash || !user.passwordSalt) {
         recordLogin(store, { userId: null, email, success: false, reason: "not_found", ip, userAgent: ua });
         writeAuthStore(store);
+        // Generic error response to prevent user enumeration
+        res.status(401).json({ error: "Invalid email or password.", code: "INVALID_CREDENTIALS" });
+        return;
+      }
+
+      // 2. Progressive Delay: Each prior failed attempt adds an incremental delay (up to 2s) to mitigate brute force
+      if (user.failedLoginAttempts > 0) {
+        const progressiveDelayMs = Math.min(2000, user.failedLoginAttempts * 350);
+        await new Promise((resolve) => setTimeout(resolve, progressiveDelayMs));
+      }
+
+      // Check if account is locked (15 minutes lockout)
+      if (user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now()) {
+        recordLogin(store, {
+          userId: user.id,
+          email,
+          success: false,
+          reason: "account_locked",
+          ip,
+          userAgent: ua
+        });
+        writeAuthStore(store);
+        // Generic error response: Never reveal whether lockout is due to too many attempts vs wrong password
         res.status(401).json({ error: "Invalid email or password.", code: "INVALID_CREDENTIALS" });
         return;
       }
@@ -538,32 +563,86 @@ export function createAuthRouter() {
         return;
       }
 
-      const valid = verifyPassword(password, user.passwordSalt, user.passwordHash);
-      if (!valid) {
+      const verification = verifyAndUpgradePassword(password, user.passwordSalt, user.passwordHash);
+      if (!verification.valid) {
         user.failedLoginAttempts += 1;
         let locked = false;
+
+        // 3. 5 Consecutive Failed Attempts -> Lock for 15 Minutes + Send Reset Email
         if (user.failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
           user.lockedUntil = new Date(Date.now() + LOCK_MS).toISOString();
           user.failedLoginAttempts = 0;
           locked = true;
+
+          // Dispatch security lockout notification email with password reset link
+          const rawResetToken = randomToken(32);
+          const resetRecord = {
+            id: createId("reset"),
+            userId: user.id,
+            email: user.email,
+            otpHash: hashToken(randomOtp()),
+            tokenHash: hashToken(rawResetToken),
+            attempts: 0,
+            createdAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + LOCK_MS).toISOString(),
+            usedAt: null
+          };
+          if (!Array.isArray(store.passwordResetTokens)) {
+            store.passwordResetTokens = [];
+          }
+          store.passwordResetTokens.push(resetRecord);
+          void sendPasswordResetLink(user.email, rawResetToken, appOrigin()).catch((err) =>
+            console.error("Lockout email error:", err)
+          );
         }
+
         user.updatedAt = new Date().toISOString();
         recordLogin(store, {
           userId: user.id,
           email,
           success: false,
-          reason: "wrong_password",
+          reason: locked ? "account_locked" : "wrong_password",
           ip,
           userAgent: ua
         });
         writeAuthStore(store);
+
+        // Never reveal whether lockout is due to too many attempts vs wrong password
         res.status(401).json({
-          error: locked
-            ? "Too many failed attempts. Account temporarily locked. Try again in 15 minutes."
-            : "Invalid email or password.",
-          code: locked ? "ACCOUNT_LOCKED" : "INVALID_CREDENTIALS"
+          error: "Invalid email or password.",
+          code: "INVALID_CREDENTIALS"
         });
         return;
+      }
+
+      // Automatic Migration: Transparently re-hash legacy or weak passwords to bcrypt(12) on successful login
+      if (verification.needsRehash && verification.upgraded) {
+        user.passwordHash = verification.upgraded.hash;
+        user.passwordSalt = verification.upgraded.salt;
+        user.updatedAt = new Date().toISOString();
+        try {
+          audit(store, "user.password_rehashed_migration", user.id, {
+            previousAlgorithm: verification.matchedAlgorithm || "legacy",
+            newAlgorithm: "bcrypt",
+            rounds: BCRYPT_SALT_ROUNDS
+          });
+        } catch {
+          // ignore audit logging error
+        }
+
+        if (isSupabaseConfigured()) {
+          const supabase = getSupabase();
+          if (supabase) {
+            void supabase
+              .from("auth_users")
+              .update({
+                password_hash: user.passwordHash,
+                password_salt: user.passwordSalt,
+                updated_at: user.updatedAt
+              })
+              .eq("id", user.id);
+          }
+        }
       }
 
       user.failedLoginAttempts = 0;

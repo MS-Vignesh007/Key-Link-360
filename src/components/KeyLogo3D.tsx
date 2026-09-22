@@ -6,13 +6,14 @@ interface KeyLogo3DProps {
   size?: KeyLogo3DSize;
   showLabel?: boolean;
   className?: string;
+  textClassName?: string;
   variant?: "icon" | "full" | "auto";
 }
 
 const SIZE_MAP: Record<KeyLogo3DSize, { iconHeight: string; fullHeight: string; text: string; sub: string }> = {
   xs: { iconHeight: "h-7 w-7", fullHeight: "h-8 w-8", text: "text-xs", sub: "text-[8px]" },
-  sm: { iconHeight: "h-9 w-9", fullHeight: "h-10 w-10", text: "text-sm", sub: "text-[9px]" },
-  md: { iconHeight: "h-11 w-11", fullHeight: "h-12 w-12", text: "text-base", sub: "text-[10px]" },
+  sm: { iconHeight: "h-9 w-9", fullHeight: "h-10 w-10", text: "text-lg", sub: "text-[10px]" },
+  md: { iconHeight: "h-11 w-11", fullHeight: "h-12 w-12", text: "text-xl", sub: "text-xs" },
   lg: { iconHeight: "h-28 w-28 sm:h-32 sm:w-32", fullHeight: "h-28 w-28 sm:h-32 sm:w-32", text: "text-2xl", sub: "text-xs" },
   xl: { iconHeight: "h-40 w-40 sm:h-48 sm:w-48", fullHeight: "h-40 w-40 sm:h-48 sm:w-48", text: "text-4xl", sub: "text-sm" }
 };
@@ -21,6 +22,7 @@ export default function KeyLogo3D({
   size = "md",
   showLabel = false,
   className = "",
+  textClassName = "",
   variant = "auto"
 }: KeyLogo3DProps) {
   const { iconHeight, fullHeight, text } = SIZE_MAP[size];
@@ -56,12 +58,17 @@ export default function KeyLogo3D({
       {showLabel && (
         <div className="key-logo-label flex flex-col leading-none whitespace-nowrap">
           <span
-            className={`font-sans font-black tracking-tight text-[var(--key-brand-text,#0f172a)] drop-shadow-sm ${text}`}
+            className={`font-sans font-black tracking-tight drop-shadow-sm uppercase ${textClassName || text}`}
             style={{
               letterSpacing: "-0.02em"
             }}
           >
-            KeyLink<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500">360</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-500 to-indigo-500">
+              KEYLINK
+            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-pink-500 ml-0.5">
+              360
+            </span>
           </span>
         </div>
       )}

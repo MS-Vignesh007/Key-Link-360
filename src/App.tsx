@@ -24,6 +24,16 @@ import LoginScreen from "./components/LoginScreen";
 import LoggedInLoginPrompt from "./components/LoggedInLoginPrompt";
 import NotFoundScreen from "./components/NotFoundScreen";
 import LandingPage from "./components/LandingPage";
+import MobileBioWebsitesPage from "./pages/public/MobileBioWebsitesPage";
+import ShortLinksPage from "./pages/public/ShortLinksPage";
+import DynamicQRStudioPage from "./pages/public/DynamicQRStudioPage";
+import RazorpayPaymentsPage from "./pages/public/RazorpayPaymentsPage";
+import CustomDomainsPage from "./pages/public/CustomDomainsPage";
+import CreatorsSolutionPage from "./pages/public/CreatorsSolutionPage";
+import MarketplaceSellersPage from "./pages/public/MarketplaceSellersPage";
+import LocalShopsPage from "./pages/public/LocalShopsPage";
+import ServiceStudiosPage from "./pages/public/ServiceStudiosPage";
+import SupportFAQPage from "./pages/public/SupportFAQPage";
 import {
   AuthUser,
   clearAuthSession,
@@ -70,6 +80,7 @@ import CustomDomainsScreen from "./components/CustomDomainsScreen";
 import HelpCenterScreen from "./components/HelpCenterScreen";
 import ContactSupportScreen from "./components/ContactSupportScreen";
 import AccountScreen from "./components/AccountScreen";
+import SettingsScreen from "./components/SettingsScreen";
 import SuperAdminScreen from "./components/SuperAdminScreen";
 import PublicBioPageView from "./components/PublicBioPageView";
 import PublishModal from "./components/PublishModal";
@@ -105,8 +116,11 @@ import {
   prependNotification,
   markNotificationRead,
   markAllNotificationsRead,
+  deleteNotification,
+  writeNotifications,
   CreateNotificationInput
 } from "./storage/notificationStorage";
+import { auditWorkspaceTruth } from "./lib/workspaceAuditor";
 import { getPublishSettings, persistPublishSettings, PRIMARY_DOMAIN } from "./storage/publishStorage";
 import { AppTheme, getStoredTheme, saveTheme } from "./lib/themeStorage";
 import AOS from "aos";
@@ -120,6 +134,30 @@ import {
 } from "./lib/qrCodes";
 
 const USER_PROFILE_STORAGE_KEY = "keylink360_user_profile";
+
+const PUBLIC_STANDALONE_PATHS = new Set([
+  "/features/bio-websites",
+  "/features/short-links",
+  "/features/qr-studio",
+  "/features/razorpay-payments",
+  "/features/custom-domains",
+  "/solutions/creators",
+  "/solutions/marketplace-sellers",
+  "/solutions/local-shops-d2c",
+  "/solutions/service-studios",
+  "/support"
+]);
+
+function isPublicRoutePath(pathname: string): boolean {
+  const clean = pathname.replace(/\/+$/, "") || "/";
+  return (
+    clean === "/" ||
+    clean === "/home" ||
+    clean === "/login" ||
+    clean.startsWith("/login") ||
+    PUBLIC_STANDALONE_PATHS.has(clean)
+  );
+}
 
 function writeLocalStorage(key: string, value: unknown): void {
   try {
@@ -217,28 +255,85 @@ export default function App() {
     };
   }, [isBrandedHost]);
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getAccessToken() && getStoredAuthUser()));
   const [authBootstrapping, setAuthBootstrapping] = useState(() => Boolean(getAccessToken()));
   const [idleTimeoutMs, setIdleTimeoutMs] = useState(1000 * 60 * 30);
 
+  // Auto collapse sidebar when clicking outside on the workspace
+  React.useEffect(() => {
+    if (isCollapsed) return;
+
+    const handleWorkspaceClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest(".codepen-sidebar") || target.closest("#mobile-nav-drawer")) {
+        return;
+      }
+      setIsCollapsed(true);
+    };
+
+    document.addEventListener("mousedown", handleWorkspaceClick);
+    return () => {
+      document.removeEventListener("mousedown", handleWorkspaceClick);
+    };
+  }, [isCollapsed]);
+
   const currentScreen = React.useMemo(
-    () => pathToScreen(location.pathname) ?? (isLoggedIn ? ScreenId.DASHBOARD : ScreenId.LOGIN),
+    () => pathToScreen(location.pathname) ?? (isLoggedIn ? ScreenId.DASHBOARD : ScreenId.HOME),
     [location.pathname, isLoggedIn]
   );
   const editPageIdFromUrl = searchParams.get("edit");
   const mainScrollRef = React.useRef<HTMLElement>(null);
 
   const resetMainScroll = React.useCallback(() => {
-    const el = mainScrollRef.current;
-    if (!el) return;
-    el.scrollTop = 0;
-    el.scrollLeft = 0;
+    const doScroll = () => {
+      // 1. Reset standard window & document scroll
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+        document.documentElement.scrollLeft = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+      }
+
+      // 2. Reset primary workspace scroll container
+      const mainContainer =
+        mainScrollRef.current ||
+        (document.getElementById("key-main-scroll-container") as HTMLElement | null) ||
+        (document.querySelector(".key-main-scroll") as HTMLElement | null);
+
+      if (mainContainer) {
+        mainContainer.scrollTop = 0;
+        mainContainer.scrollLeft = 0;
+        if (typeof mainContainer.scrollTo === "function") {
+          mainContainer.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+        }
+      }
+
+      // 3. Reset any nested workspace scrollable panes
+      const subPanes = document.querySelectorAll(".key-main-scroll__content, .overflow-y-auto");
+      subPanes.forEach((pane) => {
+        if (!pane.closest(".codepen-sidebar") && !pane.closest("#mobile-nav-drawer")) {
+          (pane as HTMLElement).scrollTop = 0;
+        }
+      });
+    };
+
+    // Run immediately and across key render lifecycle frames
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 10);
+    setTimeout(doScroll, 50);
+    setTimeout(doScroll, 150);
+    setTimeout(doScroll, 300);
   }, []);
 
   React.useEffect(() => {
     resetMainScroll();
-  }, [location.pathname, resetMainScroll]);
+  }, [location.pathname, location.search, resetMainScroll]);
   const authVerifyToken = React.useMemo(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("verifyToken") || "";
@@ -283,6 +378,12 @@ export default function App() {
     });
   }, []);
 
+  const handleGlobalThemeChange = React.useCallback((newTheme: AppTheme) => {
+    setUiTheme(newTheme);
+    saveTheme(newTheme);
+    window.dispatchEvent(new CustomEvent("keylink360_theme_change", { detail: newTheme }));
+  }, []);
+
   // Sync theme globally across document root for all devices
   React.useEffect(() => {
     document.documentElement.setAttribute("data-theme", uiTheme);
@@ -298,6 +399,22 @@ export default function App() {
     document.documentElement.classList.add(`key-theme-${uiTheme}`);
     AOS.refresh();
   }, [uiTheme, location.pathname, currentScreen]);
+
+  // Listen for theme changes across modals, studio editor, and tabs
+  React.useEffect(() => {
+    const onThemeExternalSync = (e: any) => {
+      const nextTheme = e?.detail || getStoredTheme();
+      if (nextTheme && nextTheme !== uiTheme) {
+        setUiTheme(nextTheme);
+      }
+    };
+    window.addEventListener("keylink360_theme_change", onThemeExternalSync);
+    window.addEventListener("storage", onThemeExternalSync);
+    return () => {
+      window.removeEventListener("keylink360_theme_change", onThemeExternalSync);
+      window.removeEventListener("storage", onThemeExternalSync);
+    };
+  }, [uiTheme]);
 
   // Dynamic Browser Tab Document Title sync across all pages & states
   React.useEffect(() => {
@@ -449,15 +566,11 @@ export default function App() {
     const isPublicQrPath = /^\/q\/[^/]+\/?$/i.test(location.pathname);
     if (isPublicQrPath) return;
 
-    const isPublicPath =
-      location.pathname === "/" ||
-      location.pathname === "/home" ||
-      location.pathname === screenToPath(ScreenId.LOGIN) ||
-      location.pathname.startsWith("/login");
+    const isPublic = isPublicRoutePath(location.pathname);
 
     if (!isLoggedIn) {
-      if (!isPublicPath) {
-        navigate(screenToPath(ScreenId.LOGIN), { replace: true });
+      if (!isPublic) {
+        navigate(screenToPath(ScreenId.HOME), { replace: true });
       }
     } else if (location.pathname === "/" || location.pathname === "/home") {
       navigate(screenToPath(ScreenId.DASHBOARD), { replace: true });
@@ -466,13 +579,9 @@ export default function App() {
 
   // CRM Hard Refresh Limit Rule (>5 full refreshes in CRM resets session & sends user to Home page)
   React.useEffect(() => {
-    const isPublicPath =
-      location.pathname === "/" ||
-      location.pathname === "/home" ||
-      location.pathname === screenToPath(ScreenId.LOGIN) ||
-      location.pathname.startsWith("/login");
+    const isPublic = isPublicRoutePath(location.pathname);
 
-    if (!isPublicPath && (isLoggedIn || Boolean(getAccessToken()))) {
+    if (!isPublic && (isLoggedIn || Boolean(getAccessToken()))) {
       const raw = sessionStorage.getItem("keylink_crm_hard_refresh_count");
       const count = raw ? parseInt(raw, 10) : 0;
       const next = count + 1;
@@ -486,7 +595,7 @@ export default function App() {
         return;
       }
       sessionStorage.setItem("keylink_crm_hard_refresh_count", String(next));
-    } else if (isPublicPath) {
+    } else if (isPublic) {
       sessionStorage.removeItem("keylink_crm_hard_refresh_count");
     }
   }, []);
@@ -538,6 +647,10 @@ export default function App() {
     setNotifications((prev) => prependNotification(prev, input));
   }, []);
 
+  const handleDeleteNotification = React.useCallback((id: string) => {
+    setNotifications((prev) => deleteNotification(prev, id));
+  }, []);
+
   const savePublishSettings = (settings: PublishSettings) => {
     setPublishSettings(settings);
     persistPublishSettings(settings);
@@ -546,10 +659,13 @@ export default function App() {
   const handleWebsitePublished = (settings: PublishSettings) => {
     savePublishSettings(settings);
     pushNotification({
-      type: "general",
-      title: "Website published",
-      message: `Your website is available at ${settings.primaryUrl}.`,
-      targetScreen: ScreenId.DASHBOARD
+      type: "page_published",
+      status: "completed",
+      stage: "after_publish",
+      title: "Website Published & Live",
+      message: `Your website is active and delivered to public visitors at ${settings.primaryUrl}.`,
+      targetScreen: ScreenId.DASHBOARD,
+      actionLabel: "View Dashboard"
     });
   };
 
@@ -863,6 +979,37 @@ export default function App() {
   const [linkRotatorsLoading, setLinkRotatorsLoading] = useState(false);
   const [linkRotatorsLoadError, setLinkRotatorsLoadError] = useState<string | null>(null);
 
+  // Truthful Workspace Auditor - keeps notification bell 100% synchronized with actual real workspace items & stages
+  React.useEffect(() => {
+    if (!isLoggedIn) return;
+    setNotifications((prev) => {
+      const safePrev = Array.isArray(prev) ? prev : [];
+      const audited = auditWorkspaceTruth(
+        {
+          pages: Array.isArray(pages) ? pages : [],
+          savedDrafts: Array.isArray(savedDrafts) ? savedDrafts : [],
+          contacts: Array.isArray(contacts) ? contacts : [],
+          domains: Array.isArray(domains) ? domains : [],
+          whatsAppCampaigns: Array.isArray(whatsAppCampaigns) ? whatsAppCampaigns : [],
+          qrCodes: Array.isArray(qrCodes) ? qrCodes : [],
+          pixels: Array.isArray(pixels) ? pixels : []
+        },
+        safePrev
+      );
+      writeNotifications(audited);
+      return audited;
+    });
+  }, [
+    isLoggedIn,
+    pages,
+    savedDrafts,
+    contacts,
+    domains,
+    whatsAppCampaigns,
+    qrCodes,
+    pixels
+  ]);
+
   const loadPlatformSubdomains = React.useCallback(async () => {
     if (!getAccessToken() || isPreviewToken(getAccessToken())) return;
     try {
@@ -1092,8 +1239,8 @@ export default function App() {
     setWorkspaceHydrated(false);
     didPushLocalPagesRef.current = false;
     setIsMobileNavOpen(false);
-    navigate(screenToPath(ScreenId.LOGIN), { replace: true });
-    window.history.replaceState({ keyAuthGate: "login" }, "", screenToPath(ScreenId.LOGIN));
+    navigate(screenToPath(ScreenId.HOME), { replace: true });
+    window.history.replaceState({}, "", screenToPath(ScreenId.HOME));
   };
 
   React.useEffect(() => {
@@ -1102,8 +1249,8 @@ export default function App() {
       setWorkspaceHydrated(false);
       didPushLocalPagesRef.current = false;
       setIsMobileNavOpen(false);
-      navigate(screenToPath(ScreenId.LOGIN), { replace: true });
-      window.history.replaceState({ keyAuthGate: "login" }, "", screenToPath(ScreenId.LOGIN));
+      navigate(screenToPath(ScreenId.HOME), { replace: true });
+      window.history.replaceState({}, "", screenToPath(ScreenId.HOME));
     };
     window.addEventListener("keylink360:auth-expired", onAuthExpired);
     window.addEventListener("keyslink:auth-expired", onAuthExpired);
@@ -1268,9 +1415,12 @@ export default function App() {
 
     pushNotification({
       type: "page_duplicated",
-      title: "Page duplicated",
-      message: `"${duplicated.title}" was created with ${blocksCopy.length} block(s).`,
+      status: "proceed",
+      stage: "before_build",
+      title: "Page Duplicated",
+      message: `"${duplicated.title}" was created with ${blocksCopy.length} block(s). Ready to customize and publish.`,
       targetScreen: ScreenId.BIO_PAGES,
+      actionLabel: "Edit Copy",
       meta: { pageId: newId }
     });
   };
@@ -1454,9 +1604,12 @@ export default function App() {
     setContacts((current) => [newContact, ...current]);
     pushNotification({
       type: "contact_added",
-      title: "New contact captured",
-      message: `${newContact.name} was added to your contacts.`,
-      targetScreen: ScreenId.CONTACTS
+      status: "delivered",
+      stage: "after_publish",
+      title: "New Lead Captured",
+      message: `${newContact.name} submitted a website form. Awaiting sales/support response.`,
+      targetScreen: ScreenId.CONTACTS,
+      actionLabel: "View Contacts"
     });
     if (getAccessToken() && !isPreviewToken(getAccessToken())) {
       void fetch(apiUrl("/api/contacts"), {
@@ -1633,9 +1786,12 @@ export default function App() {
     });
     pushNotification({
       type: "qr_generated",
-      title: "QR code created",
-      message: `"${name}" is ready to share.`,
-      targetScreen: ScreenId.QR_CODES
+      status: "delivered",
+      stage: "workspace_activity",
+      title: "Dynamic QR Ready",
+      message: `"${name}" dynamic QR code is generated and active to share or print.`,
+      targetScreen: ScreenId.QR_CODES,
+      actionLabel: "View QR Studio"
     });
   };
 
@@ -1689,7 +1845,7 @@ export default function App() {
             type: "general",
             title: "Live scan URL not updated yet",
             message:
-              "Saved locally, but keylink360.mindflo.today still opens the old URL. Deploy this fix to live, then Save Dynamic Destination again.",
+              "Saved locally, but keylink360.in still opens the old URL. Deploy this fix to live, then Save Dynamic Destination again.",
             targetScreen: ScreenId.QR_CODES
           });
           return false;
@@ -1748,9 +1904,12 @@ export default function App() {
     setPixels((current) => [newPixel, ...current]);
     pushNotification({
       type: "pixel_added",
-      title: "Tracking pixel added",
-      message: `"${name}" (${type}) is now ${newPixel.status === "Active" ? "active" : "awaiting validation"}.`,
-      targetScreen: ScreenId.PIXELS
+      status: newPixel.status === "Active" ? "completed" : "awaiting",
+      stage: "workspace_activity",
+      title: "Tracking Pixel Added",
+      message: `"${name}" (${type}) is now ${newPixel.status === "Active" ? "active and recording analytics" : "awaiting validation"}.`,
+      targetScreen: ScreenId.PIXELS,
+      actionLabel: "View Pixels"
     });
   };
 
@@ -1907,18 +2066,18 @@ export default function App() {
     const path = screenToPath(screen);
     navigate(path);
     setIsMobileNavOpen(false);
-    if (location.pathname === path) {
-      resetMainScroll();
-    }
+    resetMainScroll();
   };
 
   const handleNotificationNavigate = (screen: ScreenId, pageId?: string) => {
     if (screen === ScreenId.BIO_PAGES && pageId) {
       setInitialActiveEditPageId(pageId);
       navigate(`${screenToPath(screen)}?edit=${encodeURIComponent(pageId)}`);
+      resetMainScroll();
       return;
     }
     navigate(screenToPath(screen));
+    resetMainScroll();
   };
 
   const handleOpenDashboardPage = (pageId: string, options?: { fromCustomDomain?: boolean }) => {
@@ -1928,6 +2087,7 @@ export default function App() {
       params.set("source", "domain");
     }
     navigate(`${screenToPath(ScreenId.BIO_PAGES)}?${params.toString()}`);
+    resetMainScroll();
   };
 
   // Helper object to serve metrics inside dashboard with server-side tracking support
@@ -1971,6 +2131,16 @@ export default function App() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    pushNotification({
+      type: "workspace_sync",
+      status: "completed",
+      stage: "workspace_activity",
+      title: "Workspace Export Delivered",
+      message: "Full workspace JSON backup was generated and downloaded successfully.",
+      targetScreen: ScreenId.ACCOUNT,
+      actionLabel: "Account"
+    });
   };
 
   const handleImportData = (backupData: any): boolean => {
@@ -2242,6 +2412,21 @@ export default function App() {
             onEditPage={(pageId, options) => handleOpenDashboardPage(pageId, options)}
           />
         );
+      case ScreenId.SETTINGS:
+        return (
+          <SettingsScreen
+            user={user}
+            theme={uiTheme}
+            onThemeChange={handleGlobalThemeChange}
+            onUpdateUser={handleUpdateUser}
+            onUpdateMfa={handleUpdateMfa}
+            onExportData={handleExportData}
+            onImportData={handleImportData}
+            onLogout={handleLogout}
+            onNavigate={handleScreenChange}
+            helpArticles={articles}
+          />
+        );
       case ScreenId.HELP_CENTER:
         return <HelpCenterScreen articles={articles} onNavigate={handleScreenChange} />;
       case ScreenId.CONTACT_SUPPORT:
@@ -2251,10 +2436,7 @@ export default function App() {
           <AccountScreen
             user={user}
             theme={uiTheme}
-            onThemeChange={(theme) => {
-              setUiTheme(theme);
-              saveTheme(theme);
-            }}
+            onThemeChange={handleGlobalThemeChange}
             onUpdateUser={handleUpdateUser}
             onUpdateMfa={handleUpdateMfa}
             onExportData={handleExportData}
@@ -2275,18 +2457,8 @@ export default function App() {
     }
   };
 
-  if (authBootstrapping) {
-    return (
-      <div className="key-auth-canvas h-screen max-h-[100dvh] overflow-hidden flex items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-3 text-slate-300 relative z-10">
-          <span className="h-8 w-8 border-2 border-indigo-300/40 border-t-indigo-300 rounded-full animate-spin" />
-          <p className="text-xs font-semibold uppercase tracking-widest">Restoring session…</p>
-        </div>
-      </div>
-    );
-  }
-
-  const isPublicLandingPage = location.pathname === "/" || location.pathname === "/home";
+  const cleanPath = location.pathname.replace(/\/+$/, "") || "/";
+  const isPublicLandingPage = cleanPath === "/" || cleanPath === "/home";
 
   if (isPublicLandingPage) {
     return (
@@ -2302,6 +2474,49 @@ export default function App() {
           }}
           onSignIn={() => navigate(isLoggedIn ? "/dashboard" : "/login")}
         />
+      </div>
+    );
+  }
+
+  // Standalone Public Feature & Solution Showcase Pages (Strictly Pre-Login Zone, No Sidebar/Shell)
+  if (cleanPath === "/features/bio-websites") {
+    return <MobileBioWebsitesPage />;
+  }
+  if (cleanPath === "/features/short-links") {
+    return <ShortLinksPage />;
+  }
+  if (cleanPath === "/features/qr-studio") {
+    return <DynamicQRStudioPage />;
+  }
+  if (cleanPath === "/features/razorpay-payments") {
+    return <RazorpayPaymentsPage />;
+  }
+  if (cleanPath === "/features/custom-domains") {
+    return <CustomDomainsPage />;
+  }
+  if (cleanPath === "/solutions/creators") {
+    return <CreatorsSolutionPage />;
+  }
+  if (cleanPath === "/solutions/marketplace-sellers") {
+    return <MarketplaceSellersPage />;
+  }
+  if (cleanPath === "/solutions/local-shops-d2c") {
+    return <LocalShopsPage />;
+  }
+  if (cleanPath === "/solutions/service-studios") {
+    return <ServiceStudiosPage />;
+  }
+  if (cleanPath === "/support") {
+    return <SupportFAQPage />;
+  }
+
+  if (authBootstrapping) {
+    return (
+      <div className="key-auth-canvas h-screen max-h-[100dvh] overflow-hidden flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3 text-slate-300 relative z-10">
+          <span className="h-8 w-8 border-2 border-indigo-300/40 border-t-indigo-300 rounded-full animate-spin" />
+          <p className="text-xs font-semibold uppercase tracking-widest">Restoring session…</p>
+        </div>
       </div>
     );
   }
@@ -2337,10 +2552,7 @@ export default function App() {
           setIsCollapsed={setIsCollapsed}
           user={user}
           theme={uiTheme}
-          onThemeChange={(newTheme) => {
-            setUiTheme(newTheme);
-            saveTheme(newTheme);
-          }}
+          onThemeChange={handleGlobalThemeChange}
         />
       )}
 
@@ -2356,6 +2568,7 @@ export default function App() {
             unreadCount={unreadNotificationCount}
             onMarkNotificationRead={handleMarkNotificationRead}
             onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
+            onDeleteNotification={handleDeleteNotification}
             onNotificationNavigate={handleNotificationNavigate}
             onPublish={() => setIsPublishOpen(true)}
             onLogout={handleLogout}
@@ -2394,6 +2607,16 @@ export default function App() {
                     />
                   }
                 />
+                <Route path="/features/bio-websites" element={<MobileBioWebsitesPage />} />
+                <Route path="/features/short-links" element={<ShortLinksPage />} />
+                <Route path="/features/qr-studio" element={<DynamicQRStudioPage />} />
+                <Route path="/features/razorpay-payments" element={<RazorpayPaymentsPage />} />
+                <Route path="/features/custom-domains" element={<CustomDomainsPage />} />
+                <Route path="/solutions/creators" element={<CreatorsSolutionPage />} />
+                <Route path="/solutions/marketplace-sellers" element={<MarketplaceSellersPage />} />
+                <Route path="/solutions/local-shops-d2c" element={<LocalShopsPage />} />
+                <Route path="/solutions/service-studios" element={<ServiceStudiosPage />} />
+                <Route path="/support" element={<SupportFAQPage />} />
                 <Route
                   path={screenToPath(ScreenId.LOGIN)}
                   element={
@@ -2411,6 +2634,16 @@ export default function App() {
             ) : (
               <Routes>
                 <Route path="/q/:code" element={<PublicQrScanRedirect />} />
+                <Route path="/features/bio-websites" element={<MobileBioWebsitesPage />} />
+                <Route path="/features/short-links" element={<ShortLinksPage />} />
+                <Route path="/features/qr-studio" element={<DynamicQRStudioPage />} />
+                <Route path="/features/razorpay-payments" element={<RazorpayPaymentsPage />} />
+                <Route path="/features/custom-domains" element={<CustomDomainsPage />} />
+                <Route path="/solutions/creators" element={<CreatorsSolutionPage />} />
+                <Route path="/solutions/marketplace-sellers" element={<MarketplaceSellersPage />} />
+                <Route path="/solutions/local-shops-d2c" element={<LocalShopsPage />} />
+                <Route path="/solutions/service-studios" element={<ServiceStudiosPage />} />
+                <Route path="/support" element={<SupportFAQPage />} />
                 {APP_ROUTE_ENTRIES.map(([screen, path]) => (
                   <React.Fragment key={path}>
                     <Route path={path} element={renderScreenElement(screen)} />
@@ -2474,10 +2707,7 @@ export default function App() {
           onScreenChange={handleScreenChange}
           user={user}
           theme={uiTheme}
-          onThemeChange={(newTheme) => {
-            setUiTheme(newTheme);
-            saveTheme(newTheme);
-          }}
+          onThemeChange={handleGlobalThemeChange}
         />
       )}
 

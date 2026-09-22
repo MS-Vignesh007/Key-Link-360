@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { X } from "lucide-react";
+import { X, Smartphone, Tablet, Laptop, Monitor, Globe, ArrowLeft } from "lucide-react";
 import { normalizePageTheme, getBioPageThemeClass, getBioPageThemeStyle } from "../lib/bioPageThemes";
+import type { DeviceViewportMode } from "../types";
 import {
   BlockRecord,
   destinationEmailFromBlock,
@@ -19,8 +20,10 @@ import ThankYouPageView, {
   DEFAULT_THANK_YOU_MESSAGE,
   DEFAULT_THANK_YOU_BRAND
 } from "./bio/ThankYouPageView";
+import BioAiChatWidget from "./bio/BioAiChatWidget";
 import { normalizeCoverSettings } from "../lib/bioCoverPhoto";
 import { formatDisplayHandle, readLocalPageUpdatedAt } from "../storage/bioBuilderStorage";
+import { computeBlockInlineStyles, getBlockCustomMeta } from "../lib/blockStyleHelper";
 import type { BioPage, BioPagePreviewDetails, BioPagePreviewTheme } from "../types";
 
 interface Block {
@@ -40,6 +43,9 @@ interface PublicBioPageViewProps {
   allPages?: BioPage[];
   /** Platform ?previewPageId= testing shows the sandbox banner; live custom domains do not. */
   mode?: "preview" | "live";
+  initialBlocks?: Block[];
+  initialDetails?: BioPagePreviewDetails;
+  onExitPreview?: () => void;
 }
 
 const marvelFallbackBlocks = [
@@ -187,22 +193,61 @@ export default function PublicBioPageView({
   pageBio,
   pageCoverPhoto,
   allPages,
-  mode = "preview"
+  mode = "preview",
+  initialBlocks,
+  initialDetails,
+  onExitPreview
 }: PublicBioPageViewProps) {
-  const initialPage = getInitialPageState(pageId, pageSlug, mode);
+  const initialPage =
+    initialBlocks && initialBlocks.length > 0
+      ? {
+          blocks: initialBlocks,
+          details: initialDetails || null,
+          status: "ready" as const
+        }
+      : getInitialPageState(pageId, pageSlug, mode);
   const [displayPageId, setDisplayPageId] = useState(pageId);
   const displayPageMeta = allPages?.find((page) => page.id === displayPageId);
   const effectiveSlug = displayPageMeta?.slug || pageSlug;
-  const effectiveTitle = displayPageMeta?.title || pageTitle;
-  const effectiveBio = displayPageMeta?.bio || pageBio;
-  const effectiveCover = displayPageMeta?.coverPhoto || pageCoverPhoto;
+  const effectiveTitle = initialDetails?.title || displayPageMeta?.title || pageTitle;
+  const effectiveBio = initialDetails?.bio ?? (displayPageMeta?.bio || pageBio);
+  const effectiveCover = initialDetails?.coverPhoto || displayPageMeta?.coverPhoto || pageCoverPhoto;
   const [blocks, setBlocks] = useState<Block[]>(initialPage.blocks);
-  const [customDetails, setCustomDetails] = useState<BioPagePreviewDetails | null>(initialPage.details);
+  const [customDetails, setCustomDetails] = useState<BioPagePreviewDetails | null>(
+    initialDetails || initialPage.details
+  );
   const [pageTheme, setPageTheme] = useState<BioPagePreviewTheme>(
-    normalizePageTheme(initialPage.details?.pageTheme)
+    normalizePageTheme(initialDetails?.pageTheme || initialPage.details?.pageTheme)
   );
   const [pageLoadStatus, setPageLoadStatus] = useState<"loading" | "ready" | "not_found">(initialPage.status);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!onExitPreview) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onExitPreview();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onExitPreview]);
+
+  useEffect(() => {
+    if (initialBlocks && initialBlocks.length > 0) {
+      setBlocks(initialBlocks);
+      setPageLoadStatus("ready");
+    }
+  }, [initialBlocks]);
+
+  useEffect(() => {
+    if (initialDetails) {
+      setCustomDetails(initialDetails);
+      if (initialDetails.pageTheme) {
+        setPageTheme(normalizePageTheme(initialDetails.pageTheme));
+      }
+    }
+  }, [initialDetails]);
   const [toast, setToast] = useState<string | null>(null);
   const [leadEmails, setLeadEmails] = useState<Record<string, string>>({});
   const [showSpinWheel, setShowSpinWheel] = useState(false);
@@ -211,6 +256,16 @@ export default function PublicBioPageView({
   const [activeSpinBlockId, setActiveSpinBlockId] = useState<string | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinResult, setSpinResult] = useState<string | null>(null);
+  const [activeDeviceMode, setActiveDeviceMode] = useState<DeviceViewportMode | "auto">(() => {
+    if (typeof window === "undefined") return "auto";
+    const params = new URLSearchParams(window.location.search);
+    const d = params.get("device") || params.get("view");
+    if (d === "mobile" || d === "tablet" || d === "laptop" || d === "desktop") {
+      return d;
+    }
+    return "auto";
+  });
+  const [showDeviceDock, setShowDeviceDock] = useState(true);
   const pageEtagRef = useRef<string | null>(null);
   const fetchAbortRef = useRef<AbortController | null>(null);
 
@@ -737,18 +792,96 @@ export default function PublicBioPageView({
     }
   };
 
-                return (
-    <div
-      className={`key-public-bio-page ${getBioPageThemeClass(pageTheme)} flex flex-col items-center justify-start font-sans${
-        showThanksPage ? " key-public-bio-page--thanks-open" : ""
-      }`}
-      style={getBioPageThemeStyle(pageTheme)}
-    >
+    const deviceScope = customDetails?.deviceScope || "auto_adaptive";
+    const effectiveDevice: DeviceViewportMode =
+      activeDeviceMode !== "auto"
+        ? activeDeviceMode
+        : deviceScope === "mobile_only"
+          ? "mobile"
+          : deviceScope === "mobile_tablet"
+            ? "tablet"
+            : deviceScope === "mobile_tablet_laptop"
+              ? "laptop"
+              : "desktop";
+
+    const containerMaxWidthClass =
+      effectiveDevice === "mobile"
+        ? "max-w-md key-public-bio-page--mobile"
+        : effectiveDevice === "tablet"
+          ? "max-w-3xl key-public-bio-page--tablet"
+          : effectiveDevice === "laptop"
+            ? "max-w-5xl key-public-bio-page--laptop"
+            : "max-w-7xl key-public-bio-page--desktop";
+
+    const isWideBlock = (type: string) => {
+      const t = (type || "").toLowerCase();
+      return (
+        t.includes("hero") ||
+        t.includes("pricing") ||
+        t.includes("table") ||
+        t.includes("product") ||
+        t.includes("slider") ||
+        t.includes("gallery") ||
+        t.includes("video showcase") ||
+        t.includes("videoshowcase") ||
+        t.includes("multi-step") ||
+        t.includes("multistep") ||
+        t.includes("form") ||
+        t.includes("shop") ||
+        t.includes("header") ||
+        t.includes("banner") ||
+        t.includes("faq") ||
+        t.includes("testimonial") ||
+        t.includes("rating") ||
+        t.includes("brand") ||
+        t.includes("map") ||
+        t.includes("countdown") ||
+        t.includes("lead magnet") ||
+        t.includes("meeting") ||
+        t.includes("audio")
+      );
+    };
+
+    const gridLayoutClass =
+      effectiveDevice === "mobile"
+        ? "grid-cols-1 gap-3.5"
+        : effectiveDevice === "tablet"
+          ? "grid-cols-1 sm:grid-cols-2 gap-4"
+          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5";
+
+    return (
       <div
-        ref={publicScreenRef}
-        className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full max-w-md`}
-        style={getBioPageThemeStyle(pageTheme)}
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 p-0 sm:py-8 sm:px-4${
+          showThanksPage ? " key-public-bio-page--thanks-open" : ""
+        }`}
+        style={{
+          backgroundColor: "#090d16",
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px)",
+          backgroundSize: "24px 24px"
+        }}
       >
+        {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
+        {onExitPreview && (
+          <div className="fixed top-4 left-4 z-50 animate-in fade-in slide-in-from-top-2 group/exitbtn">
+            <button
+              type="button"
+              onClick={onExitPreview}
+              className="flex items-center justify-center h-10 w-10 bg-slate-900/95 hover:bg-slate-800 text-white rounded-full shadow-2xl border border-slate-700/80 backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer ring-1 ring-cyan-500/40"
+              aria-label="Exit Preview (Esc)"
+            >
+              <ArrowLeft className="w-5 h-5 text-cyan-400 group-hover/exitbtn:-translate-x-0.5 transition-transform" />
+            </button>
+            <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitbtn:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+              Exit Preview (Esc)
+            </span>
+          </div>
+        )}
+
+        <div
+          ref={publicScreenRef}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
+          style={getBioPageThemeStyle(pageTheme)}
+        >
         <div
           className="key-phone-preview__bio-layer"
           hidden={showThanksPage}
@@ -768,44 +901,81 @@ export default function PublicBioPageView({
               {displayHandle && (
                 <p className="key-public-bio-page__handle">{displayHandle}</p>
               )}
-                    </div>
+            </div>
 
             {displayBio && <p className="key-phone-preview__bio-text">{displayBio}</p>}
 
-            <div className="key-phone-preview__blocks space-y-4">
-            {pageLoadStatus === "loading" && visibleBlocks.length === 0 && <BlockSkeleton />}
+            <div className={`key-phone-preview__blocks grid ${gridLayoutClass}`}>
+            {pageLoadStatus === "loading" && visibleBlocks.length === 0 && (
+              <div className="col-span-full">
+                <BlockSkeleton />
+              </div>
+            )}
             {loadError && visibleBlocks.length === 0 && (
-              <p className="key-public-bio-page__loading rounded-2xl border p-4 text-center text-xs">
+              <p className="key-public-bio-page__loading rounded-2xl border p-4 text-center text-xs col-span-full">
                 {loadError}
               </p>
             )}
             {pageLoadStatus === "not_found" && visibleBlocks.length === 0 && !loadError && (
-              <p className="key-public-bio-page__loading rounded-2xl border p-4 text-center text-xs">
+              <p className="key-public-bio-page__loading rounded-2xl border p-4 text-center text-xs col-span-full">
                 This page content is not published on the server yet. Open KEYLINK360 → Bio Pages → Edit
                 this page → Publish, then refresh.
               </p>
             )}
-            {visibleBlocks.map((block) => (
-              <BlockRenderer
-                key={`${block.id}-pay-${paymentRequired ? paymentAmountInr || 0 : 0}`}
-                block={block as BlockRecord}
-                mode="live"
-                context={{
-                  displayTitle,
-                  displayHandle,
-                  paymentEnabled: paymentRequired,
-                  paymentAmountInr
-                }}
-                handlers={liveBlockHandlers}
-              />
-            ))}
-                      </div>
+            {visibleBlocks
+              .filter((block) => !Boolean((block as any).isHidden || (block as any).styles?.isHidden))
+              .map((block) => {
+                const visibilityClass =
+                  block.deviceVisibility === "mobile_only"
+                    ? "block md:hidden"
+                    : block.deviceVisibility === "desktop_only"
+                      ? "hidden md:block"
+                      : "block";
+                const isWide = isWideBlock(block.type);
+                const colSpanClass =
+                  effectiveDevice === "mobile"
+                    ? "col-span-1"
+                    : isWide
+                      ? effectiveDevice === "tablet"
+                        ? "col-span-1 sm:col-span-2"
+                        : "col-span-1 md:col-span-2 lg:col-span-3"
+                      : block.colSpan === "half"
+                        ? "col-span-1"
+                        : effectiveDevice === "tablet"
+                          ? "col-span-1 sm:col-span-2"
+                          : "col-span-1";
+
+                const devStyles = computeBlockInlineStyles((block as any).styles);
+                const devMeta = getBlockCustomMeta((block as any).styles);
+
+                return (
+                  <div
+                    key={`${block.id}-pay-${paymentRequired ? paymentAmountInr || 0 : 0}`}
+                    style={devStyles}
+                    aria-label={devMeta.ariaLabel}
+                    className={`${visibilityClass} ${colSpanClass} ${devMeta.className} transition-all`}
+                  >
+                    <BlockRenderer
+                      block={block as BlockRecord}
+                      mode="live"
+                      context={{
+                        displayTitle,
+                        displayHandle,
+                        paymentEnabled: paymentRequired,
+                        paymentAmountInr
+                      }}
+                      handlers={liveBlockHandlers}
+                    />
+                  </div>
+                );
+              })}
+            </div>
 
             <div className="key-bio-page-footer key-phone-preview__footer">
               <span>Powered by KEYLINK360</span>
-                      </div>
-                      </div>
-                    </div>
+            </div>
+            </div>
+          </div>
 
         <ThankYouPageView
           open={showThanksPage}
@@ -944,6 +1114,72 @@ export default function PublicBioPageView({
               </button>
             )}
           </div>
+        )}
+
+        {/* Live AI Sales & Support Chat Widget */}
+        <BioAiChatWidget
+          pageId={pageId}
+          pageTitle={displayTitle}
+          pageSlug={pageSlug}
+          pageBio={displayBio}
+          settings={customDetails?.aiAssistant}
+          blocks={blocks as any}
+        />
+
+        {/* Floating Live Device Preview Switcher Dock */}
+        {showDeviceDock ? (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white shadow-2xl backdrop-blur-md border border-white/20 transition-all text-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 pl-1 hidden sm:inline">
+              Preview:
+            </span>
+            <div className="flex items-center gap-1">
+              {(
+                [
+                  { id: "mobile" as const, label: "Phone", icon: Smartphone },
+                  { id: "tablet" as const, label: "Tablet", icon: Tablet },
+                  { id: "laptop" as const, label: "Laptop", icon: Laptop },
+                  { id: "desktop" as const, label: "Desktop", icon: Monitor },
+                  { id: "auto" as const, label: "Auto", icon: Globe }
+                ] as const
+              ).map(({ id, label, icon: Icon }) => {
+                const isActive = activeDeviceMode === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setActiveDeviceMode(id)}
+                    title={`Switch View: ${label}`}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-indigo-600 text-white shadow-sm font-bold"
+                        : "text-slate-300 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon className="h-3 w-3" />
+                    <span className="hidden xs:inline">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowDeviceDock(false)}
+              title="Hide Preview Dock"
+              className="ml-1 p-1 rounded-full hover:bg-white/20 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowDeviceDock(true)}
+            title="Show Device Preview Switcher"
+            className="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/85 hover:bg-slate-900 text-white shadow-xl backdrop-blur-md border border-white/20 text-xs font-semibold transition-all cursor-pointer"
+          >
+            <Monitor className="h-3.5 w-3.5 text-indigo-400" />
+            <span>Devices</span>
+          </button>
         )}
 
       </div>

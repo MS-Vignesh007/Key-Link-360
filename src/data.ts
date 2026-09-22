@@ -303,6 +303,268 @@ export const initialMediaFiles: MediaFile[] = [
 
 export const initialHelpArticles: HelpArticle[] = [
   {
+    id: "faq-ai-bio-chat",
+    title: "How to Setup Google Gemini AI Sales Assistant on Your Bio Page",
+    category: "AI & Automation",
+    excerpt:
+      "Enable autonomous Gemini 1.5 Flash chat on your public bio website with custom FAQs, business greetings, and instant CRM lead sync.",
+    readTime: "3 mins",
+    content: `GOOGLE GEMINI AI SALES ASSISTANT SETUP GUIDE
+
+━━━━━━━━━━━━━━━━━━━━
+OVERVIEW
+━━━━━━━━━━━━━━━━━━━━
+KeyLink360 comes with a built-in Google Gemini 1.5 Flash AI Assistant that floats directly on your public bio website. It autonomously answers customer questions, explains products, quotes pricing, and captures customer contacts into your CRM.
+
+━━━━━━━━━━━━━━━━━━━━
+STEP-BY-STEP SETUP
+━━━━━━━━━━━━━━━━━━━━
+1. Open Left Sidebar → Bio Pages.
+2. Select your bio page or click "Create Page".
+3. In the right-side Editor panel, click the "AI Sales Assistant" tab (Sparkles icon).
+4. Turn the "Enable AI Sales Assistant" switch ON.
+5. Enter your Business Details:
+   • Bot Display Name (e.g. Acme Sales Bot)
+   • Welcome Greeting Message
+   • Business Description & Product Highlights
+6. Add Custom FAQs:
+   • Add common questions and direct answers (e.g. "What are your delivery times?", "Do you offer COD?")
+7. Test the interactive preview in the phone simulator on the right.
+8. Click Publish → Your public bio website now has a 24/7 AI Sales Assistant!
+
+━━━━━━━━━━━━━━━━━━━━
+CRM LEAD CAPTURE
+━━━━━━━━━━━━━━━━━━━━
+When visitors share their name, phone number, or email in the chat, KeyLink360 automatically syncs them to Sidebar → Contacts & Leads tagged with "AI Chat Lead" and "Hot Lead".`,
+    translations: {
+      ta: {
+        title: "உங்கள் Bio பக்கத்தில் Google Gemini AI சேல்ஸ் அசிஸ்டண்ட் அமைப்பது எப்படி?",
+        excerpt: "Google Gemini 1.5 Flash AI சாட்பாட் மூலம் வாடிக்கையாளர்களுக்கு தானாகவே பதிலளித்து, அவர்களின் தகவல்களை CRM-ல் சேமிப்பது எப்படி.",
+        content: `GOOGLE GEMINI AI சேல்ஸ் அசிஸ்டண்ட் அமைக்கும் முறை
+
+━━━━━━━━━━━━━━━━━━━━
+கண்ணோட்டம் (OVERVIEW)
+━━━━━━━━━━━━━━━━━━━━
+KeyLink360 பிளாட்பார்மில் உள்ளமைக்கப்பட்ட Google Gemini 1.5 Flash AI அசிஸ்டண்ட் மூலம் உங்கள் Bio பக்கத்திற்கு வரும் வாடிக்கையாளர்களுக்கு 24/7 தானாகவே பதிலளித்து, விற்பனையை அதிகரிக்கலாம்.
+
+━━━━━━━━━━━━━━━━━━━━
+படிப்படியான வழிமுறைகள் (STEP-BY-STEP)
+━━━━━━━━━━━━━━━━━━━━
+1. இடதுபுற மெனுவில் Bio Pages-ஐ திறக்கவும்.
+2. உங்கள் பக்கத்தை தேர்வு செய்து Editor-ஐ திறக்கவும்.
+3. எடிட்டரின் வலதுபுறம் உள்ள "AI Sales Assistant" டேப் (Sparkles ஐகான்) கிளிக் செய்யவும்.
+4. "Enable AI Sales Assistant" சுவிட்சை ON செய்யவும்.
+5. உங்கள் பிசினஸ் விவரங்களை உள்ளிடவும்:
+   • Bot Name (எ.கா: Acme Sales Bot)
+   • Welcome Message (வரவேற்பு மெசேஜ்)
+   • Business Description & Products (பொருட்கள் மற்றும் சேவைகள் பற்றிய விவரம்)
+6. Custom FAQs சேர்க்கவும்:
+   • வாடிக்கையாளர்கள் அடிக்கடி கேட்கும் கேள்விகள் மற்றும் பதில்கள் (எ.கா: "டெலிவரி நேரம் என்ன?", "COD உள்ளதா?")
+7. பக்கத்தில் உள்ள Phone Simulator-ல் உடனடியாக Chat செய்து டெஸ்ட் செய்து பார்க்கவும்.
+8. Publish கிளிக் செய்யவும் → உங்கள் Bio பக்கத்தில் Floating AI Chat Widget நேரலையாகிவிடும்!
+
+━━━━━━━━━━━━━━━━━━━━
+CRM LEADS சேமிப்பு
+━━━━━━━━━━━━━━━━━━━━
+வாடிக்கையாளர்கள் சாட்டில் தங்கள் பெயர், போன் நம்பர் தரும்போது, அது உடனடியாக Sidebar › Contacts மெனுவில் "AI Chat Lead" டேக்குடன் தானாகவே பதிவாகிவிடும்.`
+      },
+      hi: {
+        title: "अपने Bio पेज पर Google Gemini AI सेल्स असिस्टेंट कैसे सेट करें?",
+        excerpt: "Google Gemini 1.5 Flash AI चैटबॉट को एक्टिवेट करें, ऑटो-रिप्लाई सेट करें और लीड्स को सीधे CRM में कैप्चर करें।",
+        content: `GOOGLE GEMINI AI सेल्स असिस्टेंट सेटअप गाइड
+
+━━━━━━━━━━━━━━━━━━━━
+अवलोकन (OVERVIEW)
+━━━━━━━━━━━━━━━━━━━━
+KeyLink360 में इन-बिल्ट Google Gemini 1.5 Flash AI असिस्टेंट है जो आपकी Bio वेबसाइट पर आने वाले ग्राहकों के सवालों का 24/7 तुरंत जवाब देता है और नए ऑर्डर्स व लीड्स कलेक्ट करता है।
+
+━━━━━━━━━━━━━━━━━━━━
+स्टेप-बाय-स्टेप सेटअप (STEP-BY-STEP)
+━━━━━━━━━━━━━━━━━━━━
+1. साइडबार में Bio Pages पर जाएं।
+2. अपना पेज चुनें और Editor खोलें।
+3. दाईं ओर "AI Sales Assistant" टैब (Sparkles आइकॉन) पर क्लिक करें।
+4. "Enable AI Sales Assistant" टॉगल को ON करें।
+5. अपना बिज़नेस विवरण दर्ज करें:
+   • Bot Name (जैसे: Acme Sales Bot)
+   • Welcome Greeting (स्वागत संदेश)
+   • बिज़नेस व प्रॉडक्ट्स की जानकारी
+6. Custom FAQs जोड़ें:
+   • अक्सर पूछे जाने वाले सवाल और उनके जवाब (जैसे: डिलीवरी चार्ज, रिटर्न पॉलिसी)।
+7. फ़ोन सिम्युलेटर में लाइव चैट टेस्ट करें।
+8. Publish पर क्लिक करें → आपका AI चैट विजेट लाइव हो जाएगा!
+
+━━━━━━━━━━━━━━━━━━━━
+CRM लीड्स कैप्चर
+━━━━━━━━━━━━━━━━━━━━
+ग्राहक जब चैट में अपना नाम और मोबाइल नंबर साझा करते हैं, तो वे सीधे Contacts & Leads सेक्शन में सेव हो जाते हैं।`
+      }
+    }
+  },
+  {
+    id: "faq-wa-cloud-api",
+    title: "Official Meta WhatsApp Cloud API Setup & 1,000 Free Monthly Chats",
+    category: "AI & Automation",
+    excerpt:
+      "Connect your official WhatsApp Business Account using Meta BYOK architecture with ₹0 platform cost and automated Gemini AI replies.",
+    readTime: "4 mins",
+    content: `OFFICIAL META WHATSAPP CLOUD API SETUP GUIDE
+
+━━━━━━━━━━━━━━━━━━━━
+KEY BENEFIT: ₹0 PLATFORM COST
+━━━━━━━━━━━━━━━━━━━━
+Meta provides 1,000 free service conversations every month to every WhatsApp Business Account. KeyLink360 uses a BYOK (Bring Your Own Key) architecture so you get 100% free automation with zero platform markups.
+
+━━━━━━━━━━━━━━━━━━━━
+STEP-BY-STEP SETUP
+━━━━━━━━━━━━━━━━━━━━
+1. Open Sidebar → WhatsApp → Cloud API & Meta Setup tab.
+2. Go to developers.facebook.com and create a "Business" app with WhatsApp product added.
+3. In Meta Dashboard › WhatsApp › API Setup:
+   • Copy your "Phone Number ID" and paste into KeyLink360.
+   • Copy your "WhatsApp Business Account ID (WABA)" and paste into KeyLink360.
+4. In Meta Dashboard › System Users:
+   • Generate a Permanent Access Token (Bearer) with whatsapp_business_messaging permissions.
+5. In KeyLink360:
+   • Copy the "Meta Webhook Callback URL" (https://.../api/whatsapp/webhook).
+   • Copy your "Webhook Verification Token".
+6. Back in Meta Dashboard › WhatsApp › Configuration › Webhook:
+   • Click "Edit", paste the Callback URL and Verify Token, and click "Verify and Save".
+   • Subscribe to the "messages" field.
+7. Click "Test API Connection" in KeyLink360 → Your WhatsApp Business is live with Gemini AI Auto-Replies!`,
+    translations: {
+      ta: {
+        title: "அதிகாரப்பூர்வ WhatsApp Cloud API (Meta BYOK) மற்றும் 1,000 இலவச சேட் அமைப்பது எப்படி?",
+        excerpt: "Meta வழங்கும் 1,000 இலவச சேட்களுடன் உங்கள் WhatsApp Business-ஐ ₹0 பிளாட்பார்ம் செலவில் இணைப்பது எப்படி.",
+        content: `அதிகாரப்பூர்வ META WHATSAPP CLOUD API அமைக்கும் முறை
+
+━━━━━━━━━━━━━━━━━━━━
+முக்கிய பலன்: ₹0 PLATFORM COST
+━━━━━━━━━━━━━━━━━━━━
+Meta நிறுவனம் ஒவ்வொரு WhatsApp Business கணக்கிற்கும் மாதம் 1,000 Service சேட்களை முற்றிலும் இலவசமாக வழங்குகிறது. KeyLink360-ல் உங்கள் சொந்த API கீயை இணைத்து ₹0 செலவில் இயக்கலாம்.
+
+━━━━━━━━━━━━━━━━━━━━
+படிப்படியான வழிமுறைகள்
+━━━━━━━━━━━━━━━━━━━━
+1. Sidebar → WhatsApp → Cloud API & Meta Setup டேப் செல்லவும்.
+2. developers.facebook.com தளத்தில் ஒரு Business App உருவாக்கி WhatsApp Product-ஐ சேர்க்கவும்.
+3. Meta Dashboard › WhatsApp › API Setup பகுதியில்:
+   • "Phone Number ID" மற்றும் "WhatsApp Business Account ID"-ஐ காப்பி செய்து KeyLink360-ல் பேஸ்ட் செய்யவும்.
+4. Meta System Users பகுதியில் Permanent Access Token ஜெனரேட் செய்து பேஸ்ட் செய்யவும்.
+5. KeyLink360-ல் உள்ள "Meta Webhook Callback URL" மற்றும் "Verify Token"-ஐ காப்பி செய்யவும்.
+6. Meta Webhook Configuration-ல் பேஸ்ட் செய்து "Verify and Save" கொடுத்து "messages" ஃபீல்டை Subscribe செய்யவும்.
+7. KeyLink360-ல் "Test API Connection" கிளிக் செய்து இணைப்பை உறுதிப்படுத்தவும்!`
+      },
+      hi: {
+        title: "Meta WhatsApp Cloud API और 1,000 फ्री चैट्स सेटअप कैसे करें?",
+        excerpt: "Meta BYOK आर्किटेक्चर के साथ ₹0 प्लेटफॉर्म कॉस्ट पर 1,000 फ्री मंथली चैट्स और AI ऑटो-रिप्लाई कनेक्ट करें।",
+        content: `META WHATSAPP CLOUD API सेटअप गाइड
+
+━━━━━━━━━━━━━━━━━━━━
+1,000 फ्री मंथली चैट्स
+━━━━━━━━━━━━━━━━━━━━
+Meta हर महीने 1,000 सर्विस बातचीत मुफ्त देता है। KeyLink360 में अपने क्रेडेंशियल्स दर्ज करके ₹0 प्लेटफॉर्म चार्ज पर फुल ऑटोमेशन पाएं।
+
+━━━━━━━━━━━━━━━━━━━━
+स्टेप-बाय-स्टेप गाइड
+━━━━━━━━━━━━━━━━━━━━
+1. Sidebar → WhatsApp → Cloud API & Meta Setup टैब खोलें।
+2. developers.facebook.com पर जाकर Business App बनाएं और WhatsApp जोड़ें।
+3. Phone Number ID और WABA ID को KeyLink360 में पेस्ट करें।
+4. Meta System Users से Permanent Access Token बनाकर पेस्ट करें।
+5. Webhook Callback URL और Verify Token को Meta Webhook सेटिंग्स में पेस्ट करके सेव करें।
+6. "messages" फील्ड सब्सक्राइब करें और KeyLink360 में "Test API Connection" दबाएं!`
+      }
+    }
+  },
+  {
+    id: "faq-wa-web-qr",
+    title: "WhatsApp Web Quick QR Scanner — Link Personal/Business Phone",
+    category: "AI & Automation",
+    excerpt:
+      "Link your direct mobile phone in 5 seconds via QR code or 8-digit pairing code with Anti-Spam Safety Guard and Daily Message Limit Tracker.",
+    readTime: "3 mins",
+    content: `WHATSAPP WEB QUICK QR SCANNER SETUP GUIDE
+
+━━━━━━━━━━━━━━━━━━━━
+WHY USE QR SCANNER MODE?
+━━━━━━━━━━━━━━━━━━━━
+If you do not have a Meta Developer account or want to connect your personal WhatsApp number with zero paperwork, use WhatsApp Web QR Scanner mode.
+
+━━━━━━━━━━━━━━━━━━━━
+STEP-BY-STEP LINKING
+━━━━━━━━━━━━━━━━━━━━
+1. Open Sidebar → WhatsApp → WhatsApp Web QR Scanner tab.
+2. Click "Generate WhatsApp Web QR Code".
+3. Open WhatsApp on your mobile phone:
+   • iOS: Settings → Linked Devices → Link a Device.
+   • Android: 3-Dots Menu → Linked Devices → Link a Device.
+4. Point your phone camera at the QR code on your screen (or use the 8-Digit Pairing Code).
+5. Once scanned, your phone status becomes "Active & Connected"!
+
+━━━━━━━━━━━━━━━━━━━━
+ANTI-SPAM SAFETY GUARD & LIMITS
+━━━━━━━━━━━━━━━━━━━━
+• Natural Typing Delay: AI introduces a 1.5s – 3.5s jitter delay to mimic real human typing speed.
+• Anti-Flood Protection: Limits fast bursts to max 6 msgs/min per contact.
+• Daily Safe Message Limit Tracker: Visual progress bar (50 / 100 / 250 msgs/day) that auto-pauses at midnight to keep your personal WhatsApp number 100% safe from bans.`,
+    translations: {
+      ta: {
+        title: "WhatsApp Web QR ஸ்கேனர் — பர்சனல் அல்லது பிசினஸ் போனை நேரடியாக இணைப்பது எப்படி?",
+        excerpt: "எந்தவித Meta App அப்ரூவலும் இன்றி, QR கோட் ஸ்கேன் செய்து உங்கள் பர்சனல் போனை 5 வினாடிகளில் AI ஆட்டோமேஷனுடன் இணைக்கலாம்.",
+        content: `WHATSAPP WEB QR ஸ்கேனர் அமைக்கும் முறை
+
+━━━━━━━━━━━━━━━━━━━━
+எதற்காக QR SCANNER முறை?
+━━━━━━━━━━━━━━━━━━━━
+உங்களிடம் Meta Developer Account இல்லையென்றால் அல்லது உங்கள் சொந்த பர்சனல் WhatsApp நம்பரையே ஆட்டோமேஷனுக்கு பயன்படுத்த விரும்பினால் இந்த முறை மிக சிறந்தது.
+
+━━━━━━━━━━━━━━━━━━━━
+இணைக்கும் வழிமுறைகள்
+━━━━━━━━━━━━━━━━━━━━
+1. Sidebar → WhatsApp → WhatsApp Web QR Scanner டேப் திறக்கவும்.
+2. "Generate WhatsApp Web QR Code" பட்டனை கிளிக் செய்யவும்.
+3. உங்கள் மொபைல் போனில் WhatsApp-ஐ திறக்கவும்:
+   • iOS: Settings → Linked Devices → Link a Device.
+   • Android: 3-புள்ளிகள் மெனு → Linked Devices → Link a Device.
+4. திரையில் தெரியும் QR கோடை உங்கள் போன் கேமராவால் ஸ்கேன் செய்யவும் (அல்லது 8-எழுத்து Pairing Code பயன்படுத்தவும்).
+5. ஸ்கேன் செய்தவுடன் "Device Linked & Active" என்று தோன்றும்!
+
+━━━━━━━━━━━━━━━━━━━━
+ANTI-SPAM பாதுகாப்பு மற்றும் DAILY LIMIT TRACKER
+━━━━━━━━━━━━━━━━━━━━
+• மனிதர்கள் டைப் செய்வது போன்ற 1.5s முதல் 3.5s காலதாமதத்துடன் AI பதில் அனுப்பும்.
+• தினசரி பாதுகாப்பு வரம்பு (Daily Limit Tracker) உங்கள் கணக்கு WhatsApp Ban ஆகாமல் 100% பாதுகாக்கும்.`
+      },
+      hi: {
+        title: "WhatsApp Web QR स्कैनर — व्यक्तिगत/व्यावसायिक फोन कैसे कनेक्ट करें?",
+        excerpt: "बिना किसी Meta अप्रूवल के, सिर्फ QR कोड स्कैन करके अपना फोन 5 सेकंड में कनेक्ट करें और AI ऑटो-रिप्लाई पाएं।",
+        content: `WHATSAPP WEB QR स्कैनर गाइड
+
+━━━━━━━━━━━━━━━━━━━━
+QR स्कैनर का उपयोग क्यों करें?
+━━━━━━━━━━━━━━━━━━━━
+यदि आपके पास Meta Developer अकाउंट नहीं है और आप अपने व्यक्तिगत व्हाट्सएप नंबर को आसानी से कनेक्ट करना चाहते हैं, तो यह तरीका सबसे आसान और 100% फ्री है।
+
+━━━━━━━━━━━━━━━━━━━━
+कनेक्ट करने के चरण
+━━━━━━━━━━━━━━━━━━━━
+1. Sidebar → WhatsApp → WhatsApp Web QR Scanner टैब खोलें।
+2. "Generate WhatsApp Web QR Code" पर क्लिक करें।
+3. अपने मोबाइल फोन में WhatsApp खोलें:
+   • Linked Devices → Link a Device पर जाएं।
+4. स्क्रीन पर मौजूद QR कोड को स्कैन करें।
+5. तुरंत आपका डिवाइस "Connected & Active" हो जाएगा!
+
+━━━━━━━━━━━━━━━━━━━━
+Anti-Spam सुरक्षा व डेली लिमिट ट्रैकर
+━━━━━━━━━━━━━━━━━━━━
+• AI रिप्लाई में 1.5s - 3.5s का नेचुरल टाइपिंग डिले होता है।
+• डेली मैसेज लिमिट ट्रैकर आपके पर्सनल व्हाट्सएप नंबर को सुरक्षित रखता है।`
+      }
+    }
+  },
+  {
     id: "faq1",
     title: "How do I get started with KEYLINK360?",
     category: "Getting Started",
@@ -350,7 +612,7 @@ export const initialHelpArticles: HelpArticle[] = [
       "Yes — connect yourdomain.com (root) or name.yourdomain.com (subdomain). Start with the beginner story guides in this category.",
     readTime: "2 mins",
     content:
-      "Short answer: Yes.\n\nKEYLINK360 lets you open your bio page on an address you already own instead of the default KEY URL.\n\nYou have two main options:\n\n1) ROOT DOMAIN — yourdomain.com and www.yourdomain.com\n   → Read: \"Story guide: Connect a root domain (yourdomain.com)\"\n\n2) SUBDOMAIN — name.yourdomain.com or shop.yourdomain.com\n   → Read: \"Story guide: Connect a subdomain (name.yourdomain.com)\"\n\nNot ready to buy a domain?\n   → On Bio Pages, use \"Get free URL\" for something like yourname.keylink360.mindflo.today (no DNS setup).\n\nWhere to start in the app:\nSidebar → Custom Domains → Connect Domain (button on the top right).\n\nPick the story guide that matches what you typed in the wizard — root or subdomain — and follow it step by step."
+      "Short answer: Yes.\n\nKEYLINK360 lets you open your bio page on an address you already own instead of the default KEY URL.\n\nYou have two main options:\n\n1) ROOT DOMAIN — yourdomain.com and www.yourdomain.com\n   → Read: \"Story guide: Connect a root domain (yourdomain.com)\"\n\n2) SUBDOMAIN — name.yourdomain.com or shop.yourdomain.com\n   → Read: \"Story guide: Connect a subdomain (name.yourdomain.com)\"\n\nNot ready to buy a domain?\n   → On Bio Pages, use \"Get free URL\" for something like yourname.keylink360.in (no DNS setup).\n\nWhere to start in the app:\nSidebar → Custom Domains → Connect Domain (button on the top right).\n\nPick the story guide that matches what you typed in the wizard — root or subdomain — and follow it step by step."
   },
   {
     id: "faq-cd-cloudflare-account",
@@ -370,7 +632,7 @@ export const initialHelpArticles: HelpArticle[] = [
       "New to DNS? Read this first. Simple story examples for root domain, subdomain, and where to click in KEYLINK360.",
     readTime: "6 mins",
     content:
-      "WHO IS THIS FOR?\nYou built a bio page in KEYLINK360. You want people to visit YOUR website name — not a long link. You have never touched DNS before. Perfect — read this like a short story.\n\n━━━━━━━━━━━━━━━━━━━━\nTHREE WAYS TO SHARE YOUR PAGE\n━━━━━━━━━━━━━━━━━━━━\n\nA) FREE KEY URL (easiest — no domain needed)\n   Example: yourname.keylink360.mindflo.today\n   Where: Bio Pages → Get free URL\n   Good when: you are testing or do not own a domain yet.\n\nB) ROOT DOMAIN (your main website name)\n   Example: yourdomain.com\n   Also opens: www.yourdomain.com\n   Good when: you bought yourdomain.com and want that exact name.\n\nC) SUBDOMAIN (a prefix before your domain)\n   Example: name.yourdomain.com or shop.yourdomain.com\n   Good when: your main site stays somewhere else, but one link should open your KEY bio page.\n\n━━━━━━━━━━━━━━━━━━━━\nWORDS YOU WILL SEE (SIMPLE MEANING)\n━━━━━━━━━━━━━━━━━━━━\n\n• Domain — the website name you type in the browser (yourdomain.com).\n• Root / apex domain — yourdomain.com with nothing in front.\n• Subdomain — the part before the domain (name. in name.yourdomain.com).\n• DNS provider — where you edit DNS records (GoDaddy, Namecheap, Cloudflare, Hostinger, Amazon Route 53, etc.). KEY detects this automatically and shows the name on your domain card.\n• A record — points a name to an IP address (used for root domains).\n• CNAME record — points a name to another hostname (used for subdomains).\n• Connect Domain — the wizard button in Custom Domains.\n• Test Connection — checks if DNS is correct after you save records.\n\n━━━━━━━━━━━━━━━━━━━━\nTHE FULL JOURNEY (ALL TYPES)\n━━━━━━━━━━━━━━━━━━━━\n\nStep 1 — Build and publish your bio page first.\nStep 2 — Sidebar → Custom Domains → Connect Domain.\nStep 3 — Type your address exactly:\n        • Root: yourdomain.com (no www, no https://)\n        • Subdomain: name.yourdomain.com (full address including the prefix)\nStep 4 — Choose which bio page should open when someone visits that address.\nStep 5 — KEY shows which DNS host we detected and the exact records to copy.\nStep 6 — Log in to THAT provider (not a random one) and add the records.\nStep 7 — Wait 2–15 minutes for DNS to update worldwide.\nStep 8 — Back in KEY → Test Connection (plug icon on the domain row).\nStep 9 — Status becomes Verified → open your domain in the browser and celebrate.\n\nStatus meanings:\n• Pending DNS — records missing or still propagating.\n• DNS Verified / Provisioning SSL — almost there; HTTPS finishing.\n• Verified — live. Share the link.\n• OFFLINE on the card — DNS still points elsewhere; fix records and Test again.\n\n━━━━━━━━━━━━━━━━━━━━\nWHICH GUIDE TO READ NEXT?\n━━━━━━━━━━━━━━━━━━━━\n\n→ Root domain story (yourdomain.com): open \"Story guide: Connect a root domain\"\n→ Subdomain story (name.yourdomain.com): open \"Story guide: Connect a subdomain\"\n→ Exact buttons in the app: open \"Step-by-step: Connect Domain wizard\"\n→ Stuck on Pending DNS?: open \"Troubleshooting: domain not verifying\""
+      "WHO IS THIS FOR?\nYou built a bio page in KEYLINK360. You want people to visit YOUR website name — not a long link. You have never touched DNS before. Perfect — read this like a short story.\n\n━━━━━━━━━━━━━━━━━━━━\nTHREE WAYS TO SHARE YOUR PAGE\n━━━━━━━━━━━━━━━━━━━━\n\nA) FREE KEY URL (easiest — no domain needed)\n   Example: yourname.keylink360.in\n   Where: Bio Pages → Get free URL\n   Good when: you are testing or do not own a domain yet.\n\nB) ROOT DOMAIN (your main website name)\n   Example: yourdomain.com\n   Also opens: www.yourdomain.com\n   Good when: you bought yourdomain.com and want that exact name.\n\nC) SUBDOMAIN (a prefix before your domain)\n   Example: name.yourdomain.com or shop.yourdomain.com\n   Good when: your main site stays somewhere else, but one link should open your KEY bio page.\n\n━━━━━━━━━━━━━━━━━━━━\nWORDS YOU WILL SEE (SIMPLE MEANING)\n━━━━━━━━━━━━━━━━━━━━\n\n• Domain — the website name you type in the browser (yourdomain.com).\n• Root / apex domain — yourdomain.com with nothing in front.\n• Subdomain — the part before the domain (name. in name.yourdomain.com).\n• DNS provider — where you edit DNS records (GoDaddy, Namecheap, Cloudflare, Hostinger, Amazon Route 53, etc.). KEY detects this automatically and shows the name on your domain card.\n• A record — points a name to an IP address (used for root domains).\n• CNAME record — points a name to another hostname (used for subdomains).\n• Connect Domain — the wizard button in Custom Domains.\n• Test Connection — checks if DNS is correct after you save records.\n\n━━━━━━━━━━━━━━━━━━━━\nTHE FULL JOURNEY (ALL TYPES)\n━━━━━━━━━━━━━━━━━━━━\n\nStep 1 — Build and publish your bio page first.\nStep 2 — Sidebar → Custom Domains → Connect Domain.\nStep 3 — Type your address exactly:\n        • Root: yourdomain.com (no www, no https://)\n        • Subdomain: name.yourdomain.com (full address including the prefix)\nStep 4 — Choose which bio page should open when someone visits that address.\nStep 5 — KEY shows which DNS host we detected and the exact records to copy.\nStep 6 — Log in to THAT provider (not a random one) and add the records.\nStep 7 — Wait 2–15 minutes for DNS to update worldwide.\nStep 8 — Back in KEY → Test Connection (plug icon on the domain row).\nStep 9 — Status becomes Verified → open your domain in the browser and celebrate.\n\nStatus meanings:\n• Pending DNS — records missing or still propagating.\n• DNS Verified / Provisioning SSL — almost there; HTTPS finishing.\n• Verified — live. Share the link.\n• OFFLINE on the card — DNS still points elsewhere; fix records and Test again.\n\n━━━━━━━━━━━━━━━━━━━━\nWHICH GUIDE TO READ NEXT?\n━━━━━━━━━━━━━━━━━━━━\n\n→ Root domain story (yourdomain.com): open \"Story guide: Connect a root domain\"\n→ Subdomain story (name.yourdomain.com): open \"Story guide: Connect a subdomain\"\n→ Exact buttons in the app: open \"Step-by-step: Connect Domain wizard\"\n→ Stuck on Pending DNS?: open \"Troubleshooting: domain not verifying\""
   },
   {
     id: "faq-cd-root",
@@ -380,7 +642,7 @@ export const initialHelpArticles: HelpArticle[] = [
       "Follow the yourdomain.com example — from Connect Domain to A record @, Test Connection, and going live.",
     readTime: "7 mins",
     content:
-      "STORY — CONNECTING YOURDOMAIN.COM\n\nYou already own yourdomain.com from a registrar (GoDaddy, Namecheap, etc.). In KEYLINK360 you created a bio page with buttons, WhatsApp, and a product gallery.\n\nYou do NOT want to share:\n  https://keylink360.mindflo.today/p/something-long\n\nYou WANT people to type:\n  yourdomain.com\n\nThat is a ROOT DOMAIN connection. Here is exactly what to do.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — OPEN THE RIGHT PAGE IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Log in to KEYLINK360.\n2. Left sidebar → Custom Domains.\n3. Top right → Connect Domain.\n\nDo not look for this inside Publish — custom domains live only on the Custom Domains page.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — ENTER THE ROOT DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nIn the wizard type:\n  yourdomain.com\n\nRules:\n• No https://\n• No www. (www is handled separately via DNS)\n• Just the bare domain: yourdomain.com\n\nSelect the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — KEY FINDS WHERE DNS LIVES\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and shows your DNS host (for example GoDaddy or Cloudflare).\n\nImportant: KEY shows YOUR real provider. Edit DNS there, not somewhere else.\n\nIf you bought the domain on Hostinger but moved nameservers to Cloudflare, you edit Cloudflare — trust the name KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — ADD TWO A RECORDS (ROOT ONLY)\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Record 1\n  Type: A\n  Name / Host: @  (means root — some panels say \"@\" or leave blank)\n  Value / Points to: 69.46.46.90  (use the IP KEY shows on YOUR screen)\n\n  Record 2\n  Type: A\n  Name / Host: www\n  Value / Points to: same IP as above\n\nLog in to your DNS provider → DNS → Add both records → Save.\n\nCloudflare users: turn Proxied (orange cloud) ON for both records.\n\nRemove OLD A records that point to a previous website host. Duplicate @ records cause \"still opens another site\" errors.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 5 — WAIT, THEN TEST\n━━━━━━━━━━━━━━━━━━━━\n\nDNS is not instant. Wait a few minutes, then in KEYLINK360:\n\nCustom Domains → yourdomain.com row → Test Connection (plug icon).\n\nFirst try: Pending DNS (normal if records just saved).\nSecond try after a few minutes: DNS Verified → then Verified.\n\nYou can also expand \"Show DNS\" on the card to copy values again.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 6 — OPEN THE LIVE SITE\n━━━━━━━━━━━━━━━━━━━━\n\nWhen status = Verified, open your domain.\n\nBoth work:\n  https://yourdomain.com\n  https://www.yourdomain.com\n\nYour KEY bio page opens with HTTPS.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT DOMAIN CHECKLIST (COPY THIS)\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Bio page built and published\n☐ Custom Domains → Connect Domain\n☐ Entered yourdomain.com (root only)\n☐ Picked the correct bio page\n☐ Added A record @ → KEY IP\n☐ Added A record www → same IP\n☐ Removed old conflicting A records\n☐ Waited a few minutes\n☐ Test Connection until Verified\n☐ Opened domain in browser\n\nNote: You only change DNS at your domain provider. If HTTPS is still pending, wait a few minutes and click Test Connection again. See Troubleshooting article if needed."
+      "STORY — CONNECTING YOURDOMAIN.COM\n\nYou already own yourdomain.com from a registrar (GoDaddy, Namecheap, etc.). In KEYLINK360 you created a bio page with buttons, WhatsApp, and a product gallery.\n\nYou do NOT want to share:\n  https://keylink360.in/p/something-long\n\nYou WANT people to type:\n  yourdomain.com\n\nThat is a ROOT DOMAIN connection. Here is exactly what to do.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — OPEN THE RIGHT PAGE IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Log in to KEYLINK360.\n2. Left sidebar → Custom Domains.\n3. Top right → Connect Domain.\n\nDo not look for this inside Publish — custom domains live only on the Custom Domains page.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — ENTER THE ROOT DOMAIN\n━━━━━━━━━━━━━━━━━━━━\n\nIn the wizard type:\n  yourdomain.com\n\nRules:\n• No https://\n• No www. (www is handled separately via DNS)\n• Just the bare domain: yourdomain.com\n\nSelect the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — KEY FINDS WHERE DNS LIVES\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 checks nameservers and shows your DNS host (for example GoDaddy or Cloudflare).\n\nImportant: KEY shows YOUR real provider. Edit DNS there, not somewhere else.\n\nIf you bought the domain on Hostinger but moved nameservers to Cloudflare, you edit Cloudflare — trust the name KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — ADD TWO A RECORDS (ROOT ONLY)\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Record 1\n  Type: A\n  Name / Host: @  (means root — some panels say \"@\" or leave blank)\n  Value / Points to: 69.46.46.90  (use the IP KEY shows on YOUR screen)\n\n  Record 2\n  Type: A\n  Name / Host: www\n  Value / Points to: same IP as above\n\nLog in to your DNS provider → DNS → Add both records → Save.\n\nCloudflare users: turn Proxied (orange cloud) ON for both records.\n\nRemove OLD A records that point to a previous website host. Duplicate @ records cause \"still opens another site\" errors.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 5 — WAIT, THEN TEST\n━━━━━━━━━━━━━━━━━━━━\n\nDNS is not instant. Wait a few minutes, then in KEYLINK360:\n\nCustom Domains → yourdomain.com row → Test Connection (plug icon).\n\nFirst try: Pending DNS (normal if records just saved).\nSecond try after a few minutes: DNS Verified → then Verified.\n\nYou can also expand \"Show DNS\" on the card to copy values again.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 6 — OPEN THE LIVE SITE\n━━━━━━━━━━━━━━━━━━━━\n\nWhen status = Verified, open your domain.\n\nBoth work:\n  https://yourdomain.com\n  https://www.yourdomain.com\n\nYour KEY bio page opens with HTTPS.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT DOMAIN CHECKLIST (COPY THIS)\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Bio page built and published\n☐ Custom Domains → Connect Domain\n☐ Entered yourdomain.com (root only)\n☐ Picked the correct bio page\n☐ Added A record @ → KEY IP\n☐ Added A record www → same IP\n☐ Removed old conflicting A records\n☐ Waited a few minutes\n☐ Test Connection until Verified\n☐ Opened domain in browser\n\nNote: You only change DNS at your domain provider. If HTTPS is still pending, wait a few minutes and click Test Connection again. See Troubleshooting article if needed."
   },
   {
     id: "faq-cd-subdomain",
@@ -390,7 +652,7 @@ export const initialHelpArticles: HelpArticle[] = [
       "Follow the name.yourdomain.com example — one CNAME record, Test Connection, and your bio page on a prefix URL.",
     readTime: "6 mins",
     content:
-      "STORY — CONNECTING NAME.YOURDOMAIN.COM\n\nYour company already uses yourdomain.com for the main marketing website (hosted elsewhere). You do NOT want to move the whole domain.\n\nYou only want ONE special address for your KEY bio page:\n  name.yourdomain.com\n\nThat is a SUBDOMAIN. The prefix is name. and the parent domain is yourdomain.com.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT VS SUBDOMAIN — QUICK COMPARE\n━━━━━━━━━━━━━━━━━━━━\n\nROOT (yourdomain.com)\n  Records needed: 2 × A records (@ and www)\n  Wizard input: yourdomain.com\n\nSUBDOMAIN (name.yourdomain.com)\n  Records needed: 1 × CNAME\n  Wizard input: name.yourdomain.com  ← type the FULL address including name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — CONNECT IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Sidebar → Custom Domains → Connect Domain.\n2. Type exactly:\n     name.yourdomain.com\n   NOT just yourdomain.com\n3. Select the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — CHECK DNS HOST\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows where yourdomain.com DNS is managed — for example Cloudflare or Namecheap.\n\nYou must be able to edit DNS for the PARENT zone (yourdomain.com). If your IT team owns DNS, send them the CNAME KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — ADD ONE CNAME RECORD\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Type: CNAME\n  Name / Host: name\n    (some panels want only \"name\", not the full name.yourdomain.com)\n  Target / Value: keylink360.mindflo.today\n    (use the exact target KEY shows on YOUR screen)\n\nCloudflare: Proxied (orange cloud) is OK.\n\nDo NOT add A records for a subdomain connection — use CNAME unless KEY explicitly says otherwise.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — TEST AND GO LIVE\n━━━━━━━━━━━━━━━━━━━━\n\nWait a few minutes → Test Connection on the domain row.\n\nWhen Verified, open:\n  https://name.yourdomain.com\n\nYour bio page loads. The main site at yourdomain.com stays unchanged.\n\n━━━━━━━━━━━━━━━━━━━━\nMORE SUBDOMAIN EXAMPLES\n━━━━━━━━━━━━━━━━━━━━\n\nWhat you type in wizard → CNAME host label\n\n  shop.yourdomain.com     →  shop\n  bio.yourdomain.com      →  bio\n  link.yourdomain.com     →  link\n  studio.yourdomain.com   →  studio\n\nRule: everything BEFORE the main domain is the host name in DNS.\n\n━━━━━━━━━━━━━━━━━━━━\nSUBDOMAIN CHECKLIST\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Typed FULL subdomain in wizard (e.g. name.yourdomain.com)\n☐ Selected correct bio page\n☐ Added CNAME with host = prefix only (name, shop, bio…)\n☐ Target = KEY hostname shown in app\n☐ Test Connection → Verified\n☐ Opened https://name.yourdomain.com in browser"
+      "STORY — CONNECTING NAME.YOURDOMAIN.COM\n\nYour company already uses yourdomain.com for the main marketing website (hosted elsewhere). You do NOT want to move the whole domain.\n\nYou only want ONE special address for your KEY bio page:\n  name.yourdomain.com\n\nThat is a SUBDOMAIN. The prefix is name. and the parent domain is yourdomain.com.\n\n━━━━━━━━━━━━━━━━━━━━\nROOT VS SUBDOMAIN — QUICK COMPARE\n━━━━━━━━━━━━━━━━━━━━\n\nROOT (yourdomain.com)\n  Records needed: 2 × A records (@ and www)\n  Wizard input: yourdomain.com\n\nSUBDOMAIN (name.yourdomain.com)\n  Records needed: 1 × CNAME\n  Wizard input: name.yourdomain.com  ← type the FULL address including name.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — CONNECT IN KEY\n━━━━━━━━━━━━━━━━━━━━\n\n1. Sidebar → Custom Domains → Connect Domain.\n2. Type exactly:\n     name.yourdomain.com\n   NOT just yourdomain.com\n3. Select the bio page that should open → Continue.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — CHECK DNS HOST\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows where yourdomain.com DNS is managed — for example Cloudflare or Namecheap.\n\nYou must be able to edit DNS for the PARENT zone (yourdomain.com). If your IT team owns DNS, send them the CNAME KEY shows.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 3 — ADD ONE CNAME RECORD\n━━━━━━━━━━━━━━━━━━━━\n\nKEYLINK360 shows something like:\n\n  Type: CNAME\n  Name / Host: name\n    (some panels want only \"name\", not the full name.yourdomain.com)\n  Target / Value: keylink360.in\n    (use the exact target KEY shows on YOUR screen)\n\nCloudflare: Proxied (orange cloud) is OK.\n\nDo NOT add A records for a subdomain connection — use CNAME unless KEY explicitly says otherwise.\n\n━━━━━━━━━━━━━━━━━━━━\nSTEP 4 — TEST AND GO LIVE\n━━━━━━━━━━━━━━━━━━━━\n\nWait a few minutes → Test Connection on the domain row.\n\nWhen Verified, open:\n  https://name.yourdomain.com\n\nYour bio page loads. The main site at yourdomain.com stays unchanged.\n\n━━━━━━━━━━━━━━━━━━━━\nMORE SUBDOMAIN EXAMPLES\n━━━━━━━━━━━━━━━━━━━━\n\nWhat you type in wizard → CNAME host label\n\n  shop.yourdomain.com     →  shop\n  bio.yourdomain.com      →  bio\n  link.yourdomain.com     →  link\n  studio.yourdomain.com   →  studio\n\nRule: everything BEFORE the main domain is the host name in DNS.\n\n━━━━━━━━━━━━━━━━━━━━\nSUBDOMAIN CHECKLIST\n━━━━━━━━━━━━━━━━━━━━\n\n☐ Typed FULL subdomain in wizard (e.g. name.yourdomain.com)\n☐ Selected correct bio page\n☐ Added CNAME with host = prefix only (name, shop, bio…)\n☐ Target = KEY hostname shown in app\n☐ Test Connection → Verified\n☐ Opened https://name.yourdomain.com in browser"
   },
   {
     id: "faq-cd-wizard",
@@ -450,6 +712,6 @@ export const initialHelpArticles: HelpArticle[] = [
       "Root: A @ → platform IP. Subdomain: CNAME → platform hostname. Copy from Show DNS.",
     readTime: "2 mins",
     content:
-      "KEYLINK360 supports root domains and subdomains.\n\nROOT (yourdomain.com)\n  Type: A\n  Name: @\n  Value: platform IP (example: 69.46.46.90)\n\nSUBDOMAIN (name.yourdomain.com, www.yourdomain.com, shop.yourdomain.com)\n  Type: CNAME\n  Name: name (prefix only — not the full domain)\n  Value: keylink360.mindflo.today (or value from Show DNS)\n\nRules:\n• Root → A record only\n• Subdomain → CNAME only (never A)\n\nAlways copy live values from Custom Domains → Show DNS.\n\nAfter saving → Test Connection → Verified."
+      "KEYLINK360 supports root domains and subdomains.\n\nROOT (yourdomain.com)\n  Type: A\n  Name: @\n  Value: platform IP (example: 69.46.46.90)\n\nSUBDOMAIN (name.yourdomain.com, www.yourdomain.com, shop.yourdomain.com)\n  Type: CNAME\n  Name: name (prefix only — not the full domain)\n  Value: keylink360.in (or value from Show DNS)\n\nRules:\n• Root → A record only\n• Subdomain → CNAME only (never A)\n\nAlways copy live values from Custom Domains → Show DNS.\n\nAfter saving → Test Connection → Verified."
   }
 ];

@@ -5,7 +5,8 @@ import {
   BioPageDraft,
   BioPagePreviewDetails,
   BioPagePreviewTheme,
-  BioPageTemplate
+  BioPageTemplate,
+  DeviceTargetScope
 } from "../types";
 import { normalizePageTheme } from "../lib/bioPageThemes";
 import { apiUrl } from "../lib/apiBase";
@@ -297,7 +298,9 @@ export function buildEditorState(
     enabled?: boolean;
     amountInr?: number;
     description?: string;
-  }
+  },
+  aiAssistant?: BioPagePreviewDetails["aiAssistant"],
+  deviceScope?: DeviceTargetScope
 ): BioEditorState {
   return {
     pageMeta: {
@@ -308,6 +311,7 @@ export function buildEditorState(
       handle: normalizeHandleInput(handle || ""),
       pageTheme,
       ...(coverSettings ? { coverSettings } : {}),
+      ...(deviceScope ? { deviceScope } : {}),
       ...(thankYou?.title ? { thankYouTitle: thankYou.title } : {}),
       ...(thankYou?.message ? { thankYouMessage: thankYou.message } : {}),
       ...(thankYou?.emoji ? { thankYouEmoji: thankYou.emoji } : {}),
@@ -315,7 +319,8 @@ export function buildEditorState(
       ...(typeof payment?.amountInr === "number" && payment.amountInr > 0
         ? { paymentAmountInr: payment.amountInr }
         : {}),
-      ...(payment?.description ? { paymentDescription: payment.description } : {})
+      ...(payment?.description ? { paymentDescription: payment.description } : {}),
+      ...(aiAssistant ? { aiAssistant } : {})
     },
     blocks: cloneBlocks(blocks),
     ...(thankYou?.blocks?.length ? { thankYouBlocks: cloneBlocks(thankYou.blocks) } : {})

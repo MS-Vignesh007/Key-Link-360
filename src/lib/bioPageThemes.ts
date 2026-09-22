@@ -10,6 +10,11 @@ export interface BioPageThemePreset {
 
 export const BIO_PAGE_THEME_PRESETS: BioPageThemePreset[] = [
   { id: "dark", label: "Dark", swatch: "#161b27", description: "Classic dark bio page" },
+  { id: "glass_dark", label: "Glassmorphic Dark", swatch: "linear-gradient(135deg, #1e1b4b, #0f172a)", description: "Ultra-modern frosted glass dark" },
+  { id: "glass_neon", label: "Cyber Glass", swatch: "linear-gradient(135deg, #050505, #00f0ff)", description: "Glowing cyan-violet neon glass" },
+  { id: "cyberpunk", label: "Cyberpunk Neon", swatch: "linear-gradient(135deg, #0a0a0f, #ff007a)", description: "High-contrast synthwave neon" },
+  { id: "aurora", label: "Frosted Aurora", swatch: "linear-gradient(135deg, #032b30, #6366f1)", description: "Dreamy northern lights glow" },
+  { id: "emerald_luxe", label: "Emerald Luxe", swatch: "linear-gradient(135deg, #022c22, #10b981)", description: "Deep emerald gold prestige" },
   { id: "light", label: "Light", swatch: "#ffffff", description: "Clean white layout" },
   { id: "midnight", label: "Midnight", swatch: "#0f172a", description: "Deep navy night" },
   { id: "ocean", label: "Ocean", swatch: "#0c4a6e", description: "Cool teal waters" },
@@ -221,6 +226,81 @@ const THEME_TOKEN_MAP: Record<
     bodyBorder: "#bae6fd",
     footer: "#0284c7",
     coverFade: "linear-gradient(to top, #f0f9ff 0%, rgba(240, 249, 255, 0.92) 22%, rgba(240, 249, 255, 0.45) 50%, transparent 100%)"
+  },
+  glass_dark: {
+    screenBg: "linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #0f172a 100%)",
+    screenText: "#f8fafc",
+    title: "#ffffff",
+    handle: "#a5b4fc",
+    bioBg: "rgba(30, 41, 59, 0.4)",
+    bioText: "#cbd5e1",
+    bioBorder: "rgba(255, 255, 255, 0.15)",
+    heading: "#ffffff",
+    bodyText: "#e2e8f0",
+    bodyBg: "rgba(15, 23, 42, 0.45)",
+    bodyBorder: "rgba(255, 255, 255, 0.12)",
+    footer: "#94a3b8",
+    coverFade: "linear-gradient(to top, #0b0f19 0%, rgba(11, 15, 25, 0.95) 24%, rgba(11, 15, 25, 0.4) 52%, transparent 100%)"
+  },
+  glass_neon: {
+    screenBg: "linear-gradient(135deg, #030712 0%, #083344 50%, #020617 100%)",
+    screenText: "#ecfeff",
+    title: "#67e8f9",
+    handle: "#22d3ee",
+    bioBg: "rgba(8, 51, 68, 0.35)",
+    bioText: "#a5f3fc",
+    bioBorder: "rgba(34, 211, 238, 0.3)",
+    heading: "#ffffff",
+    bodyText: "#cffafe",
+    bodyBg: "rgba(3, 7, 18, 0.6)",
+    bodyBorder: "rgba(34, 211, 238, 0.25)",
+    footer: "#22d3ee",
+    coverFade: "linear-gradient(to top, #030712 0%, rgba(3, 7, 18, 0.95) 24%, rgba(3, 7, 18, 0.4) 52%, transparent 100%)"
+  },
+  cyberpunk: {
+    screenBg: "linear-gradient(135deg, #09090b 0%, #3b0764 50%, #180324 100%)",
+    screenText: "#fae8ff",
+    title: "#f472b6",
+    handle: "#e879f9",
+    bioBg: "rgba(59, 7, 100, 0.4)",
+    bioText: "#f0abfc",
+    bioBorder: "rgba(244, 114, 182, 0.35)",
+    heading: "#ffffff",
+    bodyText: "#f5d0fe",
+    bodyBg: "rgba(9, 9, 11, 0.65)",
+    bodyBorder: "rgba(244, 114, 182, 0.25)",
+    footer: "#f472b6",
+    coverFade: "linear-gradient(to top, #09090b 0%, rgba(9, 9, 11, 0.95) 24%, rgba(9, 9, 11, 0.4) 52%, transparent 100%)"
+  },
+  aurora: {
+    screenBg: "linear-gradient(135deg, #022c22 0%, #1e1b4b 50%, #042f2e 100%)",
+    screenText: "#ecfdf5",
+    title: "#6ee7b7",
+    handle: "#818cf8",
+    bioBg: "rgba(4, 47, 46, 0.4)",
+    bioText: "#a7f3d0",
+    bioBorder: "rgba(110, 231, 183, 0.25)",
+    heading: "#ffffff",
+    bodyText: "#d1fae5",
+    bodyBg: "rgba(2, 44, 34, 0.55)",
+    bodyBorder: "rgba(129, 140, 248, 0.2)",
+    footer: "#6ee7b7",
+    coverFade: "linear-gradient(to top, #022c22 0%, rgba(2, 44, 34, 0.95) 24%, rgba(2, 44, 34, 0.4) 52%, transparent 100%)"
+  },
+  emerald_luxe: {
+    screenBg: "linear-gradient(135deg, #022c22 0%, #064e3b 50%, #021a14 100%)",
+    screenText: "#f0fdf4",
+    title: "#fef08a",
+    handle: "#34d399",
+    bioBg: "rgba(6, 78, 59, 0.45)",
+    bioText: "#86efac",
+    bioBorder: "rgba(250, 204, 21, 0.25)",
+    heading: "#ffffff",
+    bodyText: "#bbf7d0",
+    bodyBg: "rgba(2, 44, 34, 0.6)",
+    bodyBorder: "rgba(52, 211, 153, 0.2)",
+    footer: "#facc15",
+    coverFade: "linear-gradient(to top, #022c22 0%, rgba(2, 44, 34, 0.95) 24%, rgba(2, 44, 34, 0.4) 52%, transparent 100%)"
   }
 };
 
@@ -236,6 +316,8 @@ export function normalizePageTheme(value: unknown): BioPagePreviewTheme {
 export function getBioPageThemeStyle(theme: BioPagePreviewTheme): CSSProperties {
   const tokens = THEME_TOKEN_MAP[theme] || THEME_TOKEN_MAP.dark;
   return {
+    background: tokens.screenBg,
+    color: tokens.screenText,
     "--key-bio-screen-bg": tokens.screenBg,
     "--key-bio-screen-text": tokens.screenText,
     "--key-bio-title": tokens.title,

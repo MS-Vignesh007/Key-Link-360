@@ -103,7 +103,7 @@ export function resolveCnameTarget(explicitTarget?: string, platformUrl?: string
       /* ignore */
     }
   }
-  return "keylink360.mindflo.today";
+  return "keylink360.in";
 }
 
 /**

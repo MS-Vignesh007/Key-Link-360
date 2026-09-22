@@ -48,6 +48,12 @@ export interface BlockRendererHandlers {
     amountInr?: number;
     errorMessage?: string;
   }>;
+  /** Direct Canva-style inline text edit update */
+  onInlineTextChange?: (blockId: string, field: string, value: any) => void;
+  /** Focus specific inspector section/drawer field on click */
+  onSelectElement?: (blockId: string, fieldToFocus?: string) => void;
+  /** Whether inline editing is active (e.g. In editor preview mode) */
+  isInlineEditingAllowed?: boolean;
 }
 
 export interface BlockRendererProps {

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import type { BioEditorBlock, BioPageTemplate, TemplateItem } from "../types";
+import DeviceMockupFrame from "./bio/DeviceMockupFrame";
+import type { BioEditorBlock, BioPageTemplate, TemplateItem, DeviceViewportMode } from "../types";
 import {
   formatStorageDate,
   getTemplateEditorPayload
@@ -23,7 +24,11 @@ import {
   Eye,
   X,
   ImageOff,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Monitor
 } from "lucide-react";
 
 interface TemplatesScreenProps {
@@ -48,88 +53,83 @@ function resolvePreviewState(target: PreviewTarget) {
   return resolveSystemTemplate(target.item.name) ?? getBlankTemplate(target.item.name);
 }
 
-function TemplateExplorePhone({
+function TemplateExploreDeviceMockup({
   title,
   bio,
   coverImage,
   handle,
-  blocks
+  blocks,
+  deviceMode = "mobile",
+  zoom = "fit"
 }: {
   title: string;
   bio: string;
   coverImage: string;
   handle?: string;
   blocks: BioEditorBlock[];
+  deviceMode?: DeviceViewportMode;
+  zoom?: "fit" | number;
 }) {
   const themeClass = getBioPageThemeClass("light");
   const themeStyle = getBioPageThemeStyle("light");
 
   return (
-    <div
-      className="key-phone-preview key-phone-preview--samsung key-phone-preview--slim key-template-explore-phone"
-      aria-label="Template mobile preview"
+    <DeviceMockupFrame
+      mode={deviceMode}
+      zoom={zoom}
+      displayUrl="keylink360.in/preview"
+      className="w-full"
     >
-      <div className="key-phone-preview__side-key key-phone-preview__side-key--volume-up" aria-hidden />
-      <div className="key-phone-preview__side-key key-phone-preview__side-key--volume-down" aria-hidden />
-      <div className="key-phone-preview__bezel">
-        <div className="key-phone-preview__hole-punch" aria-hidden />
-        <div className="key-phone-preview__display">
-          <div className="key-phone-preview__chrome">
-            <div className="key-phone-preview__status-bar">
-              <span>9:41</span>
-              <span className="key-phone-preview__status-icons">▮▮▮ 100%</span>
+      <div
+        className={`key-preview-isolate w-full min-h-full ${themeClass} no-scrollbar`}
+        style={{
+          ...themeStyle,
+          minHeight: "100%"
+        }}
+      >
+        <div className="w-full max-w-5xl mx-auto">
+          <CoverPhotoView
+            src={coverImage}
+            alt={`${title} cover`}
+            variant="preview"
+            className="key-phone-preview__cover key-public-bio-page__cover"
+          />
+          <div className="key-phone-preview__body key-public-bio-page__body px-4 py-4">
+            <div className="key-public-bio-page__profile">
+              <h1 className="key-public-bio-page__title font-display">{title}</h1>
+              {handle ? <p className="key-public-bio-page__handle">{handle}</p> : null}
             </div>
-            <div className="key-phone-preview__browser-bar">
-              <span className="key-phone-preview__browser-home" aria-hidden>
-                ⌂
-              </span>
-              <span className="key-phone-preview__browser-url">key.link/preview</span>
-              <span className="key-phone-preview__browser-tabs" aria-hidden>
-                1
-              </span>
-            </div>
-          </div>
-
-          <div
-            className={`key-preview-isolate key-phone-preview__screen ${themeClass} no-scrollbar key-template-explore-phone__screen`}
-            style={themeStyle}
-          >
-            <CoverPhotoView
-              src={coverImage}
-              alt={`${title} cover`}
-              variant="preview"
-              className="key-phone-preview__cover key-public-bio-page__cover"
-            />
-            <div className="key-phone-preview__body key-public-bio-page__body">
-              <div className="key-public-bio-page__profile">
-                <h1 className="key-public-bio-page__title font-display">{title}</h1>
-                {handle ? <p className="key-public-bio-page__handle">{handle}</p> : null}
-              </div>
-              {bio ? <p className="key-phone-preview__bio-text">{bio}</p> : null}
-              <div className="key-phone-preview__blocks space-y-3">
-                {blocks.map((block) => (
+            {bio ? <p className="key-phone-preview__bio-text">{bio}</p> : null}
+            <div className="key-phone-preview__blocks grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {blocks.map((block) => (
+                <div
+                  key={block.id}
+                  className={
+                    deviceMode !== "mobile" && block.colSpan === "half"
+                      ? "col-span-1"
+                      : "col-span-1 md:col-span-2"
+                  }
+                >
                   <BlockRenderer
-                    key={block.id}
                     block={block as BlockRecord}
                     mode="preview"
                     context={{ compact: true, displayTitle: title, displayHandle: handle }}
                   />
-                ))}
-                {blocks.length === 0 && (
-                  <p className="rounded-xl border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-400">
-                    This template starts blank — build it in the editor.
-                  </p>
-                )}
-              </div>
-              <div className="key-bio-page-footer key-phone-preview__footer">
-                <span>Powered by KEYLINK360</span>
-              </div>
+                </div>
+              ))}
+              {blocks.length === 0 && (
+                <p className="col-span-1 md:col-span-2 rounded-xl border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-400">
+                  This template starts blank — build it in the editor.
+                </p>
+              )}
+            </div>
+            <div className="key-bio-page-footer key-phone-preview__footer">
+              <span>Powered by KEYLINK360</span>
             </div>
           </div>
         </div>
       </div>
-      <div className="key-phone-preview__side-key key-phone-preview__side-key--power" aria-hidden />
-    </div>
+    </DeviceMockupFrame>
   );
 }
 
@@ -165,15 +165,47 @@ function ThumbnailImage({
   );
 }
 
-function TemplatePhonePreview({
+function TemplateCardPreview({
   imageUrl,
   name,
+  viewMode = "phone",
   onPreview
 }: {
   imageUrl?: string;
   name: string;
+  viewMode?: "phone" | "laptop";
   onPreview: () => void;
 }) {
+  if (viewMode === "laptop") {
+    return (
+      <button
+        type="button"
+        onClick={onPreview}
+        aria-label={`Preview ${name}`}
+        className="key-template-laptop group w-full pt-4 pb-2"
+      >
+        <div className="key-template-laptop__frame">
+          <div className="key-template-laptop__notch" aria-hidden />
+          <div className="key-template-laptop__screen">
+            <ThumbnailImage
+              src={imageUrl}
+              alt={name}
+              overlayClassName="w-full h-full"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+        <div className="key-template-laptop__base" />
+        <div className="key-template-laptop__overlay">
+          <span className="text-white text-xs font-bold flex items-center gap-1.5 bg-black/55 px-3 py-1.5 rounded-full">
+            <Eye className="h-3.5 w-3.5" />
+            Preview Laptop
+          </span>
+        </div>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -211,7 +243,10 @@ export default function TemplatesScreen({
   const [activeTab, setActiveTab] = useState<"SYSTEM" | "MY_TEMPLATES">("SYSTEM");
   const [activeCategory, setActiveCategory] = useState("All Categories");
   const [searchQuery, setSearchQuery] = useState("");
+  const [galleryViewMode, setGalleryViewMode] = useState<"phone" | "laptop">("phone");
   const [previewTarget, setPreviewTarget] = useState<PreviewTarget | null>(null);
+  const [templatePreviewDevice, setTemplatePreviewDevice] = useState<DeviceViewportMode>("mobile");
+  const [templatePreviewZoom, setTemplatePreviewZoom] = useState<"fit" | number>("fit");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -345,28 +380,63 @@ export default function TemplatesScreen({
         </button>
       </div>
 
-      {activeTab === "SYSTEM" && (
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar animate-in fade-in duration-200">
-          {TEMPLATE_CATEGORIES.map((cat) => {
-            const isSelected = activeCategory === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                aria-pressed={isSelected}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all border whitespace-nowrap shrink-0 ${
-                  isSelected
-                    ? "bg-[#4F46E5] border-[#4F46E5] text-white shadow-sm"
-                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {activeTab === "SYSTEM" ? (
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar flex-1 min-w-0 animate-in fade-in duration-200">
+            {TEMPLATE_CATEGORIES.map((cat) => {
+              const isSelected = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all border whitespace-nowrap shrink-0 ${
+                    isSelected
+                      ? "bg-[#4F46E5] border-[#4F46E5] text-white shadow-sm"
+                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
+
+        {/* Gallery View Mode Toggle (Phone vs Laptop) */}
+        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs shrink-0 ml-auto">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 hidden sm:inline">
+            Mockup:
+          </span>
+          <button
+            type="button"
+            onClick={() => setGalleryViewMode("phone")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              galleryViewMode === "phone"
+                ? "bg-indigo-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <Smartphone className="h-3.5 w-3.5" />
+            <span>Phone</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setGalleryViewMode("laptop")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              galleryViewMode === "laptop"
+                ? "bg-indigo-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <Laptop className="h-3.5 w-3.5" />
+            <span>Laptop</span>
+          </button>
         </div>
-      )}
+      </div>
 
       {activeTab === "MY_TEMPLATES" ? (
         savedTemplates.length === 0 ? (
@@ -401,9 +471,10 @@ export default function TemplatesScreen({
                 className="key-template-card key-glass-card overflow-hidden flex flex-col min-w-0"
               >
                 <div className="p-4 pb-0 relative">
-                  <TemplatePhonePreview
+                  <TemplateCardPreview
                     imageUrl={tpl.previewImage}
                     name={tpl.name}
+                    viewMode={galleryViewMode}
                     onPreview={() => setPreviewTarget({ kind: "custom", item: tpl })}
                   />
                   <button
@@ -481,9 +552,10 @@ export default function TemplatesScreen({
                     Suggested for you
                   </span>
                 )}
-                <TemplatePhonePreview
+                <TemplateCardPreview
                   imageUrl={item.imageUrl}
                   name={item.name}
+                  viewMode={galleryViewMode}
                   onPreview={() => setPreviewTarget({ kind: "system", item })}
                 />
               </div>
@@ -561,25 +633,27 @@ export default function TemplatesScreen({
             aria-labelledby="preview-template-title"
             className="key-template-explore-dialog flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
           >
-            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-4 py-3.5 sm:px-6">
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 sm:px-6">
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">
-                  Mobile template preview
-                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 border border-indigo-200/60 px-2 py-0.5 rounded-full">
+                    Responsive Multi-Device Preview
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    Active: <strong className="text-slate-700 capitalize">{templatePreviewDevice}</strong>
+                  </span>
+                </div>
                 <h3
                   id="preview-template-title"
                   className="mt-1 font-display text-xl font-black text-slate-900 sm:text-2xl"
                 >
                   {previewTarget.item.name}
                 </h3>
-                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500">
+                <p className="mt-1 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-500">
                   {previewTarget.kind === "system"
                     ? previewTarget.item.description
                     : previewTarget.item.description ||
                       `Custom design with ${getBlockCount(previewTarget.item)} widgets.`}
-                </p>
-                <p className="mt-2 text-[11px] font-semibold text-slate-400">
-                  Scroll inside the phone to explore the full layout before editing.
                 </p>
               </div>
               <button
@@ -592,14 +666,86 @@ export default function TemplatesScreen({
               </button>
             </div>
 
-            <div className="key-template-explore-stage min-h-0 flex-1 overflow-y-auto">
-              <div className="flex min-h-full items-start justify-center px-3 py-5 sm:px-6 sm:py-7">
-                <TemplateExplorePhone
+            {/* Device & Zoom Controls Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 bg-slate-50/80 px-4 py-2 sm:px-6">
+              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-xs">
+                {(
+                  [
+                    { id: "mobile", label: "Phone", icon: Smartphone },
+                    { id: "tablet", label: "Tablet", icon: Tablet },
+                    { id: "laptop", label: "Laptop", icon: Laptop },
+                    { id: "desktop", label: "Desktop", icon: Monitor }
+                  ] as const
+                ).map(({ id, label, icon: Icon }) => {
+                  const isActive = templatePreviewDevice === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setTemplatePreviewDevice(id)}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                        isActive
+                          ? "bg-indigo-600 text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span className="hidden sm:inline font-semibold text-slate-400">Scale:</span>
+                <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 gap-1 text-[11px] font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setTemplatePreviewZoom("fit")}
+                    className={`px-2.5 py-0.5 rounded-lg transition-all ${
+                      templatePreviewZoom === "fit"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Fit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTemplatePreviewZoom(0.75)}
+                    className={`px-2.5 py-0.5 rounded-lg transition-all ${
+                      templatePreviewZoom === 0.75
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    75%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTemplatePreviewZoom(1)}
+                    className={`px-2.5 py-0.5 rounded-lg transition-all ${
+                      templatePreviewZoom === 1
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    100%
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="key-template-explore-stage min-h-0 flex-1 overflow-y-auto bg-slate-100/60 p-3 sm:p-6">
+              <div className="flex min-h-full items-center justify-center">
+                <TemplateExploreDeviceMockup
                   title={previewState.pageMeta.title}
                   bio={previewState.pageMeta.shortBio}
                   coverImage={previewState.pageMeta.coverImage}
                   handle={previewState.pageMeta.handle}
                   blocks={previewState.blocks}
+                  deviceMode={templatePreviewDevice}
+                  zoom={templatePreviewZoom}
                 />
               </div>
             </div>

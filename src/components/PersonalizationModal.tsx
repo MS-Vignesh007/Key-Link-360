@@ -1,7 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { X, Check, Palette, Sparkles, Moon, Sun, Terminal, Zap, Crown, Eye, Flame } from "lucide-react";
-import { AppTheme, ALL_THEMES } from "../lib/themeStorage";
+import { AppTheme, ALL_THEMES, saveTheme } from "../lib/themeStorage";
 
 interface PersonalizationModalProps {
   isOpen: boolean;
@@ -121,7 +121,11 @@ export default function PersonalizationModal({
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => onThemeChange(t.id)}
+                    onClick={() => {
+                      saveTheme(t.id);
+                      onThemeChange(t.id);
+                      window.dispatchEvent(new CustomEvent("keylink360_theme_change", { detail: t.id }));
+                    }}
                     className={`group relative text-left p-4 sm:p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden cursor-pointer ${
                       isActive
                         ? "bg-[var(--key-surface)] border-indigo-500 ring-2 ring-indigo-500/40 shadow-xl"

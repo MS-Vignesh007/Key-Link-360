@@ -47,7 +47,7 @@ export default function DomainDnsPanel({
         ) : (
           <>
             Subdomain — add one <strong>CNAME</strong> to{" "}
-            <code>{cnameTarget || "keylink360.mindflo.today"}</code>. Do not use an A record.
+            <code>{cnameTarget || "keylink360.in"}</code>. Do not use an A record.
           </>
         )}
       </p>

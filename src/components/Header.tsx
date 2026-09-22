@@ -4,6 +4,7 @@ import { Menu, Rocket } from "lucide-react";
 import KeyLogo3D from "./KeyLogo3D";
 import NotificationPanel from "./NotificationPanel";
 import ProfileMenu from "./ProfileMenu";
+import { useLanguage } from "../lib/languageContext";
 
 interface HeaderProps {
   currentScreen: ScreenId;
@@ -15,6 +16,7 @@ interface HeaderProps {
   unreadCount: number;
   onMarkNotificationRead: (id: string) => void;
   onMarkAllNotificationsRead: () => void;
+  onDeleteNotification?: (id: string) => void;
   onNotificationNavigate?: (screen: ScreenId, pageId?: string) => void;
   onPublish?: () => void;
   onLogout: () => void;
@@ -30,12 +32,14 @@ export default function Header({
   unreadCount,
   onMarkNotificationRead,
   onMarkAllNotificationsRead,
+  onDeleteNotification,
   onNotificationNavigate,
   onPublish,
   onLogout
 }: HeaderProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const { t } = useLanguage();
 
   const showPublish =
     currentScreen === ScreenId.DASHBOARD || currentScreen === ScreenId.ACCOUNT;
@@ -71,7 +75,7 @@ export default function Header({
             className="key-btn-chip"
           >
             <Rocket className="h-4 w-4" />
-            <span className="hidden sm:inline">Publish</span>
+            <span className="hidden sm:inline">{t("header.publish", "Publish")}</span>
           </button>
         )}
 
@@ -86,6 +90,7 @@ export default function Header({
           onClose={() => setNotificationsOpen(false)}
           onMarkRead={onMarkNotificationRead}
           onMarkAllRead={onMarkAllNotificationsRead}
+          onDeleteNotification={onDeleteNotification}
           onNavigate={onNotificationNavigate || onScreenChange}
         />
 

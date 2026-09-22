@@ -39,7 +39,7 @@ function normalizePublicCode(value: string): string {
 
 /**
  * Keep each QR's publicCode forever.
- * Upgrade localhost/LAN scan URLs → https://keylink360.mindflo.today/q/{code}
+ * Upgrade localhost/LAN scan URLs → https://keylink360.in/q/{code}
  * so mobile cameras hit the platform redirect (per-code destination), not /login.
  */
 export function canonicalizeQrScanUrl(publicCode: string, scanUrl?: string): string {

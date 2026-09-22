@@ -794,7 +794,7 @@ export default function ConnectDomainWizard({
   const dnsZoneDomain = getDnsZoneDomain(activeHostname);
   const domainKind = getCustomDomainKind(activeHostname);
   const activeDot = progressIndex(phase);
-  const cnameTarget = platformConfig?.cnameTarget || "keylink360.mindflo.today";
+  const cnameTarget = platformConfig?.cnameTarget || "keylink360.in";
 
   return (
     <div className="key-modal-backdrop key-workflow-modal-backdrop">

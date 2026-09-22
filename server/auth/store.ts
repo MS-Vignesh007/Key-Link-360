@@ -5,6 +5,7 @@ import {
   AuthUserRecord,
   UserStatus,
   hashPassword,
+  isBcryptHash,
   publicUser,
   randomToken,
   verifyPassword
@@ -251,7 +252,7 @@ function seedDemoUser(store: AuthStoreShape): boolean {
 
   if (existing) {
     let mutated = false;
-    if (!existing.passwordHash || !existing.passwordSalt) {
+    if (!existing.passwordHash || !isBcryptHash(existing.passwordHash)) {
       const { salt, hash } = hashPassword(DEMO_PASSWORD);
       existing.passwordHash = hash;
       existing.passwordSalt = salt;

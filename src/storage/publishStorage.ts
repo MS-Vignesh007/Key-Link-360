@@ -1,7 +1,7 @@
 import { PublishSettings } from "../types";
 
 const STORAGE_KEY = "keylink360_publish_settings";
-export const PRIMARY_DOMAIN = "keylink360.mindflo.today";
+export const PRIMARY_DOMAIN = "keylink360.in";
 export const DEFAULT_DNS_TARGET = "cname.vercel-dns.com";
 
 function defaultSettings(): PublishSettings {

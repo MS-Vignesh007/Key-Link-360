@@ -3,7 +3,11 @@ import { createPortal } from "react-dom";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { screenToPath } from "../navigation";
 import { ScreenId } from "../types";
-import type { BioPage, BioPageDraft, BioPageTemplate, BioEditorState, BioEditorBlock, BioPagePreviewTheme, BioPagePreviewDetails, BioCoverPhotoSettings, CustomDomain, PlatformSubdomain } from "../types";
+import type { BioPage, BioPageDraft, BioPageTemplate, BioEditorState, BioEditorBlock, BlockDeveloperStyles, BioPagePreviewTheme, BioPagePreviewDetails, BioCoverPhotoSettings, CustomDomain, PlatformSubdomain, DeviceViewportMode, DeviceTargetScope } from "../types";
+import BlockStyleInspector from "./bio/BlockStyleInspector";
+import BuilderStructureTree from "./bio/BuilderStructureTree";
+import InlineEditableText from "./bio/InlineEditableText";
+import { computeBlockInlineStyles, getBlockCustomMeta } from "../lib/blockStyleHelper";
 import {
   buildEditorState,
   cloneBlocks,
@@ -38,7 +42,7 @@ import {
   sortPagesByPublicLinkKind
 } from "../lib/bioPagePublicUrl";
 import { apiUrl } from "../lib/apiBase";
-import { normalizePageTheme, getBioPageThemeClass, getBioPageThemeStyle } from "../lib/bioPageThemes";
+import { normalizePageTheme, getBioPageThemeClass, getBioPageThemeStyle, BIO_PAGE_THEME_PRESETS } from "../lib/bioPageThemes";
 import {
   SOCIAL_PLATFORMS,
   createDefaultSocialFields,
@@ -81,6 +85,34 @@ import {
   DEFAULT_SHOP_PRODUCTS,
   toDatetimeLocalValue,
   filterVisibleBioBlocks,
+  createDefaultSplitHeroFields,
+  createDefaultVideoHeroFields,
+  createDefaultGlowBadgeFields,
+  createDefaultFeatureHeroFields,
+  createDefaultTogglePricingFields,
+  createDefaultProductShowcaseFields,
+  createDefaultComparisonTableFields,
+  createDefaultPaymentButtonFields,
+  createDefaultBrandLogosFields,
+  createDefaultStarRatingsFields,
+  createDefaultPressMentionsFields,
+  createDefaultBeforeAfterFields,
+  createDefaultPortfolioFields,
+  createDefaultVideoShowcaseFields,
+  createDefaultAudioPlayerFields,
+  createDefaultMultiStepFormFields,
+  createDefaultLeadMagnetFields,
+  createDefaultMeetingBookerFields,
+  createDefaultNewsletterFields,
+  createDefaultNavbarFields,
+  createDefaultFooterFields,
+  createDefaultMainFeatureFields,
+  createDefaultAutoSliderFields,
+  createDefaultGoogleFormFields,
+  createDefaultFlashOfferFields,
+  createDefaultCommunityHubFields,
+  createDefaultYouTubeChannelFields,
+  createDefaultInstagramFeedFields,
   type BlockRecord
 } from "../lib/bioBlocks";
 import BlockRenderer, { type BlockRendererHandlers } from "./bio/BlockRenderer";
@@ -92,11 +124,21 @@ import ThankYouPageView, {
 import BioPageThemePicker from "./bio/BioPageThemePicker";
 import CoverPhotoView from "./bio/CoverPhotoView";
 import CoverPhotoControls from "./bio/CoverPhotoControls";
+import BioAiChatWidget from "./bio/BioAiChatWidget";
+import InteractiveSetupGuideModal from "./guides/InteractiveSetupGuideModal";
+import DeviceMockupFrame from "./bio/DeviceMockupFrame";
+import PhoneSimulatorToolbar from "./bio/PhoneSimulatorToolbar";
+import VisibleDevicesDrawer from "./bio/VisibleDevicesDrawer";
+import PublicBioPageView from "./PublicBioPageView";
+import { DEVICE_CATALOG, DEFAULT_DEVICE, type DeviceSpec } from "../data/deviceCatalog";
 import { DEFAULT_COVER_SETTINGS, normalizeCoverSettings } from "../lib/bioCoverPhoto";
 import {
+  Zap,
   RefreshCw,
   Plus,
   Smartphone,
+  Bot,
+  BookOpen,
   Copy,
   BarChart2,
   Edit3,
@@ -105,6 +147,14 @@ import {
   Trash2,
   Check,
   X,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  Sliders,
+  SlidersHorizontal,
+  Maximize2,
+  Minimize2,
   Link,
   Loader,
   Settings,
@@ -128,11 +178,14 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   GripVertical,
   Palette,
   Globe,
   Image as ImageIcon,
   LayoutGrid,
+  LayoutTemplate,
   ClipboardList,
   HelpCircle,
   Quote,
@@ -147,11 +200,18 @@ import {
   Search,
   MoreVertical,
   Lock,
-  Unlock
+  Unlock,
+  Tablet,
+  Laptop,
+  Monitor,
+  Maximize2,
+  PanelLeft,
+  CheckCircle,
+  BookmarkCheck
 } from "lucide-react";
-import PageShell, { PageHeader, Workspace } from "./layout/PageShell";
-import { BIO_LINK } from "../lib/bioLinkColors";
-import type { AppTheme } from "../lib/themeStorage";
+import PageShell, { PageHeader, StatCard, StatCardGrid, Workspace } from "./layout/PageShell";
+import { AppTheme, ALL_THEMES, getStoredTheme, saveTheme } from "../lib/themeStorage";
+import PersonalizationModal from "./PersonalizationModal";
 
 export { getShareableOrigin } from "../lib/bioPagePublicUrl";
 
@@ -415,6 +475,49 @@ export default function BioPagesScreen({
   const [searchParams] = useSearchParams();
   const editIdFromUrl = searchParams.get("edit");
   const editFromDomain = searchParams.get("source") === "domain";
+
+  // Reactive UI Theme sync across all 7 visual modes
+  const [currentUiTheme, setCurrentUiTheme] = React.useState<AppTheme>(() => theme || getStoredTheme());
+  const [isStudioPersonalizationOpen, setIsStudioPersonalizationOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (theme) {
+      setCurrentUiTheme(theme);
+    }
+  }, [theme]);
+
+  React.useEffect(() => {
+    const onThemeSync = (e: any) => {
+      const nextTheme = (e?.detail || getStoredTheme()) as AppTheme;
+      if (nextTheme) {
+        setCurrentUiTheme(nextTheme);
+      }
+    };
+    window.addEventListener("keylink360_theme_change", onThemeSync);
+    window.addEventListener("storage", onThemeSync);
+    return () => {
+      window.removeEventListener("keylink360_theme_change", onThemeSync);
+      window.removeEventListener("storage", onThemeSync);
+    };
+  }, []);
+
+  const handleApplyStudioTheme = React.useCallback((nextTheme: AppTheme) => {
+    setCurrentUiTheme(nextTheme);
+    saveTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    document.documentElement.classList.remove(
+      "key-theme-light",
+      "key-theme-dark",
+      "key-theme-eyevision",
+      "key-theme-cyberpunk",
+      "key-theme-luxury",
+      "key-theme-synthwave",
+      "key-theme-matrix"
+    );
+    document.documentElement.classList.add(`key-theme-${nextTheme}`);
+    window.dispatchEvent(new CustomEvent("keylink360_theme_change", { detail: nextTheme }));
+  }, []);
+
   // History list only — template sessions stay out until Save Draft / Publish
   const historyPages = React.useMemo(
     () =>
@@ -469,10 +572,23 @@ export default function BioPagesScreen({
   const [platformDuplicatesOnly, setPlatformDuplicatesOnly] = useState(false);
   const [platformSelectionMode, setPlatformSelectionMode] = useState(false);
   const [platformBulkMenuOpen, setPlatformBulkMenuOpen] = useState(false);
+  const [revealedActionRowId, setRevealedActionRowId] = useState<string | null>(null);
   const [selectedPlatformIds, setSelectedPlatformIds] = useState<Set<string>>(() => new Set());
   const platformBulkMenuRef = useRef<HTMLDivElement>(null);
   const editorExitingRef = useRef(false);
   const editorCloseConfirmOpenRef = useRef(false);
+
+  React.useEffect(() => {
+    if (!revealedActionRowId) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(".key-list-row")) {
+        setRevealedActionRowId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [revealedActionRowId]);
 
   const platformDuplicateIds = React.useMemo(
     () => getDuplicatePlatformPageIds(platformPages),
@@ -677,6 +793,38 @@ export default function BioPagesScreen({
   const [showPublishSuccess, setShowPublishSuccess] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
+  // Multi-Device Viewport & Scope states
+  const [viewportMode, setViewportMode] = useState<DeviceViewportMode>("mobile");
+  const [viewportZoom, setViewportZoom] = useState<"fit" | number>("fit");
+  const [editorDeviceScope, setEditorDeviceScope] = useState<DeviceTargetScope>("auto_adaptive");
+
+  // Modern Studio Nav Tab & Sliding Sidebar states
+  const [studioNavTab, setStudioNavTab] = useState<
+    "menu" | "library" | "layers" | "inspector" | "theme" | "thanks" | "settings" | "drafts"
+  >("menu");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isDrawerOpen = isSidebarOpen;
+  const setIsDrawerOpen = setIsSidebarOpen;
+  const [selectedCanvasBlockId, setSelectedCanvasBlockId] = useState<string | null>(null);
+  const [blockLibrarySearch, setBlockLibrarySearch] = useState("");
+  const [blockLibraryCategory, setBlockLibraryCategory] = useState<string>("all");
+
+  // Bricks Builder & Blocks Edit Developer States
+  const [inspectorTab, setInspectorTab] = useState<"content" | "style">("content");
+  const [isPreviewOnlyMode, setIsPreviewOnlyMode] = useState<boolean>(false);
+  const [isThemePopoverOpen, setIsThemePopoverOpen] = useState<boolean>(false);
+  const [selectedDevice, setSelectedDevice] = useState<DeviceSpec>(DEFAULT_DEVICE);
+  const [isDeviceDrawerOpen, setIsDeviceDrawerOpen] = useState<boolean>(false);
+  const [isLandscape, setIsLandscape] = useState<boolean>(false);
+  const [mockupFrameFinish, setMockupFrameFinish] = useState<string>("auto");
+  const [showSimulatorToolbar, setShowSimulatorToolbar] = useState<boolean>(false);
+  const [isGlobalPreviewOpen, setIsGlobalPreviewOpen] = useState<boolean>(false);
+
+  // Canvas Block Drag-to-Reorder and Drag-Outside-to-Delete States
+  const [draggingCanvasBlockId, setDraggingCanvasBlockId] = useState<string | null>(null);
+  const [dragOverCanvasBlockId, setDragOverCanvasBlockId] = useState<string | null>(null);
+  const [isDraggingOutsidePreview, setIsDraggingOutsidePreview] = useState<boolean>(false);
+
   // Widget states inside editor to allow live mockup interactivity!
   const [couponCode, setCouponCode] = useState("MARVELTOYCODE007007");
   const [copiedCoupon, setCopiedCoupon] = useState(false);
@@ -692,6 +840,24 @@ export default function BioPagesScreen({
   const [paymentEnabled, setPaymentEnabled] = useState(false);
   const [paymentAmountInr, setPaymentAmountInr] = useState(499);
   const [paymentDescription, setPaymentDescription] = useState("Bio page form payment");
+
+  // AI Sales & Support Assistant States
+  const [aiAssistantEnabled, setAiAssistantEnabled] = useState(false);
+  const [aiBotName, setAiBotName] = useState("AI Sales Assistant");
+  const [aiWelcomeMessage, setAiWelcomeMessage] = useState(
+    "👋 Hi! How can I help you explore our products, pricing, or services today?"
+  );
+  const [aiBusinessName, setAiBusinessName] = useState("");
+  const [aiBusinessDescription, setAiBusinessDescription] = useState("");
+  const [aiContactPhone, setAiContactPhone] = useState("");
+  const [aiContactEmail, setAiContactEmail] = useState("");
+  const [aiPrimaryColor, setAiPrimaryColor] = useState("#6366f1");
+  const [aiAutoLeadCapture, setAiAutoLeadCapture] = useState(true);
+  const [aiCustomFaqs, setAiCustomFaqs] = useState<Array<{ question: string; answer: string }>>([
+    { question: "How to order / buy?", answer: "Click on any of the product buttons on our bio page or chat with us on WhatsApp!" }
+  ]);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+
   const [showSpinWheel, setShowSpinWheel] = useState(false);
   const [activeSpinBlockId, setActiveSpinBlockId] = useState<string | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -957,6 +1123,42 @@ export default function BioPagesScreen({
     setCanvasBlocks((prev) => prev.map((b) => (b.id === blockId ? { ...b, [field]: value } : b)));
   };
 
+  const handleUpdateBlockStyles = (blockId: string, styles: BlockDeveloperStyles) => {
+    setCanvasBlocks((prev) =>
+      prev.map((b) => (b.id === blockId ? { ...b, styles } : b))
+    );
+  };
+
+  const handleToggleBlockLock = (blockId: string) => {
+    setCanvasBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id !== blockId) return b;
+        const nextLock = !Boolean(b.isLocked || (b as any).styles?.isLocked);
+        return {
+          ...b,
+          isLocked: nextLock,
+          styles: { ...((b as any).styles || {}), isLocked: nextLock }
+        };
+      })
+    );
+    triggerToast("Component lock updated.");
+  };
+
+  const handleToggleBlockHidden = (blockId: string) => {
+    setCanvasBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id !== blockId) return b;
+        const nextHidden = !Boolean(b.isHidden || (b as any).styles?.isHidden);
+        return {
+          ...b,
+          isHidden: nextHidden,
+          styles: { ...((b as any).styles || {}), isHidden: nextHidden }
+        };
+      })
+    );
+    triggerToast("Component visibility updated.");
+  };
+
   const handleCoverPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1162,9 +1364,12 @@ export default function BioPagesScreen({
       );
       onNotify({
         type: "template_saved",
-        title: linkedTemplateId ? "Template updated" : "Template saved",
-        message: `"${name}" is available in Templates → My Templates.`,
-        targetScreen: ScreenId.TEMPLATES
+        status: "completed",
+        stage: "workspace_activity",
+        title: linkedTemplateId ? "Template Updated" : "Template Saved",
+        message: `"${name}" with ${editorBlocks.length} block(s) is saved to workspace templates.`,
+        targetScreen: ScreenId.TEMPLATES,
+        actionLabel: "View Templates"
       });
     } catch (err) {
       console.error("Failed to save template:", err);
@@ -1192,7 +1397,20 @@ export default function BioPagesScreen({
         enabled: paymentEnabled,
         amountInr: paymentAmountInr,
         description: paymentDescription
-      }
+      },
+      {
+        enabled: aiAssistantEnabled,
+        botName: aiBotName,
+        welcomeMessage: aiWelcomeMessage,
+        businessName: aiBusinessName || editorTitle,
+        businessDescription: aiBusinessDescription || editorBio,
+        contactPhone: aiContactPhone,
+        contactEmail: aiContactEmail,
+        primaryColor: aiPrimaryColor,
+        autoLeadCapture: aiAutoLeadCapture,
+        customFaqs: aiCustomFaqs
+      },
+      editorDeviceScope
     );
 
   const buildCurrentPreviewDetails = (theme: BioPagePreviewTheme = editorPageTheme) => {
@@ -1210,6 +1428,7 @@ export default function BioPagesScreen({
       handle: getStoredHandle(editorHandle),
       pageTheme: theme,
       coverSettings: editorCoverSettings,
+      deviceScope: editorDeviceScope,
       templateId: linkedTpl?.id || linkedTemplateId || undefined,
       templateName: linkedTpl?.name || undefined,
       thankYouTitle,
@@ -1226,7 +1445,19 @@ export default function BioPagesScreen({
         : {
             paymentAmountInr: 0,
             paymentDescription: ""
-          })
+          }),
+      aiAssistant: {
+        enabled: aiAssistantEnabled,
+        botName: aiBotName,
+        welcomeMessage: aiWelcomeMessage,
+        businessName: aiBusinessName || editorTitle,
+        businessDescription: aiBusinessDescription || editorBio,
+        contactPhone: aiContactPhone,
+        contactEmail: aiContactEmail,
+        primaryColor: aiPrimaryColor,
+        autoLeadCapture: aiAutoLeadCapture,
+        customFaqs: aiCustomFaqs
+      }
     };
   };
 
@@ -1256,6 +1487,22 @@ export default function BioPagesScreen({
   const previewBlockHandlers: BlockRendererHandlers = {
     onToast: triggerSimulatorToast,
     onWhatsApp: handleWhatsAppRedirect,
+    isInlineEditingAllowed: !showThanksPage,
+    onInlineTextChange: (blockId, field, value) => {
+      handleUpdateBlockField(blockId, field, value);
+      triggerToast("✨ Saved inline edit!");
+    },
+    onSelectElement: (blockId, fieldToFocus) => {
+      setSelectedCanvasBlockId(blockId);
+      setExpandedBlockId(blockId);
+      setStudioNavTab("inspector");
+      setInspectorTab("content");
+      setIsDrawerOpen(true);
+      const el = document.getElementById(`editor-block-${blockId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
     onSpinOpen: (blockId) => {
       setActiveSpinBlockId(blockId);
       setSpinResult(null);
@@ -1480,6 +1727,22 @@ export default function BioPagesScreen({
     setPaymentEnabled(payEnabled);
     setPaymentAmountInr(amount);
     setPaymentDescription(payDesc);
+
+    const ai = state?.pageMeta.aiAssistant || details?.aiAssistant;
+    if (ai) {
+      setAiAssistantEnabled(Boolean(ai.enabled));
+      if (ai.botName) setAiBotName(ai.botName);
+      if (ai.welcomeMessage) setAiWelcomeMessage(ai.welcomeMessage);
+      if (ai.businessName) setAiBusinessName(ai.businessName);
+      if (ai.businessDescription) setAiBusinessDescription(ai.businessDescription);
+      if (ai.contactPhone) setAiContactPhone(ai.contactPhone);
+      if (ai.contactEmail) setAiContactEmail(ai.contactEmail);
+      if (ai.primaryColor) setAiPrimaryColor(ai.primaryColor);
+      if (typeof ai.autoLeadCapture === "boolean") setAiAutoLeadCapture(ai.autoLeadCapture);
+      if (Array.isArray(ai.customFaqs) && ai.customFaqs.length > 0) setAiCustomFaqs(ai.customFaqs);
+    } else {
+      setAiAssistantEnabled(false);
+    }
   };
 
   const hydrateEditorFromState = (state: BioEditorState) => {
@@ -1489,6 +1752,7 @@ export default function BioPagesScreen({
     setEditorCoverPhoto(state.pageMeta.coverImage);
     setEditorCoverSettings(normalizeCoverSettings(state.pageMeta.coverSettings));
     setEditorPageTheme(normalizePageTheme(state.pageMeta.pageTheme));
+    setEditorDeviceScope(state.pageMeta.deviceScope ?? "auto_adaptive");
     setEditorBlocks(cloneBlocks(state.blocks));
     hydrateThankYouFromDetails(null, state);
   };
@@ -1537,6 +1801,7 @@ export default function BioPagesScreen({
     setEditorCoverPhoto(details?.coverPhoto || page.coverPhoto || DEFAULT_COVER);
     setEditorPageTheme(normalizePageTheme(details?.pageTheme ?? readStoredPageTheme(page.id, page.slug)));
     setEditorCoverSettings(normalizeCoverSettings(details?.coverSettings ?? readStoredPageDetails(page.id, page.slug)?.coverSettings));
+    setEditorDeviceScope(details?.deviceScope ?? page.deviceScope ?? "auto_adaptive");
     hydrateThankYouFromDetails(details);
   };
 
@@ -1604,6 +1869,7 @@ export default function BioPagesScreen({
       coverPhoto: editorCoverPhoto,
       handle: editorHandle,
       status: nextStatus,
+      deviceScope: editorDeviceScope,
       isUncommitted: undefined
     });
     return pages.map((page) =>
@@ -1615,6 +1881,7 @@ export default function BioPagesScreen({
             coverPhoto: editorCoverPhoto,
             handle: editorHandle,
             status: nextStatus,
+            deviceScope: editorDeviceScope,
             isUncommitted: undefined
           }
         : page
@@ -1665,9 +1932,13 @@ export default function BioPagesScreen({
       triggerToast(`Draft saved for "${editorTitle}".`);
       onNotify({
         type: "draft_saved",
-        title: "Draft saved",
-        message: `Your edits to "${editorTitle}" were saved.`,
-        targetScreen: ScreenId.BIO_PAGES
+        status: "pending",
+        stage: "before_build",
+        title: "Draft Saved · Pending Publish",
+        message: `Edits to "${editorTitle}" saved to cloud cache. Pending publish to make live on the web.`,
+        targetScreen: ScreenId.BIO_PAGES,
+        actionLabel: "Publish Now",
+        meta: { pageId }
       });
 
       // Best-effort cloud sync in the background (no error toasts).
@@ -1707,6 +1978,50 @@ export default function BioPagesScreen({
 
   const handleDeleteBlock = (id: string) => {
     setCanvasBlocks((prev) => prev.filter((b) => b.id !== id));
+    if (selectedCanvasBlockId === id) {
+      setSelectedCanvasBlockId(null);
+    }
+    if (expandedBlockId === id) {
+      setExpandedBlockId(null);
+    }
+  };
+
+  const handleDuplicateBlock = (blockId: string) => {
+    const blockIndex = canvasBlocks.findIndex((b) => b.id === blockId);
+    if (blockIndex === -1) return;
+    const original = canvasBlocks[blockIndex];
+    const newBlock = {
+      ...JSON.parse(JSON.stringify(original)),
+      id: "block_" + Date.now(),
+      label: `${original.label || original.type} (Copy)`
+    };
+    setCanvasBlocks((prev) => {
+      const next = [...prev];
+      next.splice(blockIndex + 1, 0, newBlock);
+      return next;
+    });
+    setSelectedCanvasBlockId(newBlock.id);
+    setExpandedBlockId(newBlock.id);
+    setStudioNavTab("inspector");
+    setIsDrawerOpen(true);
+    triggerToast(`✨ Duplicated "${original.label || original.type}"!`);
+  };
+
+  const handleMoveBlock = (blockId: string, direction: "up" | "down") => {
+    const index = canvasBlocks.findIndex((b) => b.id === blockId);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= canvasBlocks.length) return;
+    reorderEditorBlocks(index, targetIndex, direction === "up" ? "before" : "after");
+  };
+
+  const handleReorderCanvasBlock = (sourceBlockId: string, targetBlockId: string, position: "before" | "after") => {
+    if (sourceBlockId === targetBlockId) return;
+    const sourceIndex = canvasBlocks.findIndex((b) => b.id === sourceBlockId);
+    const targetIndex = canvasBlocks.findIndex((b) => b.id === targetBlockId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+    reorderEditorBlocks(sourceIndex, targetIndex, position);
+    triggerToast("✨ Component reordered in preview!");
   };
 
   const handleAddBlock = (type: string, atIndex?: number) => {
@@ -1877,6 +2192,146 @@ export default function BioPagesScreen({
         value = "https://meetup.com/event-001";
         extraFields = createDefaultEventFields();
         break;
+      case "Split Hero":
+        label = "Split Hero Banner";
+        value = "Split Hero";
+        extraFields = createDefaultSplitHeroFields();
+        break;
+      case "Video Hero":
+        label = "Video Hero Header";
+        value = "Video Hero";
+        extraFields = createDefaultVideoHeroFields();
+        break;
+      case "Glow Badge":
+        label = "Announce Badge";
+        value = "Glow Badge";
+        extraFields = createDefaultGlowBadgeFields();
+        break;
+      case "Feature Hero":
+        label = "Features Overview";
+        value = "Feature Hero";
+        extraFields = createDefaultFeatureHeroFields();
+        break;
+      case "Toggle Pricing":
+        label = "Monthly / Annual Pricing";
+        value = "Toggle Pricing";
+        extraFields = createDefaultTogglePricingFields();
+        break;
+      case "Product Showcase":
+        label = "Featured Product";
+        value = "Product Showcase";
+        extraFields = createDefaultProductShowcaseFields();
+        break;
+      case "Comparison Table":
+        label = "Feature Comparison";
+        value = "Comparison Table";
+        extraFields = createDefaultComparisonTableFields();
+        break;
+      case "Payment Button":
+        label = "Pay Now Instant";
+        value = "Payment Button";
+        extraFields = createDefaultPaymentButtonFields();
+        break;
+      case "Brand Logos":
+        label = "Trusted Brands Marquee";
+        value = "Brand Logos";
+        extraFields = createDefaultBrandLogosFields();
+        break;
+      case "Star Ratings":
+        label = "Customer Ratings & Reviews";
+        value = "Star Ratings";
+        extraFields = createDefaultStarRatingsFields();
+        break;
+      case "Press Mentions":
+        label = "Featured In Media";
+        value = "Press Mentions";
+        extraFields = createDefaultPressMentionsFields();
+        break;
+      case "Before/After Slider":
+        label = "Before & After Results";
+        value = "Before/After Slider";
+        extraFields = createDefaultBeforeAfterFields();
+        break;
+      case "Portfolio Gallery":
+        label = "Portfolio Showcase";
+        value = "Portfolio Gallery";
+        extraFields = createDefaultPortfolioFields();
+        break;
+      case "Video Showcase":
+        label = "Video Course / Playlist";
+        value = "Video Showcase";
+        extraFields = createDefaultVideoShowcaseFields();
+        break;
+      case "Audio Player":
+        label = "Podcast / Track Player";
+        value = "Audio Player";
+        extraFields = createDefaultAudioPlayerFields();
+        break;
+      case "Multi-Step Form":
+        label = "Multi-Step Lead Wizard";
+        value = "Multi-Step Form";
+        extraFields = createDefaultMultiStepFormFields();
+        break;
+      case "Lead Magnet":
+        label = "Free Ebook Download";
+        value = "Lead Magnet";
+        extraFields = createDefaultLeadMagnetFields();
+        break;
+      case "Meeting Booker":
+        label = "Book a 1-on-1 Call";
+        value = "Meeting Booker";
+        extraFields = createDefaultMeetingBookerFields();
+        break;
+      case "Newsletter Box":
+        label = "Join Email Newsletter";
+        value = "Newsletter Box";
+        extraFields = createDefaultNewsletterFields();
+        break;
+      case "Navbar":
+        label = "Floating Glass Navbar";
+        value = "Navbar";
+        extraFields = createDefaultNavbarFields();
+        break;
+      case "Footer":
+        label = "Modern Page Footer";
+        value = "Footer";
+        extraFields = createDefaultFooterFields();
+        break;
+      case "Main Feature":
+        label = "Core Features Grid";
+        value = "Main Feature";
+        extraFields = createDefaultMainFeatureFields();
+        break;
+      case "Auto Slider":
+        label = "Auto Carousel Slider";
+        value = "Auto Slider";
+        extraFields = createDefaultAutoSliderFields();
+        break;
+      case "Google Form":
+        label = "Inquiry & Google Form";
+        value = "Google Form";
+        extraFields = createDefaultGoogleFormFields();
+        break;
+      case "Flash Offer":
+        label = "Flash Sale Offer";
+        value = "Flash Offer";
+        extraFields = createDefaultFlashOfferFields();
+        break;
+      case "Community Hub":
+        label = "VIP Community Hub";
+        value = "Community Hub";
+        extraFields = createDefaultCommunityHubFields();
+        break;
+      case "YouTube Channel":
+        label = "YouTube Showcase";
+        value = "YouTube Channel";
+        extraFields = createDefaultYouTubeChannelFields();
+        break;
+      case "Instagram Feed":
+        label = "Instagram Photo Grid";
+        value = "Instagram Feed";
+        extraFields = createDefaultInstagramFeedFields();
+        break;
       default:
         label = `New ${type} Block`;
         value = `Value of ${type}`;
@@ -1890,6 +2345,10 @@ export default function BioPagesScreen({
       copy.splice(atIndex, 0, newBlock);
       return copy;
     });
+    setSelectedCanvasBlockId(id);
+    setExpandedBlockId(id);
+    setStudioNavTab("inspector");
+    setIsDrawerOpen(true);
   };
 
   const COLOR_MAP: Record<string, string> = {
@@ -1933,6 +2392,14 @@ export default function BioPagesScreen({
     if (window.confirm(`Delete "${page.title}"? This cannot be undone.`)) {
       onDeletePage(page.id);
       triggerToast(`"${page.title}" was deleted.`);
+      onNotify({
+        type: "page_deleted",
+        status: "canceled",
+        stage: "workspace_activity",
+        title: "Page Deleted",
+        message: `"${page.title}" was permanently removed from your workspace.`,
+        targetScreen: ScreenId.BIO_PAGES
+      });
     }
   };
 
@@ -1947,46 +2414,27 @@ export default function BioPagesScreen({
 
     return (
       <div className="mt-1 flex flex-wrap items-center gap-2 min-w-0">
-        {!link.canOpen ? (
-          <span
-            title={blockedTitle}
-            className={`text-xs font-medium flex items-center gap-1 font-mono min-w-0 max-w-full ${
-              unpublished ? "text-slate-500" : "text-amber-700"
-            }`}
-          >
-            {link.kind === "custom" ? (
-              <Globe className="h-3 w-3 shrink-0" />
-            ) : link.kind === "keys_subdomain" ? (
-              <Sparkles className="h-3 w-3 shrink-0" />
-            ) : (
-              <Link className="h-3 w-3 shrink-0" />
-            )}
-            <span className="truncate">{link.displayLabel}</span>
-          </span>
-        ) : (
-          <a
-            href={link.openUrl}
-            target="_blank"
-            rel="noreferrer"
-            title={link.shareUrl}
-            className={`text-xs font-medium flex items-center gap-1 font-mono hover:underline min-w-0 max-w-full ${
-              link.kind === "custom"
-                ? "text-emerald-700 hover:text-emerald-800"
+        <span
+          title={link.shareUrl || blockedTitle}
+          className={`text-xs font-medium flex items-center gap-1 font-mono min-w-0 max-w-full cursor-default select-text ${
+            unpublished
+              ? "text-slate-400 dark:text-slate-500"
+              : link.kind === "custom"
+                ? "text-emerald-600 dark:text-emerald-400"
                 : link.kind === "keys_subdomain"
-                  ? "text-violet-700 hover:text-violet-800"
-                  : "text-indigo-600 hover:text-indigo-700"
-            }`}
-          >
-            {link.kind === "custom" ? (
-              <Globe className="h-3 w-3 shrink-0" />
-            ) : link.kind === "keys_subdomain" ? (
-              <Sparkles className="h-3 w-3 shrink-0" />
-            ) : (
-              <Link className="h-3 w-3 shrink-0" />
-            )}
-            <span className="truncate">{link.displayLabel}</span>
-          </a>
-        )}
+                  ? "text-violet-600 dark:text-violet-400"
+                  : "text-indigo-600 dark:text-indigo-400"
+          }`}
+        >
+          {link.kind === "custom" ? (
+            <Globe className="h-3 w-3 shrink-0" />
+          ) : link.kind === "keys_subdomain" ? (
+            <Sparkles className="h-3 w-3 shrink-0" />
+          ) : (
+            <Link className="h-3 w-3 shrink-0" />
+          )}
+          <span className="truncate">{link.displayLabel}</span>
+        </span>
         {!unpublished && link.kind === "custom" && (
           <span className={`key-bio-page-link-badge shrink-0 ${link.publicReady ? "" : "key-bio-page-link-badge--pending"}`}>
             {link.publicReady ? "Custom domain" : link.canOpen ? "DNS OK" : "Pending DNS"}
@@ -2003,12 +2451,31 @@ export default function BioPagesScreen({
     const publicLink = resolvePublicLink(page);
     const isSelected = rowOptions?.selection?.checked ?? false;
     const showSelection = Boolean(rowOptions?.selection);
+    const isActionsRevealed = revealedActionRowId === page.id;
+
+    const effectiveScope =
+      page.deviceScope ||
+      readStoredPageDetails(page.id, page.slug)?.deviceScope ||
+      "auto_adaptive";
+
     return (
       <div
         key={page.id}
-        className={`key-list-row min-w-0 ${publicLink.kind === "custom" ? "key-list-row--custom-domain" : publicLink.kind === "keys_subdomain" ? "key-list-row--custom-domain" : ""} ${
-          isSelected ? "key-list-row--selected" : ""
-        } ${showSelection ? "key-list-row--bulk-select" : ""}`}
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (
+            target.closest("button") ||
+            target.closest("input") ||
+            target.closest("label") ||
+            target.closest("a")
+          ) {
+            return;
+          }
+          setRevealedActionRowId((prev) => (prev === page.id ? null : page.id));
+        }}
+        className={`key-list-row min-w-0 cursor-pointer transition-all ${
+          publicLink.kind === "custom" ? "key-list-row--custom-domain" : publicLink.kind === "keys_subdomain" ? "key-list-row--custom-domain" : ""
+        } ${isSelected ? "key-list-row--selected" : ""} ${showSelection ? "key-list-row--bulk-select" : ""}`}
       >
         {showSelection && (
           <label className="key-list-row__select shrink-0">
@@ -2027,13 +2494,40 @@ export default function BioPagesScreen({
             className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center shrink-0 ${
               publicLink.kind === "custom"
                 ? "bg-emerald-500/10 text-emerald-600"
-                : "bg-indigo-500/10 text-indigo-400"
+                : effectiveScope === "all_devices"
+                  ? "bg-amber-500/10 text-amber-600"
+                  : effectiveScope === "mobile_tablet_laptop"
+                    ? "bg-purple-500/10 text-purple-600"
+                    : effectiveScope === "mobile_tablet"
+                      ? "bg-cyan-500/10 text-cyan-600"
+                      : effectiveScope === "mobile_only"
+                        ? "bg-blue-500/10 text-blue-600"
+                        : "bg-indigo-500/10 text-indigo-500"
+            }`}
+            title={`Optimized for: ${
+              effectiveScope === "all_devices"
+                ? "All Devices (Desktop & TV)"
+                : effectiveScope === "mobile_tablet_laptop"
+                  ? "Mobile + Tablets + Laptops"
+                  : effectiveScope === "mobile_tablet"
+                    ? "Mobile + Tablets"
+                    : effectiveScope === "mobile_only"
+                      ? "Mobile Phone Only"
+                      : "Smart Fluid (Universal)"
             }`}
           >
             {publicLink.kind === "custom" ? (
               <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
-            ) : (
+            ) : effectiveScope === "all_devices" ? (
+              <Monitor className="h-5 w-5 sm:h-6 sm:w-6" />
+            ) : effectiveScope === "mobile_tablet_laptop" ? (
+              <Laptop className="h-5 w-5 sm:h-6 sm:w-6" />
+            ) : effectiveScope === "mobile_tablet" ? (
+              <Tablet className="h-5 w-5 sm:h-6 sm:w-6" />
+            ) : effectiveScope === "mobile_only" ? (
               <Smartphone className="h-5 w-5 sm:h-6 sm:w-6" />
+            ) : (
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -2054,9 +2548,30 @@ export default function BioPagesScreen({
               </div>
             ) : (
               <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                <h4 className="font-display font-semibold text-gray-950 text-base truncate">{page.title}</h4>
+                <h4 className="font-display font-semibold text-base truncate" style={{ color: "var(--key-text)" }}>{page.title}</h4>
                 {rowOptions?.showDuplicateBadge && (
                   <span className="key-bio-page-duplicate-badge shrink-0">Duplicate</span>
+                )}
+                {effectiveScope === "all_devices" ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                    🖥️ All Devices
+                  </span>
+                ) : effectiveScope === "mobile_tablet_laptop" ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20 shrink-0">
+                    💻 Laptop Ready
+                  </span>
+                ) : effectiveScope === "mobile_tablet" ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 shrink-0">
+                    📟 Mobile + Tablet
+                  </span>
+                ) : effectiveScope === "mobile_only" ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20 shrink-0">
+                    📱 Phone Only
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20 shrink-0">
+                    🌐 Universal
+                  </span>
                 )}
                 <button onClick={() => startEditing(page)} className="text-gray-400 hover:text-gray-600">
                   <Edit3 className="h-3.5 w-3.5" />
@@ -2067,125 +2582,162 @@ export default function BioPagesScreen({
           </div>
         </div>
 
-        <div className={`flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:justify-end ${showSelection ? "" : "pl-14 lg:pl-0"}`}>
-          <span
-            className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-              page.status === "Live"
-                ? "bg-emerald-50 text-emerald-600"
-                : page.status === "Paused"
-                  ? "bg-amber-50 text-amber-700"
-                  : "bg-slate-100 text-slate-600"
-            }`}
-          >
-            {page.status}
-          </span>
+        {/* Right side: In-place Slider Reveal */}
+        <div className={`key-thunder-slider-wrap w-full lg:w-auto lg:flex-nowrap lg:shrink-0 ${showSelection ? "" : "pl-14 lg:pl-0"}`}>
+          {!isActionsRevealed ? (
+            /* Normal State: 3 Options (Views, Date, Live) - NO 3-dots button */
+            <div
+              className="key-thunder-slider-stats flex items-center gap-3 sm:gap-4 lg:gap-5"
+              title="Click anywhere to reveal page action keys"
+            >
+              {/* 1st: Views */}
+              <div className="text-center shrink-0 w-[56px]">
+                <span className="font-display font-bold text-2xl block leading-none" style={{ color: "var(--key-text)" }}>{page.views}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider block mt-1" style={{ color: "var(--key-text-muted)" }}>Views</span>
+              </div>
 
-          <div className="text-center">
-            <span className="font-display font-bold text-2xl text-gray-950 block leading-none">{page.views}</span>
-            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider block mt-1">Views</span>
-          </div>
+              {/* 2nd: Created Date - exactly 2 lines: date on line 1, CREATED on line 2 */}
+              <div className="text-center hidden sm:block shrink-0 w-[86px]">
+                <span className="font-sans font-medium text-xs font-mono block leading-none whitespace-nowrap" style={{ color: "var(--key-text-muted)" }}>{page.createdAt}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider block mt-1" style={{ color: "var(--key-text-muted)" }}>Created</span>
+              </div>
 
-          <div className="text-center hidden sm:block">
-            <span className="font-sans font-medium text-gray-500 text-xs font-mono block leading-none">{page.createdAt}</span>
-            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider block mt-1">Created</span>
-          </div>
+              {/* 3rd: Status / Live Badge */}
+              <div className="shrink-0 w-[74px] flex justify-center">
+                {page.status === "Live" ? (
+                  <span className="key-thunder-status-live">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    Live
+                  </span>
+                ) : page.status === "Paused" ? (
+                  <span className="key-thunder-status-paused">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    Paused
+                  </span>
+                ) : (
+                  <span className="key-thunder-status-draft">
+                    <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                    Draft
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Active Slider State: 3 Options hide, 7 Action Keys slide in smoothly! */
+            <div
+              className="key-thunder-slider-actions"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="key-thunder-row-actions">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedAnalyticsPage(page);
+                  }}
+                  title={`Analytics — ${page.title}`}
+                  className="key-thunder-action-btn key-thunder-action-btn--analytics"
+                >
+                  <BarChart2 className="h-4.5 w-4.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    openEditor(page);
+                  }}
+                  title="Edit Studio"
+                  className="key-thunder-action-btn key-thunder-action-btn--edit"
+                >
+                  <Edit3 className="h-4.5 w-4.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDuplicatePage(page.id);
+                  }}
+                  title="Duplicate Page"
+                  className="key-thunder-action-btn key-thunder-action-btn--duplicate"
+                >
+                  <Layers className="h-4.5 w-4.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedQRPage(page);
+                    setQrColor("Default");
+                    setQrForeground("#000000");
+                    setQrBackground("#FFFFFF");
+                    setQrDesign("Squares");
+                    setHasLogo(false);
+                  }}
+                  title={`QR Code Studio — ${page.title}`}
+                  className="key-thunder-action-btn key-thunder-action-btn--qr"
+                >
+                  <QrCode className="h-4.5 w-4.5" />
+                </button>
+                {publicLink.canOpen ? (
+                  <a
+                    href={publicLink.openUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Open Live Public Link"
+                    className="key-thunder-action-btn key-thunder-action-btn--open"
+                  >
+                    <ExternalLink className="h-4.5 w-4.5" />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    title="Publish this page before visitors can open it"
+                    className="key-thunder-action-btn opacity-30 cursor-not-allowed"
+                  >
+                    <ExternalLink className="h-4.5 w-4.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (page.status !== "Live") {
+                      triggerToast("Publish this page before sharing the public link.");
+                      return;
+                    }
+                    void copyText(publicLink.shareUrl, "Public shareable link copied!");
+                  }}
+                  title="Copy Public Share Link"
+                  className={`key-thunder-action-btn ${
+                    page.status !== "Live"
+                      ? "opacity-40 hover:opacity-70"
+                      : "key-thunder-action-btn--share"
+                  }`}
+                >
+                  <Copy className="h-4.5 w-4.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    confirmDeletePage(page);
+                  }}
+                  title="Delete Bio Page"
+                  className="key-thunder-action-btn key-thunder-action-btn--delete"
+                >
+                  <Trash2 className="h-4.5 w-4.5" />
+                </button>
+              </div>
 
-          <div className="grid grid-cols-7 gap-0.5 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-sm w-full max-w-[320px] sm:max-w-none sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-1 mx-auto sm:mx-0">
-            <button
-              type="button"
-              onClick={() => setSelectedAnalyticsPage(page)}
-              title={`Analytics — ${page.title}`}
-              className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-[#6366f1] transition-all flex items-center justify-center"
-            >
-              <BarChart2 className="h-4.5 w-4.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => openEditor(page)}
-              title="Edit"
-              className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-[#6366f1] transition-all flex items-center justify-center"
-            >
-              <Edit3 className="h-4.5 w-4.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => onDuplicatePage(page.id)}
-              title="Duplicate"
-              className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-[#6366f1] transition-all flex items-center justify-center"
-            >
-              <Layers className="h-4.5 w-4.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedQRPage(page);
-                setQrColor("Default");
-                setQrForeground("#000000");
-                setQrBackground("#FFFFFF");
-                setQrDesign("Squares");
-                setHasLogo(false);
-              }}
-              title={`QR — ${page.title}`}
-              className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-[#6366f1] transition-all flex items-center justify-center"
-            >
-              <QrCode className="h-4.5 w-4.5" />
-            </button>
-            {publicLink.canOpen && (
-              <a
-                href={publicLink.openUrl}
-                target="_blank"
-                rel="noreferrer"
-                title="Open (visit page)"
-                className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-[#6366f1] transition-all flex items-center justify-center"
-              >
-                <ExternalLink className="h-4.5 w-4.5" />
-              </a>
-            )}
-            {!publicLink.canOpen && (
+              {/* Slider close key button */}
               <button
                 type="button"
-                disabled
-                title={
-                  page.status !== "Live"
-                    ? "Publish this page before visitors can open it"
-                    : "This link is not ready to open yet"
-                }
-                className="p-2 rounded-lg text-slate-300 cursor-not-allowed flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRevealedActionRowId(null);
+                }}
+                title="Close action keys (back to stats)"
+                className="p-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 text-slate-400 hover:text-[var(--key-text)] transition-all cursor-pointer"
               >
-                <ExternalLink className="h-4.5 w-4.5" />
+                <X className="h-4 w-4" />
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                if (page.status !== "Live") {
-                  triggerToast("Publish this page before sharing the public link.");
-                  return;
-                }
-                void copyText(publicLink.shareUrl, "Public shareable link copied!");
-              }}
-              title={
-                page.status !== "Live"
-                  ? "Publish this page before sharing"
-                  : "Copy Public Share Link (WhatsApp & Mobile)"
-              }
-              className={`p-2 hover:bg-white rounded-lg transition-all flex items-center justify-center ${
-                page.status !== "Live"
-                  ? "text-slate-300 hover:text-slate-400"
-                  : "text-slate-500 hover:text-emerald-600"
-              }`}
-            >
-              <Copy className="h-4.5 w-4.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => confirmDeletePage(page)}
-              title="Delete"
-              className="p-2 hover:bg-white rounded-lg text-slate-500 hover:text-rose-600 transition-all flex items-center justify-center"
-            >
-              <Trash2 className="h-4.5 w-4.5" />
-            </button>
-          </div>
+            </div>
+          )}
         </div>
         </div>
       </div>
@@ -2213,6 +2765,14 @@ export default function BioPagesScreen({
     // Back / close without Save Draft or Publish — do not keep a Bio Pages history row
     if (discardPageId) {
       onDeletePage(discardPageId);
+      onNotify({
+        type: "general",
+        status: "canceled",
+        stage: "before_build",
+        title: "Editor Session Canceled",
+        message: `Uncommitted session for "${selectedEditPage?.title || "Page"}" was canceled and discarded.`,
+        targetScreen: ScreenId.BIO_PAGES
+      });
     }
   };
 
@@ -2304,6 +2864,17 @@ export default function BioPagesScreen({
     setIsCreating(false);
     triggerToast(`✨ "${newlyCreatedPage.title}" created · Page ID: ${newlyCreatedPage.id}`);
 
+    onNotify({
+      type: "page_created",
+      status: "proceed",
+      stage: "before_build",
+      title: "Site Initialized · Ready to Build",
+      message: `"${newlyCreatedPage.title}" created. 50+ pro blocks and responsive canvas ready.`,
+      targetScreen: ScreenId.BIO_PAGES,
+      actionLabel: "Edit in Studio",
+      meta: { pageId: newlyCreatedPage.id }
+    });
+
     setTimeout(() => {
       openEditor(newlyCreatedPage);
     }, 50);
@@ -2390,6 +2961,15 @@ export default function BioPagesScreen({
     }
 
     setIsPublishing(true);
+    onNotify({
+      type: "general",
+      status: "processing",
+      stage: "building",
+      title: "Building Site Assets",
+      message: `Compiling ${editorBlocks.length} block(s), responsive layout (${editorDeviceScope}), and deploying to cloud CDN...`,
+      targetScreen: ScreenId.BIO_PAGES,
+      meta: { pageId: selectedEditPage.id }
+    });
     try {
       const pageId = selectedEditPage.id;
       const pageSlug = selectedEditPage.slug;
@@ -2435,12 +3015,15 @@ export default function BioPagesScreen({
 
       onNotify({
         type: "page_published",
-        title: "Page published",
+        status: "completed",
+        stage: "after_publish",
+        title: "Site Published & Live",
         message:
           details.paymentEnabled && details.paymentAmountInr
-            ? `"${editorTitle}" is live · Form Pay ₹${details.paymentAmountInr} enabled.`
-            : `"${editorTitle}" is now live.`,
+            ? `"${editorTitle}" is live and delivered to public visitors · Form Pay ₹${details.paymentAmountInr} enabled.`
+            : `"${editorTitle}" is live and delivered across ${editorDeviceScope.replace(/_/g, " ")}.`,
         targetScreen: ScreenId.BIO_PAGES,
+        actionLabel: "Open Live Site",
         meta: { pageId }
       });
       setShowPublishSuccess(true);
@@ -2491,23 +3074,42 @@ export default function BioPagesScreen({
         subtitle={`Create link pages to share on Instagram, WhatsApp & business cards · ${historyPages.length} page${historyPages.length !== 1 ? "s" : ""}`}
         actions={
           <>
-          <button
-            onClick={handleRefresh}
-              className="key-btn-secondary btn-swipe-secondary px-4 py-2.5"
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            <span>Refresh</span>
-          </button>
-          <button
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="flex items-center gap-2 border border-gray-200 hover:bg-gray-50 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors bg-white dark:bg-[var(--key-surface)] dark:border-[var(--key-border)] dark:text-[var(--key-text)] shadow-sm cursor-pointer"
+            >
+              <RefreshCw className={`h-4.5 w-4.5 text-gray-400 ${isRefreshing ? "animate-spin" : ""}`} />
+              <span>Refresh</span>
+            </button>
+            <button
+              type="button"
               onClick={() => openCreatePageModal()}
-              className="key-btn-accent btn-swipe px-5 py-2.5"
-          >
-            <Plus className="h-4 w-4" />
-            <span>New Page</span>
-          </button>
+              className="flex items-center gap-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl px-5 py-2.5 text-sm font-semibold shadow-md shadow-indigo-100 dark:shadow-none transition-all active:scale-95 cursor-pointer"
+            >
+              <Plus className="h-4.5 w-4.5" />
+              <span>New Bio Page</span>
+            </button>
           </>
         }
       />
+
+      <div data-aos="fade-up" className="mb-6">
+        <StatCardGrid>
+          <StatCard label="TOTAL" value={historyPages.length} sub="all-time" />
+          <StatCard
+            label="TOTAL VIEWS"
+            value={pages.reduce((acc, p) => acc + (Number(p.views) || 0), 0).toLocaleString()}
+            sub="across all pages"
+          />
+          <StatCard
+            label="LIVE PAGES"
+            value={pages.filter((p) => p.status === "Live").length}
+            sub="published"
+          />
+          <StatCard label="CUSTOM DOMAINS" value={customDomainPages.length} sub="connected" />
+        </StatCardGrid>
+      </div>
 
       {/* Creation Modal/Dialog — portaled so backdrop covers navbar (PageShell z-index trap) */}
       {isAdding &&
@@ -3059,7 +3661,7 @@ export default function BioPagesScreen({
       {/* 2nd - High-fidelity full-page Editor Modal exactly matching the builder screen with sidebar and live interactive preview in pristine Light Mode */}
       {selectedEditPage &&
         createPortal(
-        <div className={`key-bio-editor-portal key-theme-${theme}`}>
+        <div className={`key-bio-editor-portal key-theme-${currentUiTheme}`} data-theme={currentUiTheme}>
           <div className="key-bg-clouds" aria-hidden>
             <span className="key-bg-cloud key-bg-cloud--1" />
             <span className="key-bg-cloud key-bg-cloud--2" />
@@ -3067,210 +3669,223 @@ export default function BioPagesScreen({
             <span className="key-bg-cloud key-bg-cloud--4" />
             <span className="key-bg-cloud key-bg-cloud--5" />
           </div>
-        <div className="key-bio-editor-shell flex flex-col h-full min-h-0 animate-in fade-in duration-200">
-          {/* Editor Header — same fixed height as main app navbar */}
-          <header className="key-app-navbar key-glass-header key-editor-header shrink-0">
-            <div className="key-editor-header__left">
-              <button
-                type="button"
-                onClick={closeEditor}
-                className="key-editor-back-btn shrink-0"
-                aria-label="Go back"
-                title="Back"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
-              <span className="key-editor-header__divider" aria-hidden />
-              <div className="key-editor-header__brand min-w-0">
-                <span className="key-editor-header__domain shrink-0">keylink360</span>
-                <span className="key-editor-header__slash shrink-0">/</span>
-                  <input
-                  ref={editorTitleInputRef}
-                    type="text"
-                    value={editorTitle}
-                    onChange={(e) => setEditorTitle(e.target.value)}
-                  className="key-editor-header__title-input min-w-0"
-                  aria-label="Page title"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    editorTitleInputRef.current?.focus();
-                    editorTitleInputRef.current?.select();
-                  }}
-                  className="key-editor-header__edit-btn shrink-0"
-                  aria-label="Edit page title"
-                  title="Edit page title"
-                >
-                  <Edit3 className="h-3.5 w-3.5 key-editor-header__edit-icon" aria-hidden />
-                </button>
-              </div>
-            </div>
-
-            <div className="key-editor-header__center">
-              <div className="key-editor-tab-switch" role="tablist" aria-label="Editor mode">
-              <button
-                  type="button"
-                  role="tab"
-                  aria-selected={editorTab === "Edit"}
-                onClick={() => {
-                  setEditorTab("Edit");
-                  setShowThanksPage(false);
-                  setExpandedBlockId(null);
-                }}
-                  className={editorTab === "Edit" ? "is-active" : ""}
-              >
-                Edit
-              </button>
-              <button
-                  type="button"
-                  role="tab"
-                  aria-selected={editorTab === "Thank You"}
-                onClick={() => {
-                  setEditorTab("Thank You");
-                  setExpandedBlockId(null);
-                }}
-                  className={editorTab === "Thank You" ? "is-active" : ""}
-              >
-                Thank You
-              </button>
-              <button
-                  type="button"
-                  role="tab"
-                  aria-selected={editorTab === "Settings"}
-                onClick={() => {
-                  setEditorTab("Settings");
-                  setShowThanksPage(false);
-                }}
-                  className={editorTab === "Settings" ? "is-active" : ""}
-              >
-                Settings
-              </button>
-              </div>
-            </div>
-
-            <div className="key-editor-header__right">
-              <button
-                type="button"
-                onClick={handleSaveAsTemplate}
-                className="key-editor-nav-btn key-editor-nav-btn--template"
-              >
-                Save as Template
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveDraft}
-                disabled={isSavingDraft}
-                className="key-editor-nav-btn key-editor-nav-btn--draft"
-              >
-                {isSavingDraft ? (
-                  <Loader className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Save className="h-3.5 w-3.5" />
-                )}
-                <span>{isSavingDraft ? "Saving…" : "Save Draft"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handlePublishEditor}
-                disabled={isPublishing}
-                aria-busy={isPublishing}
-                className="key-editor-nav-btn key-editor-nav-btn--primary"
-              >
-                {isPublishing ? (
-                  <Loader className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                <Save className="h-3.5 w-3.5" />
-                )}
-                <span>{isPublishing ? "Publishing…" : "Publish"}</span>
-              </button>
-            </div>
-          </header>
-
-          {(editorTab === "Edit" || editorTab === "Thank You") && !showPublishSuccess && (
-            <div className="lg:hidden key-editor-subnav px-2 sm:px-3 py-2 shrink-0">
-              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1">
-                {(
-                  [
-                    { id: "blocks" as const, label: "Blocks", icon: LayoutGrid },
-                    { id: "edit" as const, label: "Edit", icon: Edit3 },
-                    { id: "preview" as const, label: "Preview", icon: Eye }
-                  ] as const
-                ).map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setEditorViewPanel(id)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition-all ${
-                      editorViewPanel === id
-                        ? "bg-white text-slate-900 shadow-sm border border-slate-200/50"
-                        : "text-slate-500 hover:text-slate-900"
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Editor Body */}
-          <div className="key-editor-body flex-1 overflow-hidden flex flex-col lg:flex-row-reverse min-h-0">
-            {/* Main: Block library + Page editor */}
-            <div
-              className={`key-editor-body__main flex-1 overflow-hidden min-h-0 min-w-0 flex flex-col ${
-                editorViewPanel === "preview" ? "hidden lg:block" : "block"
-              }`}
+        <div className="key-studio-shell animate-in fade-in duration-200">
+          {/* UNIFIED SINGLE STUDIO LEFT SIDEBAR WITH SMOOTH SLIDING PANELS */}
+          {isSidebarOpen && !isPreviewOnlyMode && (
+            <aside
+              className="key-studio-sidebar flex flex-col h-full shrink-0 border-r border-slate-800/80 bg-slate-950/95 backdrop-blur-2xl z-30 transition-all duration-300 relative overflow-hidden text-slate-100 w-full min-w-full max-w-full md:w-[380px] md:min-w-[380px] md:max-w-[380px]"
+              onClick={(e) => e.stopPropagation()}
             >
-              {showPublishSuccess ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center text-emerald-800 animate-in fade-in zoom-in-95 duration-300">
-                  <Check className="h-10 w-10 mx-auto mb-2 bg-emerald-500 text-white p-2 rounded-full shadow-lg" />
-                  <h4 className="font-bold text-base">BioLink Page Published Successfully!</h4>
-                  <p className="text-xs text-emerald-600 mt-1">
-                    Changes are live at:{" "}
-                    {selectedEditPageLink && (
-                    <a
-                        href={selectedEditPageLink.openUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                        className={`underline font-bold ml-1 ${
-                          selectedEditPageLink.kind === "custom"
-                            ? "text-emerald-700 hover:text-emerald-800"
-                            : "text-[#6366f1] hover:text-[#7c3aed]"
-                        }`}
-                      >
-                        {selectedEditPageLink.displayLabel}
-                      </a>
-                    )}
-                  </p>
-                  {import.meta.env.DEV && selectedEditPageLink?.kind === "custom" ? (
-                    <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-3 text-left">
-                      Localhost publish synced to cloud. If the custom domain still shows an old
-                      theme/blocks, the live server needs the latest deploy — then hard-refresh the
-                      public page (Ctrl+Shift+R).
-                    </p>
-                  ) : null}
-                  <div className="mt-4 flex flex-col items-center justify-center gap-2">
-                    <button
-                      onClick={() => {
-                        if (!selectedEditPageLink) return;
-                        void copyText(selectedEditPageLink.shareUrl, "🔗 Public shareable link copied!");
-                      }}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-4 rounded-xl text-xs transition-colors shadow-sm"
-                    >
-                      Copy Public Share Link (for WhatsApp)
-                    </button>
+            {studioNavTab === "menu" ? (
+              /* LEVEL 1: MAIN MENU SLIDING VIEW */
+              <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-left-4 duration-200 overflow-hidden">
+                {/* Header: Back & Live badge */}
+                <div className="key-studio-sidebar__header p-3.5 border-b border-slate-800/80 shrink-0">
+                  <div className="flex items-center justify-between gap-2 mb-3">
                     <button
                       type="button"
-                      onClick={exitEditor}
-                      className="text-xs font-bold text-emerald-700 hover:underline"
+                      onClick={closeEditor}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700/80 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                      title="Back to Bio Pages"
                     >
-                      Done
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <span>Back</span>
+                    </button>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-2xs">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>Editor Live</span>
+                    </span>
+                  </div>
+
+                  {/* Heading: keylink360 / [title] */}
+                  <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/90 border border-slate-700/80 rounded-xl focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all shadow-inner">
+                    <span className="text-xs font-semibold text-slate-400 select-none font-mono">keylink360/</span>
+                    <input
+                      ref={editorTitleInputRef}
+                      type="text"
+                      value={editorTitle}
+                      onChange={(e) => setEditorTitle(e.target.value)}
+                      className="key-studio-title-input flex-1 min-w-0 !bg-transparent text-xs font-bold !text-white placeholder-slate-500 focus:outline-none !border-none !shadow-none !ring-0"
+                      style={{ background: "transparent", backgroundColor: "transparent", border: "none", boxShadow: "none", color: "#ffffff", outline: "none" }}
+                      placeholder="page-title"
+                      aria-label="Page Title"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => editorTitleInputRef.current?.focus()}
+                      className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+                      title="Edit title"
+                    >
+                      <Edit3 className="h-3 w-3" />
                     </button>
                   </div>
+
+                  {/* Main Actions: Publish, Save Draft, Save as Template */}
+                  <div className="mt-3.5 space-y-2">
+                    <button
+                      type="button"
+                      onClick={handlePublishEditor}
+                      disabled={isPublishing}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+                    >
+                      {isPublishing ? (
+                        <Loader className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Save className="h-3.5 w-3.5" />
+                      )}
+                      <span>{isPublishing ? "Publishing Site..." : "Publish Website"}</span>
+                    </button>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveDraft}
+                        disabled={isSavingDraft}
+                        className="py-2 px-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm disabled:opacity-60 cursor-pointer"
+                      >
+                        {isSavingDraft ? <Loader className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3 text-indigo-400" />}
+                        <span>{isSavingDraft ? "Saving…" : "Save Draft"}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveAsTemplate}
+                        className="py-2 px-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer"
+                      >
+                        <LayoutTemplate className="h-3 w-3 text-amber-400" />
+                        <span>Save Template</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ) : editorTab === "Settings" ? (
+
+                {/* Sidebar Navigation Section Tiles */}
+                <nav className="key-studio-sidebar__nav flex-1 overflow-y-auto p-2.5 space-y-1.5 no-scrollbar">
+                  {[
+                    { id: "library" as const, label: "Add Blocks", desc: "Buttons, Forms, Media & 50+ Pro widgets", icon: LayoutGrid, count: "50+ Pro", badgeColor: "bg-indigo-500/20 text-indigo-300" },
+                    { id: "layers" as const, label: "Structure Tree", desc: "Reorder & manage placed page blocks", icon: Layers, count: `${canvasBlocks.length}`, badgeColor: "bg-indigo-500/20 text-indigo-300" },
+                    { id: "inspector" as const, label: "Block Inspector", desc: "Styles, typography, colors & spacing", icon: Edit3, count: selectedCanvasBlockId ? "Active" : null, badgeColor: "bg-emerald-500/20 text-emerald-300" },
+                    { id: "theme" as const, label: "Design & Themes", desc: "Palettes, fonts, shadows & glass covers", icon: Palette, count: null },
+                    { id: "thanks" as const, label: "Thank You Page", desc: "Post-submit confirmation screen", icon: CheckCircle, count: null },
+                    { id: "settings" as const, label: "Page Settings", desc: "SEO, Meta tags, Razorpay & analytics", icon: Settings, count: null },
+                    { id: "drafts" as const, label: "Saved Templates & Drafts", desc: "Restore snapshots & reusable layouts", icon: BookmarkCheck, count: savedDrafts.length > 0 ? `${savedDrafts.length}` : null }
+                  ].map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => {
+                          setStudioNavTab(tab.id);
+                          if (tab.id === "thanks") {
+                            setEditorTab("Thank You");
+                            setShowThanksPage(true);
+                          } else if (tab.id === "settings") {
+                            setEditorTab("Settings");
+                            setShowThanksPage(false);
+                          } else {
+                            setEditorTab("Edit");
+                            setShowThanksPage(false);
+                          }
+                        }}
+                        className="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/70 hover:border-indigo-500/40 text-left transition-all hover:scale-[1.01] active:scale-[0.99] group cursor-pointer shadow-xs"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="p-2 rounded-xl bg-slate-800/90 group-hover:bg-indigo-600/20 border border-slate-700/60 group-hover:border-indigo-500/30 text-slate-300 group-hover:text-indigo-400 transition-colors shrink-0">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-slate-200 group-hover:text-white truncate">{tab.label}</span>
+                              {tab.count && (
+                                <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-md ${tab.badgeColor || "bg-slate-800 text-slate-400"}`}>
+                                  {tab.count}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-400 truncate mt-0.5">{tab.desc}</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                      </button>
+                    );
+                  })}
+                </nav>
+
+                {/* Mobile & Small Tablet Full Screen Live Preview Switcher Button */}
+                <div className="p-2.5 px-3 border-t border-slate-800/80 bg-slate-900/95 md:hidden shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPreviewOnlyMode(true);
+                      setIsSidebarOpen(false);
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  >
+                    <Eye className="h-4 w-4 text-cyan-200 animate-pulse" />
+                    <span>Live Page Preview</span>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/30 border border-white/20 ml-1">
+                      Full View
+                    </span>
+                  </button>
+                </div>
+
+                {/* Single Sidebar Footer */}
+                <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                    <span className="text-[11px] font-medium text-slate-400">Keys-Link Studio v360</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">Pro Editor</span>
+                </div>
+              </div>
+            ) : (
+              /* LEVEL 2: ACTIVE TOOL SLIDING VIEW (Replaces 2nd Sidebar) */
+              <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-right-4 duration-200 overflow-hidden">
+                {/* Sliding Header with [← Menu] back button and tool name */}
+                <div className="p-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/80 shrink-0 gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStudioNavTab("menu");
+                        setShowThanksPage(false);
+                        setEditorTab("Edit");
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-indigo-300 hover:text-white text-xs font-bold border border-slate-700/80 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+                      title="Return to Main Menu"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <span>Menu</span>
+                    </button>
+
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200 truncate">
+                      {studioNavTab === "library" && "🚀 Add Blocks"}
+                      {studioNavTab === "layers" && `📑 Structure (${canvasBlocks.length})`}
+                      {studioNavTab === "inspector" && "✏️ Block Inspector"}
+                      {studioNavTab === "theme" && "🎨 Themes & Styling"}
+                      {studioNavTab === "thanks" && "🎉 Thank You Page"}
+                      {studioNavTab === "settings" && "⚙️ Page Settings"}
+                      {studioNavTab === "drafts" && "💾 Saved Templates"}
+                    </h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStudioNavTab("menu");
+                      setShowThanksPage(false);
+                      setEditorTab("Edit");
+                    }}
+                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0"
+                    title="Close Panel and return to Menu"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Scrollable Tool Content */}
+                <div className="flex-1 overflow-y-auto p-3.5 space-y-4 no-scrollbar">
+                {studioNavTab === "settings" && (
                 <div className="max-w-xl mx-auto key-workspace key-workspace--stack w-full">
                   <h3 className="font-display font-bold text-xl text-slate-900">Page Settings</h3>
                   <div className="key-editor-panel key-workspace-panel key-workspace-panel--stack shadow-sm">
@@ -3369,85 +3984,458 @@ export default function BioPagesScreen({
                       ) : null}
                     </div>
 
-                    {/* Drafts & Recovery List */}
+                    {/* AI Sales & Support Assistant (Live Chatbot) */}
                     <div className="pt-4 border-t border-slate-100 space-y-3.5">
-                      <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-widest block">
-                        Drafts & Recovery
-                      </span>
-                      {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).length === 0 ? (
-                        <p className="text-xs text-slate-400 font-medium leading-relaxed">No saved drafts for this session yet. Click "Save Draft" in the top bar to create one.</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).map((draft) => (
-                            <div key={draft.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
-                              <div className="min-w-0">
-                                <span className="text-xs font-bold block text-slate-800 truncate">{getDraftDisplayName(draft)}</span>
-                                <span className="text-[9px] text-slate-400 block font-mono">{getDraftBlockCount(draft)} block{getDraftBlockCount(draft) !== 1 ? "s" : ""} saved</span>
-                              </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-widest flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-cyan-500" />
+                            AI Sales & Support Assistant (Live Chat)
+                          </span>
+                          <span className="text-[10px] text-slate-500 block mt-0.5">
+                            24/7 AI Sales Agent on your public bio website (100% Free)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsGuideModalOpen(true)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-700 text-[10px] font-bold border border-cyan-500/20 transition-colors cursor-pointer mt-1"
+                          >
+                            <BookOpen className="w-3 h-3 text-cyan-600" />
+                            <span>📖 Setup Tutorial (English / தமிழ் / हिन्दी)</span>
+                          </button>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={aiAssistantEnabled}
+                          onChange={(e) => setAiAssistantEnabled(e.target.checked)}
+                          className="rounded border-slate-200 bg-slate-50 accent-cyan-600 h-5 w-5 cursor-pointer"
+                        />
+                      </div>
+
+                      {aiAssistantEnabled && (
+                        <div className="space-y-3.5 bg-cyan-50/50 p-3.5 rounded-2xl border border-cyan-200/60 animate-in fade-in duration-150">
+                          <div>
+                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
+                              Bot Name / Persona
+                            </label>
+                            <input
+                              type="text"
+                              value={aiBotName}
+                              onChange={(e) => setAiBotName(e.target.value)}
+                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
+                              placeholder="e.g., Sales Assistant, Maya, Support Bot"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
+                              Welcome Greeting Message
+                            </label>
+                            <textarea
+                              value={aiWelcomeMessage}
+                              onChange={(e) => setAiWelcomeMessage(e.target.value)}
+                              rows={2}
+                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900 resize-none"
+                              placeholder="👋 Hi! Welcome to our store. How can I assist you today?"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-[11px] text-slate-700 font-bold mb-1">
+                                Business / Brand Name
+                              </label>
+                              <input
+                                type="text"
+                                value={aiBusinessName}
+                                onChange={(e) => setAiBusinessName(e.target.value)}
+                                className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
+                                placeholder={editorTitle || "Your Brand Name"}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] text-slate-700 font-bold mb-1">
+                                WhatsApp Contact (for Quick Links)
+                              </label>
+                              <input
+                                type="tel"
+                                value={aiContactPhone}
+                                onChange={(e) => setAiContactPhone(e.target.value)}
+                                className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
+                                placeholder="e.g. +91 9876543210"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
+                              Business Description & Offerings Knowledge
+                            </label>
+                            <textarea
+                              value={aiBusinessDescription}
+                              onChange={(e) => setAiBusinessDescription(e.target.value)}
+                              rows={3}
+                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900 resize-none"
+                              placeholder="Describe your products, pricing packages, store hours, return policy, and services so the AI gives accurate answers..."
+                            />
+                          </div>
+
+                          {/* Custom FAQs */}
+                          <div className="space-y-2 pt-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold text-slate-800">
+                                Custom FAQs & Instant Answers
+                              </span>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  hydrateEditorFromState(draft.data);
-                                  triggerToast(`✨ Restored editor blocks to draft "${getDraftDisplayName(draft)}"!`);
-                                }}
-                                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors shadow-sm"
+                                onClick={() =>
+                                  setAiCustomFaqs((prev) => [
+                                    ...prev,
+                                    { question: "", answer: "" }
+                                  ])
+                                }
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-600 hover:text-cyan-700"
                               >
-                                Restore
+                                <Plus className="h-3 w-3" />
+                                <span>Add FAQ</span>
                               </button>
                             </div>
-                          ))}
+
+                            {aiCustomFaqs.map((faq, idx) => (
+                              <div
+                                key={idx}
+                                className="p-2.5 bg-white border border-slate-200 rounded-xl space-y-1.5 relative group"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <input
+                                    type="text"
+                                    value={faq.question}
+                                    onChange={(e) => {
+                                      const updated = [...aiCustomFaqs];
+                                      updated[idx].question = e.target.value;
+                                      setAiCustomFaqs(updated);
+                                    }}
+                                    placeholder="Question (e.g. What is the refund policy?)"
+                                    className="flex-1 text-xs font-semibold text-slate-900 border-b border-slate-100 focus:border-cyan-500 focus:outline-none py-1"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setAiCustomFaqs((prev) =>
+                                        prev.filter((_, i) => i !== idx)
+                                      )
+                                    }
+                                    className="text-slate-400 hover:text-rose-500 p-1"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
+                                <textarea
+                                  value={faq.answer}
+                                  onChange={(e) => {
+                                    const updated = [...aiCustomFaqs];
+                                    updated[idx].answer = e.target.value;
+                                    setAiCustomFaqs(updated);
+                                  }}
+                                  rows={2}
+                                  placeholder="Answer..."
+                                  className="w-full text-xs text-slate-600 focus:outline-none resize-none pt-1"
+                                />
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="flex items-center justify-between py-1 border-t border-cyan-200/60 pt-2">
+                            <div>
+                              <span className="text-xs font-bold block text-slate-800">
+                                Auto Lead Capture to CRM
+                              </span>
+                              <span className="text-[10px] text-slate-500 block">
+                                Automatically save visitor phone numbers into Contacts
+                              </span>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={aiAutoLeadCapture}
+                              onChange={(e) => setAiAutoLeadCapture(e.target.checked)}
+                              className="rounded border-slate-200 bg-white accent-cyan-600 h-4.5 w-4.5"
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
+
+                    {/* Target Devices & Responsive Layout Scope */}
+                    <div className="pt-4 border-t border-slate-100 space-y-3">
+                      <div>
+                        <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-widest block">
+                          Target Devices & Responsive Layout
+                        </span>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Choose which device viewports this site is optimized for when published.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          {
+                            id: "auto_adaptive" as const,
+                            title: "Smart Fluid (Recommended)",
+                            desc: "Automatically adapts fluidly across Mobile, Tablet, Laptop & Desktop screens.",
+                            badge: "Universal",
+                            badgeColor: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                          },
+                          {
+                            id: "mobile_only" as const,
+                            title: "Mobile Only (Classic Bio-Link)",
+                            desc: "Locks content in a centered mobile phone column (max 480px) on all screens.",
+                            badge: "Mobile First",
+                            badgeColor: "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                          },
+                          {
+                            id: "mobile_tablet" as const,
+                            title: "Mobile + Tablets",
+                            desc: "Optimized for phones and iPads/tablets (up to 768px width).",
+                            badge: "Handheld",
+                            badgeColor: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20"
+                          },
+                          {
+                            id: "mobile_tablet_laptop" as const,
+                            title: "Mobile + Tablets + Laptops",
+                            desc: "Expands for laptops and MacBooks (up to 1024px width).",
+                            badge: "Laptop Ready",
+                            badgeColor: "bg-purple-500/10 text-purple-600 border-purple-500/20"
+                          },
+                          {
+                            id: "all_devices" as const,
+                            title: "All Devices (Desktop & Smart TV)",
+                            desc: "Full-width modern website view up to 1320px+ for large displays & Smart TVs.",
+                            badge: "Ultra-Wide",
+                            badgeColor: "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                          }
+                        ].map((option) => {
+                          const isSelected = editorDeviceScope === option.id;
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => {
+                                setEditorDeviceScope(option.id);
+                                triggerToast(`Target layout set to: ${option.title}`);
+                              }}
+                              className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 ${
+                                isSelected
+                                  ? "bg-indigo-50/60 border-indigo-500 shadow-sm ring-1 ring-indigo-500/20"
+                                  : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                              }`}
+                            >
+                              <div className="space-y-0.5 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-xs font-bold ${isSelected ? "text-indigo-950" : "text-slate-800"}`}>
+                                    {option.title}
+                                  </span>
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${option.badgeColor}`}>
+                                    {option.badge}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 leading-snug">
+                                  {option.desc}
+                                </p>
+                              </div>
+                              <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected ? "border-indigo-600 bg-indigo-600" : "border-slate-300 bg-white"
+                              }`}>
+                                {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="key-editor-body__grid">
-                  {/* Block Library */}
-                  <div
-                    className={`key-editor-zone key-editor-zone--blocks ${
-                      editorViewPanel === "blocks" ? "block" : "hidden"
-                    } lg:block`}
-                    >
-                    <div className="key-editor-zone__head">
-                      <LayoutGrid className="h-3.5 w-3.5" />
-                      {editingThankYouPage ? "Thank You Block Library" : "Block Library"}
+              )}
+
+              {/* DRAFTS & RECOVERY PANEL */}
+              {studioNavTab === "drafts" && (
+                <div className="key-workspace key-workspace--stack w-full">
+                  <h3 className="font-display font-bold text-base text-slate-900">Saved Templates & Drafts</h3>
+                  <div className="key-editor-panel key-workspace-panel key-workspace-panel--stack shadow-sm">
+                    <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-widest block">
+                      Drafts & Recovery
+                    </span>
+                    {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).length === 0 ? (
+                      <p className="text-xs text-slate-400 font-medium leading-relaxed">No saved drafts for this session yet. Click "Save Draft" in the left sidebar to create one.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).map((draft) => (
+                          <div key={draft.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
+                            <div className="min-w-0">
+                              <span className="text-xs font-bold block text-slate-800 truncate">{getDraftDisplayName(draft)}</span>
+                              <span className="text-[9px] text-slate-400 block font-mono">{getDraftBlockCount(draft)} block{getDraftBlockCount(draft) !== 1 ? "s" : ""} saved</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                hydrateEditorFromState(draft.data);
+                                triggerToast(`✨ Restored editor blocks to draft "${getDraftDisplayName(draft)}"!`);
+                              }}
+                              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors shadow-sm"
+                            >
+                              Restore
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* BLOCK LIBRARY PANEL */}
+              {studioNavTab === "library" && (
+                <div className="space-y-3.5 key-editor-zone key-editor-zone--blocks w-full">
+                  {/* Search and Category Filter Pills */}
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={blockLibrarySearch}
+                        onChange={(e) => setBlockLibrarySearch(e.target.value)}
+                        placeholder="Search 50+ pro developer blocks..."
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8.5 pr-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition-colors"
+                      />
                     </div>
-                    <div className="key-editor-zone__body key-workspace--stack no-scrollbar">
+
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                      {[
+                        { id: "all", label: "All (50+)" },
+                        { id: "hero", label: "🚀 Hero" },
+                        { id: "commerce", label: "💎 Commerce" },
+                        { id: "social", label: "🌟 Social" },
+                        { id: "media", label: "🎬 Media" },
+                        { id: "forms", label: "📝 Forms" },
+                        { id: "core", label: "⚡ Core" }
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setBlockLibraryCategory(cat.id)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all ${
+                            blockLibraryCategory === cat.id
+                              ? "bg-indigo-600 text-white shadow-2xs"
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="key-editor-zone__body key-workspace--stack no-scrollbar">
+                    {/* 1. Hero & Headlines */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "hero") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3">
-                        Core Blocks
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>🚀 Modern Hero & Navigation</span>
+                        <span className="text-[9px] text-[#6366f1] font-bold bg-indigo-50 px-1.5 py-0.5 rounded">Pro Hero</span>
                       </span>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Button")}
-                          onClick={() => handleAddBlock("Button")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
+                          onDragStart={(e) => handleDragStartBlockType(e, "Navbar")}
+                          onClick={() => handleAddBlock("Navbar")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Floating glass navigation bar with logo, links, CTA"
                         >
                           <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🔗
+                            🧭
                           </span>
                           <div>
-                            <span className="text-xs font-bold block text-slate-800">Button</span>
-                            <span className="text-[9px] text-slate-400 block">Interactive links</span>
+                            <span className="text-xs font-bold block text-slate-800">Navbar</span>
+                            <span className="text-[9px] text-slate-400 block">Glass floating bar</span>
                           </div>
                         </button>
 
                         <button
                           draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Text")}
-                          onClick={() => handleAddBlock("Text")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
+                          onDragStart={(e) => handleDragStartBlockType(e, "Split Hero")}
+                          onClick={() => handleAddBlock("Split Hero")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Split headline + visual hero banner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            📝
+                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🚀
                           </span>
                           <div>
-                            <span className="text-xs font-bold block text-slate-800">Text</span>
-                            <span className="text-[9px] text-slate-400 block">Formatted content</span>
+                            <span className="text-xs font-bold block text-slate-800">Split Hero</span>
+                            <span className="text-[9px] text-slate-400 block">SaaS split hero</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Main Feature")}
+                          onClick={() => handleAddBlock("Main Feature")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="High-converting 4-feature highlight grid"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🔥
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Main Feature</span>
+                            <span className="text-[9px] text-slate-400 block">4-pillar grid</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Video Hero")}
+                          onClick={() => handleAddBlock("Video Hero")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Full cinematic video hero with overlay CTA"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎬
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Video Hero</span>
+                            <span className="text-[9px] text-slate-400 block">Cinematic reel</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Glow Badge")}
+                          onClick={() => handleAddBlock("Glow Badge")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Animated glowing pill announcement"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ✨
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Glow Badge</span>
+                            <span className="text-[9px] text-slate-400 block">Glowing news pill</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Feature Hero")}
+                          onClick={() => handleAddBlock("Feature Hero")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="3-pillar feature hero overview"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ⚡
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Feature Hero</span>
+                            <span className="text-[9px] text-slate-400 block">3-feature pillars</span>
                           </div>
                         </button>
 
@@ -3456,53 +4444,149 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Header")}
                           onClick={() => handleAddBlock("Header")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             H1
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Header</span>
-                            <span className="text-[9px] text-slate-400 block">Bold title headers</span>
+                            <span className="text-[9px] text-slate-400 block">Section title</span>
                           </div>
                         </button>
 
                         <button
                           draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Socials")}
-                          onClick={() => handleAddBlock("Socials")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
+                          onDragStart={(e) => handleDragStartBlockType(e, "Banner")}
+                          onClick={() => handleAddBlock("Banner")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🌐
+                          <span className="h-8 w-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📢
                           </span>
                           <div>
-                            <span className="text-xs font-bold block text-slate-800">Socials</span>
-                            <span className="text-[9px] text-slate-400 block">Social media links</span>
+                            <span className="text-xs font-bold block text-slate-800">Banner</span>
+                            <span className="text-[9px] text-slate-400 block">Notice & alert</span>
                           </div>
                         </button>
                       </div>
                     </div>
+                    )}
 
+                    {/* 2. Pricing & Commerce */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "commerce") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3">
-                        Growth & Sales
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>💳 Pricing & Commerce</span>
+                        <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">High ROI</span>
                       </span>
                       <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Flash Offer")}
+                          onClick={() => handleAddBlock("Flash Offer")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Flash offer with countdown timer and 1-click coupon copy"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ⚡
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Flash Offer</span>
+                            <span className="text-[9px] text-slate-400 block">50% promo sale</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Toggle Pricing")}
+                          onClick={() => handleAddBlock("Toggle Pricing")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Monthly vs Yearly toggle pricing table"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ⚖️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Toggle Pricing</span>
+                            <span className="text-[9px] text-slate-400 block">Mo / Yr toggle</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Product Showcase")}
+                          onClick={() => handleAddBlock("Product Showcase")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Featured product box with badge & urgency"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📦
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Showcase</span>
+                            <span className="text-[9px] text-slate-400 block">Featured product</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Comparison Table")}
+                          onClick={() => handleAddBlock("Comparison Table")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Plan feature comparison matrix"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📊
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Compare Matrix</span>
+                            <span className="text-[9px] text-slate-400 block">Feature matrix</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Payment Button")}
+                          onClick={() => handleAddBlock("Payment Button")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Instant payment checkout button"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💳
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Pay Button</span>
+                            <span className="text-[9px] text-slate-400 block">Direct checkout</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Pricing")}
+                          onClick={() => handleAddBlock("Pricing")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💰
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Pricing Cards</span>
+                            <span className="text-[9px] text-slate-400 block">Plan tiers</span>
+                          </div>
+                        </button>
+
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Shop")}
                           onClick={() => handleAddBlock("Shop")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             🛒
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Shop</span>
-                            <span className="text-[9px] text-slate-400 block">Sell physical items</span>
+                            <span className="text-[9px] text-slate-400 block">Catalogue & cart</span>
                           </div>
                         </button>
 
@@ -3511,14 +4595,392 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Coupon")}
                           onClick={() => handleAddBlock("Coupon")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             🎟️
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Coupon</span>
-                            <span className="text-[9px] text-slate-400 block">Offer promo codes</span>
+                            <span className="text-[9px] text-slate-400 block">Promo codes</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    )}
+
+                    {/* 3. Social Proof & Community */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "social") && (
+                    <div className="key-editor-blocks-palette">
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>🌟 Social Proof & Community</span>
+                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded">Trust</span>
+                      </span>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Community Hub")}
+                          onClick={() => handleAddBlock("Community Hub")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="VIP WhatsApp/Discord community with online badge and perks"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💬
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Community</span>
+                            <span className="text-[9px] text-slate-400 block">WhatsApp / Discord</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Brand Logos")}
+                          onClick={() => handleAddBlock("Brand Logos")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Animated client and partner logo marquee"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🏢
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Brand Logos</span>
+                            <span className="text-[9px] text-slate-400 block">Marquee logos</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Star Ratings")}
+                          onClick={() => handleAddBlock("Star Ratings")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Star rating badge with user avatar pile"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ⭐
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Star Ratings</span>
+                            <span className="text-[9px] text-slate-400 block">5★ review badge</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Press Mentions")}
+                          onClick={() => handleAddBlock("Press Mentions")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Press & media review quotes"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📰
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Press Mentions</span>
+                            <span className="text-[9px] text-slate-400 block">Media quotes</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Testimonials")}
+                          onClick={() => handleAddBlock("Testimonials")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💬
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Testimonials</span>
+                            <span className="text-[9px] text-slate-400 block">Client reviews</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Stats")}
+                          onClick={() => handleAddBlock("Stats")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📊
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Stats</span>
+                            <span className="text-[9px] text-slate-400 block">Key numbers</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    )}
+
+                    {/* 4. Interactive Media & Feeds */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "media") && (
+                    <div className="key-editor-blocks-palette">
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>🎨 Interactive Media & Feeds</span>
+                        <span className="text-[9px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded">Visual</span>
+                      </span>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Auto Slider")}
+                          onClick={() => handleAddBlock("Auto Slider")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Autoplay image carousel slider with arrows & dots"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎠
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Auto Slider</span>
+                            <span className="text-[9px] text-slate-400 block">Carousel slides</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "YouTube Channel")}
+                          onClick={() => handleAddBlock("YouTube Channel")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="YouTube channel header with video player & subscribe CTA"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🔴
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">YouTube</span>
+                            <span className="text-[9px] text-slate-400 block">Channel & video</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Instagram Feed")}
+                          onClick={() => handleAddBlock("Instagram Feed")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="4-photo Instagram grid with follow button"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📸
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Instagram</span>
+                            <span className="text-[9px] text-slate-400 block">Photo grid feed</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Before/After Slider")}
+                          onClick={() => handleAddBlock("Before/After Slider")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Interactive touch & mouse comparison slider"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ↔️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Before/After</span>
+                            <span className="text-[9px] text-slate-400 block">Compare slider</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Portfolio Gallery")}
+                          onClick={() => handleAddBlock("Portfolio Gallery")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Filterable category portfolio showcase"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💼
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Portfolio</span>
+                            <span className="text-[9px] text-slate-400 block">Filterable work</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Video Showcase")}
+                          onClick={() => handleAddBlock("Video Showcase")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Video player with chapter playlist"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📺
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Video Playlist</span>
+                            <span className="text-[9px] text-slate-400 block">Course chapters</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Audio Player")}
+                          onClick={() => handleAddBlock("Audio Player")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Podcast & track player with Spotify/Apple links"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎙️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Podcast Player</span>
+                            <span className="text-[9px] text-slate-400 block">Audio player</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Gallery")}
+                          onClick={() => handleAddBlock("Gallery")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🖼️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Gallery</span>
+                            <span className="text-[9px] text-slate-400 block">Image grid</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Video")}
+                          onClick={() => handleAddBlock("Video")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎥
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Video</span>
+                            <span className="text-[9px] text-slate-400 block">Stream video</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Music")}
+                          onClick={() => handleAddBlock("Music")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎵
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Music</span>
+                            <span className="text-[9px] text-slate-400 block">Sound track</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Image")}
+                          onClick={() => handleAddBlock("Image")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🖼️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Image</span>
+                            <span className="text-[9px] text-slate-400 block">Single image</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    )}
+
+                    {/* 5. Conversion & Forms */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "forms") && (
+                    <div className="key-editor-blocks-palette">
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>⚡ Conversion & Forms</span>
+                        <span className="text-[9px] text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded">Leads</span>
+                      </span>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Google Form")}
+                          onClick={() => handleAddBlock("Google Form")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Google Form embed or native interactive feedback questionnaire"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📋
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Google Form</span>
+                            <span className="text-[9px] text-slate-400 block">Embed & questionnaire</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Multi-Step Form")}
+                          onClick={() => handleAddBlock("Multi-Step Form")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Interactive 3-step lead wizard with progress bar"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🧙‍♂️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Multi-Step Form</span>
+                            <span className="text-[9px] text-slate-400 block">3-step wizard</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Lead Magnet")}
+                          onClick={() => handleAddBlock("Lead Magnet")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Free PDF / eBook download card"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🎁
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Lead Magnet</span>
+                            <span className="text-[9px] text-slate-400 block">Free download</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Meeting Booker")}
+                          onClick={() => handleAddBlock("Meeting Booker")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Calendly meeting scheduler card"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🗓️
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Meeting Booker</span>
+                            <span className="text-[9px] text-slate-400 block">Calendly 1-on-1</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Newsletter Box")}
+                          onClick={() => handleAddBlock("Newsletter Box")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Email capture newsletter subscription"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💌
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Newsletter</span>
+                            <span className="text-[9px] text-slate-400 block">Email opt-in</span>
                           </div>
                         </button>
 
@@ -3527,7 +4989,6 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Countdown")}
                           onClick={() => handleAddBlock("Countdown")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             ⏱️
@@ -3540,49 +5001,16 @@ export default function BioPagesScreen({
 
                         <button
                           draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Deep Link")}
-                          onClick={() => handleAddBlock("Deep Link")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            ⚡
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Deep Link</span>
-                            <span className="text-[9px] text-slate-400 block">App redirections</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Link Spin")}
                           onClick={() => handleAddBlock("Link Spin")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             🎡
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Link Spin</span>
-                            <span className="text-[9px] text-slate-400 block">Lucky spinner wheel</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "WhatsApp")}
-                          onClick={() => handleAddBlock("WhatsApp")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            💬
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">WhatsApp</span>
-                            <span className="text-[9px] text-slate-400 block">Direct chat campaign</span>
+                            <span className="text-[9px] text-slate-400 block">Lucky spinner</span>
                           </div>
                         </button>
 
@@ -3591,14 +5019,13 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Smart Form")}
                           onClick={() => handleAddBlock("Smart Form")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-[#EEF2FF] text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             📋
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Smart Form</span>
-                            <span className="text-[9px] text-slate-400 block">Gather lead info</span>
+                            <span className="text-[9px] text-slate-400 block">Email leads</span>
                           </div>
                         </button>
 
@@ -3607,15 +5034,14 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Form")}
                           onClick={() => handleAddBlock("Form")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             📝
                           </span>
                           <div>
-                            <span className="text-xs font-bold block text-slate-800">Form</span>
-                            <span className="text-[9px] text-slate-400 block">Custom dynamic fields</span>
-                      </div>
+                            <span className="text-xs font-bold block text-slate-800">Custom Form</span>
+                            <span className="text-[9px] text-slate-400 block">Contact fields</span>
+                          </div>
                         </button>
 
                         <button
@@ -3623,7 +5049,6 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "FAQ")}
                           onClick={() => handleAddBlock("FAQ")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             ❓
@@ -3631,61 +5056,108 @@ export default function BioPagesScreen({
                           <div>
                             <span className="text-xs font-bold block text-slate-800">FAQ</span>
                             <span className="text-[9px] text-slate-400 block">Q&A accordion</span>
-                    </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Testimonials")}
-                          onClick={() => handleAddBlock("Testimonials")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            💬
-                          </span>
-                    <div>
-                            <span className="text-xs font-bold block text-slate-800">Testimonials</span>
-                            <span className="text-[9px] text-slate-400 block">Customer quotes</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Tip Jar")}
-                          onClick={() => handleAddBlock("Tip Jar")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            ☕
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Tip Jar</span>
-                            <span className="text-[9px] text-slate-400 block">Support / donate links</span>
                           </div>
                         </button>
                       </div>
                     </div>
+                    )}
 
+                    {/* 6. Core, Connect & Footer */}
+                    {(blockLibraryCategory === "all" || blockLibraryCategory === "core") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3">
-                        Engage & Convert
+                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
+                        <span>🔗 Core, Connect & Footer</span>
+                        <span className="text-[9px] text-slate-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded">Essential</span>
                       </span>
                       <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Footer")}
+                          onClick={() => handleAddBlock("Footer")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          title="Modern clean footer with brand, copyright and links"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-slate-900 text-slate-200 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🦶
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Footer</span>
+                            <span className="text-[9px] text-slate-400 block">Multi-link footer</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Button")}
+                          onClick={() => handleAddBlock("Button")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🔗
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Button</span>
+                            <span className="text-[9px] text-slate-400 block">Action link</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Deep Link")}
+                          onClick={() => handleAddBlock("Deep Link")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ⚡
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Deep Link</span>
+                            <span className="text-[9px] text-slate-400 block">App redirect</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "WhatsApp")}
+                          onClick={() => handleAddBlock("WhatsApp")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            💬
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">WhatsApp</span>
+                            <span className="text-[9px] text-slate-400 block">Direct chat</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Socials")}
+                          onClick={() => handleAddBlock("Socials")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            🌐
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Socials</span>
+                            <span className="text-[9px] text-slate-400 block">Social handles</span>
+                          </div>
+                        </button>
+
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Call")}
                           onClick={() => handleAddBlock("Call")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             📞
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Call</span>
-                            <span className="text-[9px] text-slate-400 block">Tap-to-call button</span>
+                            <span className="text-[9px] text-slate-400 block">Tap to call</span>
                           </div>
                         </button>
 
@@ -3694,172 +5166,28 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Email")}
                           onClick={() => handleAddBlock("Email")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             ✉️
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Email</span>
-                            <span className="text-[9px] text-slate-400 block">Mailto contact button</span>
+                            <span className="text-[9px] text-slate-400 block">Mailto button</span>
                           </div>
                         </button>
 
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Banner")}
-                          onClick={() => handleAddBlock("Banner")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            📢
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Banner</span>
-                            <span className="text-[9px] text-slate-400 block">Announcements & offers</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Stats")}
-                          onClick={() => handleAddBlock("Stats")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            📊
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Stats</span>
-                            <span className="text-[9px] text-slate-400 block">Social proof numbers</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Pricing")}
-                          onClick={() => handleAddBlock("Pricing")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            💰
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Pricing</span>
-                            <span className="text-[9px] text-slate-400 block">Dynamic plan cards</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3">
-                        Media
-                      </span>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Video")}
-                          onClick={() => handleAddBlock("Video")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🎥
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Video</span>
-                            <span className="text-[9px] text-slate-400 block">Play video streams</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Music")}
-                          onClick={() => handleAddBlock("Music")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🎵
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Music</span>
-                            <span className="text-[9px] text-slate-400 block">Audio tracks/music</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Gallery")}
-                          onClick={() => handleAddBlock("Gallery")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🖼️
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Gallery</span>
-                            <span className="text-[9px] text-slate-400 block">Image gallery</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "PDF")}
-                          onClick={() => handleAddBlock("PDF")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            📄
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">PDF</span>
-                            <span className="text-[9px] text-slate-400 block">Download documents</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Image")}
-                          onClick={() => handleAddBlock("Image")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
-                        >
-                          <span className="h-8 w-8 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
-                            🖼️
-                          </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Image</span>
-                            <span className="text-[9px] text-slate-400 block">Single image + link</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3">
-                        Other
-                      </span>
-                      <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "vCard")}
                           onClick={() => handleAddBlock("vCard")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             🪪
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">vCard</span>
-                            <span className="text-[9px] text-slate-400 block">Save contact details</span>
+                            <span className="text-[9px] text-slate-400 block">Save contact</span>
                           </div>
                         </button>
 
@@ -3868,14 +5196,13 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Events")}
                           onClick={() => handleAddBlock("Events")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             📅
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Events</span>
-                            <span className="text-[9px] text-slate-400 block">Meetups & RSVP events</span>
+                            <span className="text-[9px] text-slate-400 block">Meetup RSVP</span>
                           </div>
                         </button>
 
@@ -3884,14 +5211,58 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Map")}
                           onClick={() => handleAddBlock("Map")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             📍
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Map</span>
-                            <span className="text-[9px] text-slate-400 block">Location & directions</span>
+                            <span className="text-[9px] text-slate-400 block">Google Maps</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Tip Jar")}
+                          onClick={() => handleAddBlock("Tip Jar")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            ☕
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Tip Jar</span>
+                            <span className="text-[9px] text-slate-400 block">Donations & tips</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "PDF")}
+                          onClick={() => handleAddBlock("PDF")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📄
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">PDF</span>
+                            <span className="text-[9px] text-slate-400 block">Document file</span>
+                          </div>
+                        </button>
+
+                        <button
+                          draggable={true}
+                          onDragStart={(e) => handleDragStartBlockType(e, "Text")}
+                          onClick={() => handleAddBlock("Text")}
+                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                        >
+                          <span className="h-8 w-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                            📝
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold block text-slate-800">Text</span>
+                            <span className="text-[9px] text-slate-400 block">Paragraph</span>
                           </div>
                         </button>
 
@@ -3900,18 +5271,18 @@ export default function BioPagesScreen({
                           onDragStart={(e) => handleDragStartBlockType(e, "Divider")}
                           onClick={() => handleAddBlock("Divider")}
                           className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Drag this block to the Manager or Live Preview, or click to add"
                         >
                           <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                             —
                           </span>
                           <div>
                             <span className="text-xs font-bold block text-slate-800">Divider</span>
-                            <span className="text-[9px] text-slate-400 block">Spacing & separators</span>
+                            <span className="text-[9px] text-slate-400 block">Separator line</span>
                           </div>
                         </button>
                       </div>
                     </div>
+                    )}
 
                     {/* Saved Templates & Session Drafts in Editor Sidebar */}
                     {(savedTemplates.length > 0 || savedDrafts.length > 0) && (
@@ -3976,63 +5347,175 @@ export default function BioPagesScreen({
                     )}
                     </div>
                   </div>
+                )}
 
-                  {/* Page Editor: Cover + Accordions */}
-                  <div
-                    className={`key-editor-zone key-editor-zone--compose ${
-                      editorViewPanel === "edit" ? "block" : "hidden"
-                    } lg:block`}
-                    >
-                    <div className="key-editor-zone__head key-editor-zone__head--with-actions">
-                      <div className="key-editor-zone__head-main">
-                        <Edit3 className="h-3.5 w-3.5" />
-                        {editingThankYouPage ? "Thank You Editor" : "Page Editor"}
+                {/* THEME & COVER PANEL */}
+                {studioNavTab === "theme" && (
+                  <div className="space-y-4 w-full">
+                    {/* Visual Studio Theme Mode Selector (7 Circular Modes) */}
+                    <div className="key-editor-panel p-3 rounded-2xl border shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Palette className="h-3.5 w-3.5 text-indigo-400" />
+                          <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-200">
+                            Visual Theme Modes ({ALL_THEMES.length})
+                          </h4>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsStudioPersonalizationOpen(true)}
+                          className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer"
+                        >
+                          Studio View →
+                        </button>
                       </div>
-                      {!editingThankYouPage ? (
-                      <button
-                        type="button"
-                        className="key-editor-blocks-lock-btn"
-                        aria-pressed={coverSectionLocked}
-                        aria-label={
-                          coverSectionLocked
-                            ? "Unlock Cover Image & Header"
-                            : "Lock Cover Image & Header"
-                        }
-                        title={
-                          coverSectionLocked
-                            ? "Unlock to show Cover Image & Header"
-                            : "Lock to hide Cover Image & Header and focus on Page Blocks"
-                        }
-                        onClick={() => {
-                          setCoverSectionLocked((locked) => !locked);
-                        }}
-                      >
-                        {coverSectionLocked ? (
-                          <Unlock className="h-3.5 w-3.5" aria-hidden />
-                        ) : (
-                          <Lock className="h-3.5 w-3.5" aria-hidden />
-                        )}
-                        <span>{coverSectionLocked ? "Show header" : "Hide header"}</span>
-                      </button>
-                      ) : (
-                        <span className="text-[10px] font-bold text-[#ec4899] uppercase tracking-wider">
-                          After form submit
-                        </span>
-                      )}
+
+                      <div className="flex items-center justify-between gap-1.5 pt-0.5 px-0.5">
+                        {ALL_THEMES.map((th) => {
+                          const isThActive = currentUiTheme === th.id;
+                          return (
+                            <div key={th.id} className="relative group flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={() => handleApplyStudioTheme(th.id)}
+                                className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full border transition-all duration-150 flex items-center justify-center cursor-pointer shadow-sm relative ${
+                                  isThActive
+                                    ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-900 scale-110 border-white"
+                                    : "border-white/20 hover:border-white/60 hover:scale-105 opacity-85 hover:opacity-100"
+                                }`}
+                                style={{ background: th.previewBg }}
+                                title={th.name}
+                                aria-label={th.name}
+                              >
+                                {isThActive && (
+                                  <span className="w-3.5 h-3.5 rounded-full bg-slate-950/70 text-emerald-400 flex items-center justify-center text-[8px] font-black drop-shadow">
+                                    ✓
+                                  </span>
+                                )}
+                              </button>
+                              {/* Hover Tooltip: Very small text */}
+                              <span className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-1.5 py-0.5 rounded bg-slate-950 text-[8px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                                {th.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div
-                      ref={composeScrollRef}
-                      className={`key-editor-zone__body key-editor-compose-scroll no-scrollbar ${
-                        coverSectionLocked ? "key-editor-compose-scroll--blocks-focus" : ""
-                      }`}
-                    >
-                    <div
-                      className={`key-editor-compose-stack ${
-                        coverSectionLocked ? "key-editor-compose-stack--blocks-focus" : ""
-                      }`}
-                    >
-                    {/* COVER IMAGE & BIO CARD — hidden when locked; Thank You uses hero meta instead */}
-                    {editingThankYouPage ? (
+
+                    <div className="key-editor-panel key-editor-cover-panel p-5 shadow-sm space-y-6">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="key-editor-section-label">
+                          Cover Image & Header
+                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <CoverPhotoControls
+                            settings={editorCoverSettings}
+                            onChange={setEditorCoverSettings}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCoverUrlDraft(
+                                editorCoverPhoto.startsWith("data:") ? DEFAULT_COVER : editorCoverPhoto
+                              );
+                              setShowCoverUrlModal(true);
+                            }}
+                            className="key-cover-url-edit-btn"
+                            aria-label="Edit custom cover photo URL"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" aria-hidden />
+                            <span className="key-cover-url-edit-btn__tooltip">Custom cover photo URL</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Dropzone/Preview Frame */}
+                      <div className="relative key-editor-cover-panel__frame-wrap group">
+                        <CoverPhotoView
+                          src={
+                            editorCoverPhoto ||
+                            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"
+                          }
+                          alt="Cover Banner"
+                          settings={editorCoverSettings}
+                          variant="editor"
+                          className="key-editor-cover-panel__frame"
+                        />
+                        
+                        {/* Hidden File Input */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleCoverPhotoUpload}
+                          id="cover-photo-file-upload-center"
+                          className="hidden"
+                        />
+                        
+                        {/* Overlay trigger for Drag & Drop / Browse */}
+                        <label
+                          htmlFor="cover-photo-file-upload-center"
+                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-xs font-bold gap-1.5 p-4 text-center"
+                        >
+                          <span className="text-xl">📷</span>
+                          <span>Drop cover photo or browse</span>
+                          <span className="text-[9px] font-normal opacity-75">Supports PNG, JPG, GIF up to 5MB</span>
+                        </label>
+                      </div>
+
+                      {/* Title, handle & bio */}
+                      <div className="grid grid-cols-1 gap-3.5 key-editor-cover-panel__fields">
+                        <div>
+                          <label className="key-editor-form-label">Biolink Title</label>
+                          <input
+                            type="text"
+                            value={editorTitle}
+                            onChange={(e) => setEditorTitle(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-sm font-bold text-slate-800"
+                            placeholder="My BioLink"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="key-editor-form-label">Page Handle (@watermark)</label>
+                          <div className="key-editor-handle-field flex items-center gap-2 bg-slate-50 border border-slate-200 focus-within:border-[#6366f1] rounded-xl px-3.5">
+                            <span className="text-sm font-bold text-slate-400 shrink-0 select-none" aria-hidden>
+                              @
+                            </span>
+                            <input
+                              type="text"
+                              value={editorHandle}
+                              onChange={(e) => setEditorHandle(normalizeHandleInput(e.target.value))}
+                              className="key-editor-handle-field__input flex-1 min-w-0 bg-transparent border-0 focus:outline-none focus:ring-0 py-2.5 text-sm font-semibold text-slate-800 font-mono placeholder:text-slate-400"
+                              placeholder={handlePlaceholder}
+                              aria-label="Page handle"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="key-editor-form-label">Short Bio</label>
+                          <textarea
+                            value={editorBio}
+                            onChange={(e) => setEditorBio(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-xs text-slate-600 resize-none"
+                            placeholder="Write a short bio..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="key-editor-form-label">Theme Style</label>
+                          <BioPageThemePicker value={editorPageTheme} onChange={handlePreviewThemeChange} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* THANK YOU PAGE HERO */}
+                {studioNavTab === "thanks" && (
+                  <div className="space-y-4 w-full">
                     <div className="key-editor-panel key-editor-cover-panel p-5 shadow-sm space-y-4 border border-pink-100">
                       <div>
                         <span className="key-editor-section-label text-[#ec4899]">Thank You page</span>
@@ -4073,124 +5556,164 @@ export default function BioPagesScreen({
                         />
                       </div>
                     </div>
-                    ) : !coverSectionLocked && (
-                    <div className="key-editor-panel key-editor-cover-panel p-5 shadow-sm space-y-6">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="key-editor-section-label">
-                          Cover Image & Header
-                        </span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <CoverPhotoControls
-                            settings={editorCoverSettings}
-                            onChange={setEditorCoverSettings}
-                          />
+                  </div>
+                )}
+
+                {/* 1. STRUCTURE TREE TAB (Bricks Builder DOM Outline Panel) */}
+                {studioNavTab === "layers" && (
+                  <div className="space-y-3.5 w-full">
+                    <BuilderStructureTree
+                      blocks={canvasBlocks as BioEditorBlock[]}
+                      selectedBlockId={expandedBlockId || selectedCanvasBlockId}
+                      onSelectBlock={(id) => {
+                        setSelectedCanvasBlockId(id);
+                        setExpandedBlockId(id);
+                        setStudioNavTab("inspector");
+                        const el = document.getElementById(`editor-block-${id}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }}
+                      onMoveUp={(idx) => {
+                        if (idx > 0) reorderEditorBlocks(idx, idx - 1);
+                      }}
+                      onMoveDown={(idx) => {
+                        if (idx < canvasBlocks.length - 1) reorderEditorBlocks(idx, idx + 1);
+                      }}
+                      onDuplicate={handleDuplicateBlock}
+                      onDelete={handleDeleteBlock}
+                      onToggleHidden={handleToggleBlockHidden}
+                      onToggleLock={handleToggleBlockLock}
+                      getBlockIcon={getBlockIcon}
+                    />
+                  </div>
+                )}
+
+                {/* 2. BLOCK INSPECTOR (DUAL TAB: CONTENT & STYLE - Bricks Builder Style) */}
+                {studioNavTab === "inspector" && (
+                  <div className="space-y-3.5 w-full">
+                    {expandedBlockId ? (
+                      <>
+                        {/* Inspector Quick Info Banner */}
+                        <div className="p-3 bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800 rounded-2xl mb-1 flex items-center justify-between">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                            <div className="min-w-0">
+                              <span className="text-xs font-bold text-indigo-950 dark:text-indigo-100 block truncate">
+                                {canvasBlocks.find((b) => b.id === expandedBlockId)?.label || "Active Block"}
+                              </span>
+                              <span className="text-[9px] text-indigo-500 font-mono uppercase block">
+                                {canvasBlocks.find((b) => b.id === expandedBlockId)?.type || "Inspector"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleBlockLock(expandedBlockId)}
+                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
+                              title="Lock / Unlock component (Blocks Edit)"
+                            >
+                              {Boolean(canvasBlocks.find((b) => b.id === expandedBlockId)?.isLocked || (canvasBlocks.find((b) => b.id === expandedBlockId)?.styles as any)?.isLocked) ? (
+                                <Lock className="h-3.5 w-3.5 text-amber-500" />
+                              ) : (
+                                <Unlock className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleBlockHidden(expandedBlockId)}
+                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
+                              title="Hide / Show component"
+                            >
+                              {Boolean(canvasBlocks.find((b) => b.id === expandedBlockId)?.isHidden || (canvasBlocks.find((b) => b.id === expandedBlockId)?.styles as any)?.isHidden) ? (
+                                <EyeOff className="h-3.5 w-3.5 text-amber-500" />
+                              ) : (
+                                <Eye className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDuplicateBlock(expandedBlockId)}
+                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
+                              title="Duplicate block"
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteBlock(expandedBlockId)}
+                              className="p-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-slate-500 hover:text-rose-600 transition-colors shadow-2xs"
+                              title="Delete block"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Dual Tab Switcher: Content vs Style */}
+                        <div className="grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
                           <button
                             type="button"
-                            onClick={() => {
-                              setCoverUrlDraft(
-                                editorCoverPhoto.startsWith("data:") ? DEFAULT_COVER : editorCoverPhoto
-                              );
-                              setShowCoverUrlModal(true);
-                            }}
-                            className="key-cover-url-edit-btn"
-                            aria-label="Edit custom cover photo URL"
+                            onClick={() => setInspectorTab("content")}
+                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                              inspectorTab === "content"
+                                ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm"
+                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            }`}
                           >
-                            <Edit3 className="h-3.5 w-3.5" aria-hidden />
-                            <span className="key-cover-url-edit-btn__tooltip">Custom cover photo URL</span>
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Content</span>
                           </button>
-                          <span className="key-editor-section-badge">
-                          Live Editing
-                        </span>
+                          <button
+                            type="button"
+                            onClick={() => setInspectorTab("style")}
+                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                              inspectorTab === "style"
+                                ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm"
+                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            }`}
+                          >
+                            <Sliders className="w-3.5 h-3.5" />
+                            <span>Style (Bricks CSS)</span>
+                          </button>
                         </div>
-                      </div>
 
-                      {/* Dropzone/Preview Frame */}
-                      <div className="relative key-editor-cover-panel__frame-wrap group">
-                        <CoverPhotoView
-                          src={
-                            editorCoverPhoto ||
-                            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"
-                          }
-                          alt="Cover Banner"
-                          settings={editorCoverSettings}
-                          variant="editor"
-                          className="key-editor-cover-panel__frame"
-                        />
-                        
-                        {/* Hidden File Input */}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleCoverPhotoUpload}
-                          id="cover-photo-file-upload-center"
-                          className="hidden"
-                        />
-                        
-                        {/* Overlay trigger for Drag & Drop / Browse */}
-                        <label
-                          htmlFor="cover-photo-file-upload-center"
-                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-xs font-bold gap-1.5 p-4 text-center"
-                        >
-                          <span className="text-xl">📷</span>
-                          <span>Drop cover photo or browse</span>
-                          <span className="text-[9px] font-normal opacity-75">Supports PNG, JPG, GIF up to 5MB</span>
-                        </label>
-                      </div>
-
-                      {/* Title, handle & bio */}
-                      <div className="grid grid-cols-1 gap-3.5 key-editor-cover-panel__fields">
+                        {/* If Style Tab is Active: Render BlockStyleInspector */}
+                        {inspectorTab === "style" && (
+                          <div className="p-3 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                            <BlockStyleInspector
+                              styles={(canvasBlocks.find((b) => b.id === expandedBlockId) as any)?.styles as BlockDeveloperStyles}
+                              onChange={(newStyles) => handleUpdateBlockStyles(expandedBlockId, newStyles)}
+                              blockLabel={canvasBlocks.find((b) => b.id === expandedBlockId)?.label}
+                              blockType={canvasBlocks.find((b) => b.id === expandedBlockId)?.type}
+                            />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-12 px-4 space-y-3 bg-white rounded-2xl border border-dashed border-slate-200">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto text-xl shadow-2xs">
+                          🎯
+                        </div>
                         <div>
-                            <label className="key-editor-form-label">Biolink Title</label>
-                            <input
-                              type="text"
-                              value={editorTitle}
-                              onChange={(e) => setEditorTitle(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-sm font-bold text-slate-800"
-                              placeholder="My BioLink"
-                            />
+                          <h4 className="text-xs font-bold text-slate-800">Canvas Click-to-Inspect</h4>
+                          <p className="text-[11px] text-slate-500 mt-1 leading-relaxed max-w-xs mx-auto">
+                            Click on any block directly on the center preview canvas to edit its properties, or choose one from the Structure Tree.
+                          </p>
                         </div>
-
-                          <div>
-                            <label className="key-editor-form-label">
-                              Page Handle (@watermark)
-                            </label>
-                            <div className="key-editor-handle-field flex items-center gap-2 bg-slate-50 border border-slate-200 focus-within:border-[#6366f1] rounded-xl px-3.5">
-                              <span className="text-sm font-bold text-slate-400 shrink-0 select-none" aria-hidden>
-                                @
-                              </span>
-                            <input
-                              type="text"
-                                value={editorHandle}
-                                onChange={(e) => setEditorHandle(normalizeHandleInput(e.target.value))}
-                                className="key-editor-handle-field__input flex-1 min-w-0 bg-transparent border-0 focus:outline-none focus:ring-0 py-2.5 text-sm font-semibold text-slate-800 font-mono placeholder:text-slate-400"
-                                placeholder={handlePlaceholder}
-                                aria-label="Page handle"
-                              />
-                            </div>
-                            <p className="key-editor-form-hint">
-                              {previewHandle
-                                ? `Live preview shows ${previewHandle}`
-                                : `Optional — e.g. @${handlePlaceholder} (leave empty to hide on your page)`}
-                            </p>
-                          </div>
-
-                          <div>
-                            <label className="key-editor-form-label">Short Bio</label>
-                            <textarea
-                              value={editorBio}
-                              onChange={(e) => setEditorBio(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-xs text-slate-600 resize-none"
-                              placeholder="Write a short bio..."
-                              rows={2}
-                            />
-                          </div>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setStudioNavTab("layers")}
+                          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
+                        >
+                          Open Structure Tree
+                        </button>
                       </div>
                     )}
 
-                    {/* ACCORDION BLOCKS LIST — always visible; centered when cover is locked */}
-                    <div className="space-y-3.5 key-editor-blocks-section">
-                      <div className="key-editor-blocks-section__head flex items-center justify-between gap-3">
+                    {/* CONTENT TAB: Render existing accordion blocks */}
+                    {inspectorTab === "content" && (
+                      <div className="space-y-3.5 key-editor-blocks-section">
+                        <div className="key-editor-blocks-section__head flex items-center justify-between gap-3">
                         <span className="key-editor-section-label">
                           {editingThankYouPage ? "Thank You Blocks" : "Page Blocks"}
                         </span>
@@ -4298,9 +5821,26 @@ export default function BioPagesScreen({
                                       <span className="block text-xs font-bold text-slate-800 truncate" title={block.label}>
                                         {block.label}
                                       </span>
-                                      <span className="block text-[8.5px] font-semibold text-slate-400 uppercase tracking-wider font-mono">
-                                        {block.type}
-                                      </span>
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className="block text-[8.5px] font-semibold text-slate-400 uppercase tracking-wider font-mono">
+                                          {block.type}
+                                        </span>
+                                        {block.deviceVisibility === "mobile_only" && (
+                                          <span className="text-[7.5px] font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-600 border border-blue-200 uppercase">
+                                            📱 Phone Only
+                                          </span>
+                                        )}
+                                        {block.deviceVisibility === "desktop_only" && (
+                                          <span className="text-[7.5px] font-bold px-1.5 py-0.2 rounded bg-purple-50 text-purple-600 border border-purple-200 uppercase">
+                                            💻 Desktop Only
+                                          </span>
+                                        )}
+                                        {block.colSpan === "half" && (
+                                          <span className="text-[7.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-600 border border-emerald-200 uppercase">
+                                            ½ Grid
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
 
                                     {isExpanded && (
@@ -4411,7 +5951,26 @@ export default function BioPagesScreen({
                                       block.type !== "Stats" &&
                                       block.type !== "Pricing" &&
                                       block.type !== "Divider" &&
-                                      block.type !== "Image" && (
+                                      block.type !== "Image" &&
+                                      block.type !== "Split Hero" &&
+                                      block.type !== "Video Hero" &&
+                                      block.type !== "Glow Badge" &&
+                                      block.type !== "Feature Hero" &&
+                                      block.type !== "Toggle Pricing" &&
+                                      block.type !== "Product Showcase" &&
+                                      block.type !== "Comparison Table" &&
+                                      block.type !== "Payment Button" &&
+                                      block.type !== "Brand Logos" &&
+                                      block.type !== "Star Ratings" &&
+                                      block.type !== "Press Mentions" &&
+                                      block.type !== "Before/After Slider" &&
+                                      block.type !== "Portfolio Gallery" &&
+                                      block.type !== "Video Showcase" &&
+                                      block.type !== "Audio Player" &&
+                                      block.type !== "Multi-Step Form" &&
+                                      block.type !== "Lead Magnet" &&
+                                      block.type !== "Meeting Booker" &&
+                                      block.type !== "Newsletter Box" && (
                                       <div>
                                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                                           {block.type === "WhatsApp"
@@ -5779,6 +7338,1213 @@ export default function BioPagesScreen({
                               </div>
                                     )}
 
+                                     {/* --- DEVELOPER-GRADE BLOCK ACCORDION EDITORS --- */}
+                                     {/* 1. Split Hero */}
+                                     {block.type === "Split Hero" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Badge Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badgeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badgeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800"
+                                             placeholder="e.g. 🚀 Next-Gen Micro-Site Builder"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Main Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).headline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "headline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800"
+                                             placeholder="Headline..."
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subheadline</label>
+                                           <textarea
+                                             rows={2}
+                                             value={(block as any).subheadline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "subheadline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800"
+                                             placeholder="Supporting description..."
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Primary Button</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).primaryCtaLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "primaryCtaLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800"
+                                               placeholder="Get Started Free"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Primary URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).primaryCtaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "primaryCtaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800 font-mono"
+                                               placeholder="https://..."
+                                             />
+                                           </div>
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Secondary Button</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).secondaryCtaLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "secondaryCtaLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800"
+                                               placeholder="Book a Demo"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Secondary URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).secondaryCtaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "secondaryCtaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800 font-mono"
+                                               placeholder="https://..."
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hero Image URL</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).imageUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "imageUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800 font-mono"
+                                             placeholder="https://images.unsplash.com/..."
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 2. Video Hero */}
+                                     {block.type === "Video Hero" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Badge Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badgeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badgeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).headline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "headline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subheadline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).subheadline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "subheadline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Video Stream URL (MP4 / WebM)</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).videoUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "videoUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             placeholder="https://..."
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ctaLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ctaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 3. Glow Badge */}
+                                     {block.type === "Glow Badge" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Announcement Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badgeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badgeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             placeholder="⚡ Introducing new feature..."
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Target Link URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).badgeLink || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "badgeLink", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Glow Theme</label>
+                                             <select
+                                               value={(block as any).badgeStyle || "purple"}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "badgeStyle", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             >
+                                               <option value="purple">Purple Glow</option>
+                                               <option value="emerald">Emerald Glow</option>
+                                               <option value="amber">Amber Glow</option>
+                                               <option value="cyan">Cyan Glow</option>
+                                             </select>
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 4. Feature Hero */}
+                                     {block.type === "Feature Hero" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).headline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "headline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subheadline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).subheadline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "subheadline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 5. Toggle Pricing */}
+                                     {block.type === "Toggle Pricing" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Annual Discount Badge</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).discountBadge || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "discountBadge", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             placeholder="Save 20% Yearly"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 6. Product Showcase */}
+                                     {block.type === "Product Showcase" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Product Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).productName || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "productName", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-3 gap-2">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Price</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).price || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "price", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Original Price</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).originalPrice || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "originalPrice", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Badge</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).discountPercent || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "discountPercent", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Urgency Text</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).stockUrgency || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "stockUrgency", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Buy URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).buyUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "buyUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Image URL</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).imageUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "imageUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 8. Payment Button */}
+                                     {block.type === "Payment Button" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Button CTA Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).buttonText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "buttonText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Amount</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).amount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "amount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Payment Checkout URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).paymentUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "paymentUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Guarantee Subtext</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).guaranteeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "guaranteeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 9. Brand Logos */}
+                                     {block.type === "Brand Logos" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).title || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "title", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Display Mode</label>
+                                           <select
+                                             value={(block as any).displayMode || "marquee"}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "displayMode", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           >
+                                             <option value="marquee">Continuous Scrolling Marquee</option>
+                                             <option value="grid">Clean Static Grid</option>
+                                           </select>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 10. Star Ratings */}
+                                     {block.type === "Star Ratings" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Score</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ratingScore || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ratingScore", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Review Count Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).reviewCount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "reviewCount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).headline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "headline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 12. Before/After Slider */}
+                                     {block.type === "Before/After Slider" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Caption</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).caption || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "caption", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Before Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).beforeLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "beforeLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">After Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).afterLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "afterLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Before Image URL</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).beforeImage || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "beforeImage", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">After Image URL</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).afterImage || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "afterImage", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 14. Video Showcase */}
+                                     {block.type === "Video Showcase" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Course / Video Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).title || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "title", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Featured Video URL</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).featuredVideoUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "featuredVideoUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 15. Audio Player */}
+                                     {block.type === "Audio Player" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Episode / Track Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).title || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "title", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Show / Podcast Name</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).podcastName || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "podcastName", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Artist / Host</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).artist || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "artist", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Audio Stream URL (MP3 / AAC)</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).audioUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "audioUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 16. Multi-Step Form */}
+                                     {block.type === "Multi-Step Form" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Form Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).formTitle || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "formTitle", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Submit Button Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).submitButtonText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "submitButtonText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 17. Lead Magnet */}
+                                     {block.type === "Lead Magnet" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Badge Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badgeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badgeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Ebook / Resource Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).title || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "title", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">File Size Info</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).fileSize || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "fileSize", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Download URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).downloadUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "downloadUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 18. Meeting Booker */}
+                                     {block.type === "Meeting Booker" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Host Name</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).hostName || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "hostName", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Host Role</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).hostRole || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "hostRole", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Meeting Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).meetingTitle || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "meetingTitle", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Duration</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).durationMinutes || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "durationMinutes", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Booking / Calendly URL</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).bookingUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "bookingUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 19. Newsletter Box */}
+                                     {block.type === "Newsletter Box" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).title || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "title", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subtext</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).subtitle || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "subtitle", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Button Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).buttonLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "buttonLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Social Proof Badge</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).subscriberBadge || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "subscriberBadge", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 20. Navbar Block */}
+                                     {block.type === "Navbar" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Brand Name</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).brandName || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "brandName", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                               placeholder="KEYLINKS 360"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tagline</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).tagline || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "tagline", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                               placeholder="Micro Site"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ctaLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                               placeholder="Get Started ⚡"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA URL</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).ctaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                               placeholder="https://..."
+                                             />
+                                           </div>
+                                         </div>
+                                         <div className="flex items-center justify-between py-1">
+                                           <span className="text-xs text-slate-700 font-semibold">Glassmorphic Blur Effect</span>
+                                           <input
+                                             type="checkbox"
+                                             checked={(block as any).isGlassmorphic !== false}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "isGlassmorphic", e.target.checked)}
+                                             className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 21. Footer Block */}
+                                     {block.type === "Footer" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Brand Name</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).brandName || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "brandName", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Support Email</label>
+                                             <input
+                                               type="email"
+                                               value={(block as any).supportEmail || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "supportEmail", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tagline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).tagline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "tagline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Copyright Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).copyrightText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "copyrightText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 22. Main Feature Block */}
+                                     {block.type === "Main Feature" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Badge Text</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badge || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badge", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).headline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "headline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subheadline</label>
+                                           <textarea
+                                             rows={2}
+                                             value={(block as any).subheadline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "subheadline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs resize-none"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ctaText || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaText", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">CTA URL</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).ctaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 23. Auto Slider Block */}
+                                     {block.type === "Auto Slider" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="flex items-center justify-between py-1">
+                                           <span className="text-xs text-slate-700 font-semibold">Autoplay Slides</span>
+                                           <input
+                                             type="checkbox"
+                                             checked={(block as any).autoplay !== false}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "autoplay", e.target.checked)}
+                                             className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Slide Interval (Seconds)</label>
+                                           <input
+                                             type="number"
+                                             min={2}
+                                             max={15}
+                                             value={(block as any).intervalSeconds || 4}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "intervalSeconds", Number(e.target.value))}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="space-y-2">
+                                           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Slide Images</span>
+                                           {Array.isArray((block as any).slides) && (block as any).slides.map((sl: any, sIdx: number) => (
+                                             <div key={sl.id || sIdx} className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                                               <input
+                                                 type="text"
+                                                 value={sl.title || ""}
+                                                 onChange={(e) => {
+                                                   const updated = [...(block as any).slides];
+                                                   updated[sIdx] = { ...updated[sIdx], title: e.target.value };
+                                                   handleUpdateBlockField(block.id, "slides", updated);
+                                                 }}
+                                                 placeholder="Slide title"
+                                                 className="w-full bg-white border border-slate-200 rounded-lg py-1 px-2 text-xs font-bold"
+                                               />
+                                               <input
+                                                 type="text"
+                                                 value={sl.imageUrl || ""}
+                                                 onChange={(e) => {
+                                                   const updated = [...(block as any).slides];
+                                                   updated[sIdx] = { ...updated[sIdx], imageUrl: e.target.value };
+                                                   handleUpdateBlockField(block.id, "slides", updated);
+                                                 }}
+                                                 placeholder="Image URL"
+                                                 className="w-full bg-white border border-slate-200 rounded-lg py-1 px-2 text-xs font-mono"
+                                               />
+                                               <input
+                                                 type="text"
+                                                 value={sl.linkUrl || ""}
+                                                 onChange={(e) => {
+                                                   const updated = [...(block as any).slides];
+                                                   updated[sIdx] = { ...updated[sIdx], linkUrl: e.target.value };
+                                                   handleUpdateBlockField(block.id, "slides", updated);
+                                                 }}
+                                                 placeholder="Target click URL"
+                                                 className="w-full bg-white border border-slate-200 rounded-lg py-1 px-2 text-xs font-mono"
+                                               />
+                                             </div>
+                                           ))}
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 24. Google Form Block */}
+                                     {block.type === "Google Form" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Form Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).formTitle || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "formTitle", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Description / Instructions</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).formDescription || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "formDescription", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Google Form Embed URL (Optional)</label>
+                                           <input
+                                             type="url"
+                                             value={(block as any).embedUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "embedUrl", e.target.value)}
+                                             placeholder="https://docs.google.com/forms/d/e/.../viewform?embedded=true"
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                           <p className="text-[10px] text-slate-400 mt-1">Leave empty to use the native interactive inquiry form.</p>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Submit Button Label</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).submitButtonText || "Submit Inquiry 🚀"}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "submitButtonText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 25. Flash Offer Block */}
+                                     {block.type === "Flash Offer" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Urgency Badge</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).badgeText || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "badgeText", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-rose-600"
+                                           />
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Discount Headline</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).discountHeadline || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "discountHeadline", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-3 gap-2">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Coupon Code</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).couponCode || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "couponCode", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs font-mono font-bold uppercase text-indigo-600"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Original Price</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).originalPrice || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "originalPrice", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs line-through text-slate-400"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Sale Price</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).salePrice || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "salePrice", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-2 text-xs font-bold text-emerald-600"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Claim Button Text</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).ctaLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Claim Redirect URL</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).ctaUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "ctaUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Terms Note</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).termsNote || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "termsNote", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 26. Community Hub Block */}
+                                     {block.type === "Community Hub" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Group Name</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).groupName || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "groupName", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Members</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).memberCount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "memberCount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                               placeholder="5,000+ Members"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Online Now Badge</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).onlineCount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "onlineCount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-emerald-600"
+                                               placeholder="420 Online"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Group Description</label>
+                                           <textarea
+                                             rows={2}
+                                             value={(block as any).groupDescription || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "groupDescription", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs resize-none"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Join Button Label</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).joinButtonLabel || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "joinButtonLabel", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Invite URL (WhatsApp / Telegram / Discord)</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).inviteUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "inviteUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 27. YouTube Channel Block */}
+                                     {block.type === "YouTube Channel" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Channel Name</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).channelName || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "channelName", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subscribers</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).subscriberCount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "subscriberCount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                               placeholder="100K Subscribers"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Video Title</label>
+                                           <input
+                                             type="text"
+                                             value={(block as any).videoTitle || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "videoTitle", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                           />
+                                         </div>
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Video Stream URL (MP4 / WebM)</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).videoUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "videoUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subscribe URL</label>
+                                             <input
+                                               type="url"
+                                               value={(block as any).subscribeUrl || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "subscribeUrl", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                             />
+                                           </div>
+                                         </div>
+                                       </div>
+                                     )}
+
+                                     {/* 28. Instagram Feed Block */}
+                                     {block.type === "Instagram Feed" && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-100">
+                                         <div className="grid grid-cols-2 gap-3">
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Instagram Handle</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).instagramHandle || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "instagramHandle", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold"
+                                               placeholder="@username"
+                                             />
+                                           </div>
+                                           <div>
+                                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Followers Badge</label>
+                                             <input
+                                               type="text"
+                                               value={(block as any).followerCount || ""}
+                                               onChange={(e) => handleUpdateBlockField(block.id, "followerCount", e.target.value)}
+                                               className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                               placeholder="50K Followers"
+                                             />
+                                           </div>
+                                         </div>
+                                         <div>
+                                           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Profile URL</label>
+                                           <input
+                                             type="url"
+                                             value={(block as any).profileUrl || ""}
+                                             onChange={(e) => handleUpdateBlockField(block.id, "profileUrl", e.target.value)}
+                                             className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                           />
+                                         </div>
+                                       </div>
+                                     )}
+
                                     {/* Appearance Options (Background & Text Colors) */}
                                     {(block.type === "Button" || block.type === "Text" || block.type === "Coupon" || block.type === "WhatsApp" || block.type === "vCard" || block.type === "Deep Link" || block.type === "Call" || block.type === "Email") && (
                                       <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
@@ -5830,6 +8596,77 @@ export default function BioPagesScreen({
                                       </div>
                                     )}
 
+                                     {/* Responsive Device Visibility & Column Span */}
+                                     <div className="pt-3 border-t border-slate-100 space-y-2.5">
+                                       <div className="flex items-center justify-between">
+                                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                           Device Visibility
+                                         </label>
+                                         <span className="text-[10px] font-semibold text-slate-400">
+                                           {block.deviceVisibility === "mobile_only"
+                                             ? "📱 Phone Only"
+                                             : block.deviceVisibility === "desktop_only"
+                                               ? "💻 Desktop & Tablet"
+                                               : "🌐 All Devices"}
+                                         </span>
+                                       </div>
+                                       <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80">
+                                         {[
+                                           { id: "all", label: "All Devices", icon: Globe },
+                                           { id: "mobile_only", label: "Phone Only", icon: Smartphone },
+                                           { id: "desktop_only", label: "Desktop Only", icon: Laptop }
+                                         ].map((dev) => {
+                                           const isSelected = (block.deviceVisibility || "all") === dev.id;
+                                           const DevIcon = dev.icon;
+                                           return (
+                                             <button
+                                               key={dev.id}
+                                               type="button"
+                                               onClick={() => handleUpdateBlockField(block.id, "deviceVisibility", dev.id)}
+                                               className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                                                 isSelected
+                                                   ? "bg-white text-indigo-600 shadow-sm border border-slate-200"
+                                                   : "text-slate-500 hover:text-slate-900"
+                                               }`}
+                                             >
+                                               <DevIcon className="h-3 w-3 shrink-0" />
+                                               <span className="truncate">{dev.label}</span>
+                                             </button>
+                                           );
+                                         })}
+                                       </div>
+
+                                       <div className="flex items-center justify-between pt-1">
+                                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                           Large Screen Width
+                                         </label>
+                                         <div className="flex items-center gap-0.5 bg-slate-100/90 p-0.5 rounded-lg border border-slate-200/80">
+                                           <button
+                                             type="button"
+                                             onClick={() => handleUpdateBlockField(block.id, "colSpan", "full")}
+                                             className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                                               (block.colSpan || "full") === "full"
+                                                 ? "bg-white text-indigo-600 shadow-xs"
+                                                 : "text-slate-500 hover:text-slate-800"
+                                             }`}
+                                           >
+                                             Full Width
+                                           </button>
+                                           <button
+                                             type="button"
+                                             onClick={() => handleUpdateBlockField(block.id, "colSpan", "half")}
+                                             className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                                               block.colSpan === "half"
+                                                 ? "bg-white text-indigo-600 shadow-xs"
+                                                 : "text-slate-500 hover:text-slate-800"
+                                             }`}
+                                           >
+                                             ½ Grid Column
+                                           </button>
+                                         </div>
+                                       </div>
+                                     </div>
+
                                     {/* Action Footers */}
                                     <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
                                   <button
@@ -5852,75 +8689,180 @@ export default function BioPagesScreen({
                             );
                           })
                         )}
-                                  </div>
-                                </div>
-                                </div>
-                              </div>
-                                </div>
-                              </div>
+                      </div>
+                    </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mobile & Small Tablet Full Screen Live Preview Button from Active Tool Panel */}
+                <div className="p-2.5 px-3 border-t border-slate-800/80 bg-slate-900/95 md:hidden shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPreviewOnlyMode(true);
+                      setIsSidebarOpen(false);
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  >
+                    <Eye className="h-4 w-4 text-cyan-200 animate-pulse" />
+                    <span>Live Page Preview</span>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/30 border border-white/20 ml-1">
+                      Full View
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </aside>
+      )}
+
+          {/* ZONE 2: CENTER LIVE PREVIEW STAGE */}
+          <main
+            className={`key-studio-stage flex-1 flex flex-col h-full min-h-0 min-w-0 overflow-hidden relative transition-colors duration-200 ${
+              isDraggingOutsidePreview && draggingCanvasBlockId ? "bg-rose-950/20 ring-2 ring-rose-500/50 ring-inset" : ""
+            }`}
+            onClick={() => {
+              // Close sliding sidebar tool panel (ADD BLOCKS, Layers, Inspector, Theme, Settings, etc.) when clicking anywhere in the workspace/preview free space
+              if (studioNavTab !== "menu") {
+                setStudioNavTab("menu");
+                setShowThanksPage(false);
+                setEditorTab("Edit");
+              }
+              setSelectedCanvasBlockId(null);
+            }}
+            onDragOver={(e) => {
+              if (draggingCanvasBlockId) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (!isDraggingOutsidePreview) {
+                  setIsDraggingOutsidePreview(true);
+                }
+              }
+            }}
+            onDragLeave={(e) => {
+              if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+              setIsDraggingOutsidePreview(false);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const draggedBlockId = e.dataTransfer.getData("application/keylink-block-id") || draggingCanvasBlockId;
+              if (draggedBlockId) {
+                const removedBlock = canvasBlocks.find((b) => b.id === draggedBlockId);
+                handleDeleteBlock(draggedBlockId);
+                triggerToast(`🗑️ Dragged outside preview: Deleted "${removedBlock?.label || removedBlock?.type || 'block'}"!`);
+              }
+              setDraggingCanvasBlockId(null);
+              setDragOverCanvasBlockId(null);
+              setIsDraggingOutsidePreview(false);
+            }}
+          >
+            {/* Visual banner indicator when dragging block outside preview to delete */}
+            {isDraggingOutsidePreview && draggingCanvasBlockId && (
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-bounce">
+                <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-rose-600/95 text-white font-bold text-xs shadow-2xl shadow-rose-950/80 border border-rose-400 backdrop-blur-md">
+                  <Trash2 className="w-4 h-4 animate-pulse text-white" />
+                  <span>Drop outside preview model to DELETE block</span>
+                </div>
+              </div>
+            )}
+            {/* Top Right Stage Action Buttons: Edit Preview (Eye) & Global Preview (Globe) */}
+            <div className="absolute top-4 right-4 z-40 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              {/* 1. Edit Preview Toggle Button (Hidden when icons bar is open, visible when closed) */}
+              {!showSimulatorToolbar && (
+                <div className="relative group/editprev">
+                  <button
+                    type="button"
+                    onClick={() => setShowSimulatorToolbar(true)}
+                    className="flex items-center justify-center p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 shadow-xl backdrop-blur-xl transition-all cursor-pointer hover:scale-105 active:scale-95 ring-1 ring-cyan-500/30"
+                    aria-label="Edit Preview"
+                  >
+                    <Eye className="h-4 w-4 text-cyan-400" />
+                  </button>
+                  <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/editprev:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                    Edit Preview
+                  </span>
+                </div>
               )}
-                                  </div>
 
-            {/* Live phone preview */}
-            <div
-              className={`key-editor-zone key-editor-zone--preview key-editor-preview-rail flex flex-col h-full min-h-0 shrink-0 ${
-                editorViewPanel === "preview" ? "flex" : "hidden"
-              } lg:flex`}
-            >
-              <div className="key-editor-zone__head key-editor-zone__head--with-actions">
-                <div className="key-editor-zone__head-main">
-                  <Smartphone className="h-3.5 w-3.5" />
-                  Live Preview
-                                </div>
-                <BioPageThemePicker value={editorPageTheme} onChange={handlePreviewThemeChange} compact />
-                              </div>
+              {/* 2. Global Preview Button */}
+              <div className="relative group/globalprev">
+                <button
+                  type="button"
+                  onClick={() => setIsGlobalPreviewOpen(true)}
+                  className="flex items-center justify-center p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 shadow-xl backdrop-blur-xl transition-all cursor-pointer hover:scale-105 active:scale-95 ring-1 ring-indigo-500/30"
+                  aria-label="Global Preview"
+                >
+                  <Globe className="h-4 w-4 text-indigo-400" />
+                </button>
+                <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/globalprev:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                  Global Preview
+                </span>
+              </div>
+            </div>
 
-              <div className="key-editor-preview-rail__stage">
-                <div className="key-phone-preview key-phone-preview--samsung key-phone-preview--slim key-phone-preview--device-4k key-phone-preview--black-case" aria-label="Mobile live preview">
-                  <div className="key-phone-preview__side-key key-phone-preview__side-key--volume-up" aria-hidden />
-                  <div className="key-phone-preview__side-key key-phone-preview__side-key--volume-down" aria-hidden />
-                  <div className="key-phone-preview__bezel">
-                    <div className="key-phone-preview__hole-punch" aria-hidden />
+            {/* Floating Exit Button when in Full Preview Mode - ONLY Back Icon, NO text */}
+            {isPreviewOnlyMode && (
+              <div className="fixed top-4 left-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 group/exitpreviewbtn" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPreviewOnlyMode(false);
+                    setIsSidebarOpen(true);
+                  }}
+                  className="flex items-center justify-center h-10 w-10 bg-slate-900/95 hover:bg-slate-800 text-white rounded-full shadow-2xl border border-slate-700/80 backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer ring-1 ring-cyan-500/40"
+                  aria-label="Exit Preview (Esc)"
+                >
+                  <ArrowLeft className="w-5 h-5 text-cyan-400 group-hover/exitpreviewbtn:-translate-x-0.5 transition-transform" />
+                </button>
+                <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitpreviewbtn:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                  Exit Preview (Esc)
+                </span>
+              </div>
+            )}
 
-                    <div className="key-phone-preview__display">
-                        <div
-                          className="key-phone-preview__chrome"
-                          style={showThanksPage ? { display: "none" } : undefined}
-                        >
-                        <div className="key-phone-preview__status-bar">
-                          <span>12:33</span>
-                          <span className="key-phone-preview__status-icons">▮▮▮ 100%</span>
-                                  </div>
-                        <div className="key-phone-preview__browser-bar">
-                          <span className="key-phone-preview__browser-home" aria-hidden>⌂</span>
-                          <span className="key-phone-preview__browser-url">
-                            {selectedEditPageLink?.displayLabel || `${PRIMARY_DOMAIN}/page`}
-                          </span>
-                          <span className="key-phone-preview__browser-tabs" aria-hidden>1</span>
-                                  </div>
-                                </div>
-
-                <div
-                  ref={phonePreviewScreenRef}
+            <div className="key-editor-preview-rail__stage w-full h-full overflow-hidden flex justify-center items-center relative p-2">
+                <DeviceMockupFrame
+                  device={selectedDevice}
+                  zoom={viewportZoom}
+                  isLandscape={isLandscape}
+                  customFinish={mockupFrameFinish}
+                  displayUrl={selectedEditPageLink?.displayLabel || `keylink360.today/${editorTitle || "yourname"}`}
+                  screenRef={phonePreviewScreenRef}
+                  isDropTarget={isDraggingOverPreview && !showThanksPage}
                   onDragOver={showThanksPage ? undefined : handleDragOverTarget}
                   onDragEnter={showThanksPage ? undefined : handleDragEnterPreview}
                   onDragLeave={showThanksPage ? undefined : handleDragLeavePreview}
                   onDrop={showThanksPage ? undefined : handleDropOnPreview}
-                        className={`key-preview-isolate key-phone-preview__screen ${getBioPageThemeClass(editorPageTheme)} no-scrollbar transition-all duration-200 ${
-                          isDraggingOverPreview && !showThanksPage
-                            ? "key-phone-preview__screen--drop-target"
-                            : ""
-                        } ${showThanksPage ? "key-phone-preview__screen--thanks-open" : ""}`}
-                        style={getBioPageThemeStyle(editorPageTheme)}
-                      >
-                        {/* Bio page stays mounted but hidden while Thank You is open —
-                            otherwise scrolling the phone reveals Pay/Form blocks under the overlay. */}
-                        <div
-                          className="key-phone-preview__bio-layer"
-                          hidden={showThanksPage}
-                          aria-hidden={showThanksPage}
-                        >
-                        <CoverPhotoView
+                  className="w-full h-full"
+                >
+                  <div
+                    className={`key-preview-isolate w-full min-h-full ${getBioPageThemeClass(editorPageTheme)} no-scrollbar transition-all duration-200 ${
+                      showThanksPage ? "key-phone-preview__screen--thanks-open" : ""
+                    }`}
+                    style={{
+                      ...getBioPageThemeStyle(editorPageTheme),
+                      minHeight: "100%"
+                    }}
+                  >
+                    {/* Bio page content layout matching target device scope */}
+                    <div
+                      className={`key-phone-preview__bio-layer transition-all duration-300 ${
+                        editorDeviceScope === "mobile_only"
+                          ? "max-w-md mx-auto"
+                          : editorDeviceScope === "mobile_tablet"
+                            ? "max-w-2xl mx-auto"
+                            : editorDeviceScope === "mobile_tablet_laptop"
+                              ? "max-w-4xl mx-auto"
+                              : editorDeviceScope === "all_devices"
+                                ? "max-w-6xl mx-auto"
+                                : "max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto"
+                      }`}
+                      hidden={showThanksPage}
+                      aria-hidden={showThanksPage}
+                    >
+                      <CoverPhotoView
                           src={
                             editorCoverPhoto ||
                             "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"
@@ -5934,51 +8876,324 @@ export default function BioPagesScreen({
                         <div className="key-phone-preview__body key-public-bio-page__body">
                           <div className="key-public-bio-page__profile">
                             <h3 className="key-public-bio-page__title font-display">
-                      {editorTitle || "Marvel Products"}
-                    </h3>
+                              <InlineEditableText
+                                value={editorTitle || "Marvel Products"}
+                                onChange={(newT) => {
+                                  setEditorTitle(newT);
+                                  triggerToast("✨ Updated page title!");
+                                }}
+                                isEditingAllowed={!showThanksPage}
+                                tagName="span"
+                              />
+                            </h3>
                             {previewHandle && (
-                              <p className="key-public-bio-page__handle">{previewHandle}</p>
-                    )}
-                  </div>
+                              <p className="key-public-bio-page__handle">
+                                <InlineEditableText
+                                  value={previewHandle}
+                                  onChange={(newH) => {
+                                    setEditorHandle(normalizeHandleInput(newH));
+                                    triggerToast("✨ Updated handle!");
+                                  }}
+                                  isEditingAllowed={!showThanksPage}
+                                  tagName="span"
+                                />
+                              </p>
+                            )}
+                          </div>
 
-                          {editorBio && (
-                            <p className="key-phone-preview__bio-text">{editorBio}</p>
+                          {editorBio ? (
+                            <div className="key-phone-preview__bio-text">
+                              <InlineEditableText
+                                value={editorBio}
+                                onChange={(newB) => {
+                                  setEditorBio(newB);
+                                  triggerToast("✨ Updated bio!");
+                                }}
+                                isEditingAllowed={!showThanksPage}
+                                multiline
+                                tagName="p"
+                              />
+                            </div>
+                          ) : (
+                            <div className="key-phone-preview__bio-text opacity-40 hover:opacity-100 transition-opacity">
+                              <InlineEditableText
+                                value=""
+                                placeholder="Double-click to add a short bio..."
+                                onChange={(newB) => {
+                                  setEditorBio(newB);
+                                  triggerToast("✨ Added bio!");
+                                }}
+                                isEditingAllowed={!showThanksPage}
+                                multiline
+                                tagName="p"
+                              />
+                            </div>
                           )}
 
-                          <div className="key-phone-preview__blocks">
-                    {filterVisibleBioBlocks(editorBlocks).map((block) => {
+                          {(() => {
+                            const isMobileMockup = (selectedDevice?.category === "mobile" || (selectedDevice?.width || 0) < 500) && !isLandscape;
+                            const gridLayoutClass = isMobileMockup
+                              ? "grid-cols-1 gap-3.5"
+                              : selectedDevice?.category === "tablet"
+                                ? "grid-cols-1 sm:grid-cols-2 gap-3.5"
+                                : "grid-cols-1 md:grid-cols-2 gap-4";
+
+                            return (
+                              <div className={`key-phone-preview__blocks grid ${gridLayoutClass}`}>
+                                {filterVisibleBioBlocks(editorBlocks).map((block) => {
+                                  const isDesktopPreview = !isMobileMockup && viewportMode !== "mobile";
+                                  const isHiddenOnThisDevice =
+                                    (block.deviceVisibility === "mobile_only" && isDesktopPreview) ||
+                                    (block.deviceVisibility === "desktop_only" && !isDesktopPreview);
+                                  const isBlockHidden = Boolean(block.isHidden || (block as any).styles?.isHidden);
+                                  const isBlockLocked = Boolean(block.isLocked || (block as any).styles?.isLocked);
+                                  const colSpanClass = isMobileMockup
+                                    ? "col-span-1"
+                                    : isDesktopPreview && block.colSpan === "half"
+                                      ? "col-span-1"
+                                      : "col-span-1 md:col-span-2";
+                                  const isSelected = selectedCanvasBlockId === block.id;
+
+                                  const devStyles = computeBlockInlineStyles((block as any).styles);
+                                  const devMeta = getBlockCustomMeta((block as any).styles);
+
+                                  const isBeingDragged = draggingCanvasBlockId === block.id;
+                                  const isDragOver = dragOverCanvasBlockId === block.id && draggingCanvasBlockId !== block.id;
+
                       return (
                         <div
                           key={block.id}
-                          className="group relative p-1.5 rounded-2xl border border-transparent hover:border-dashed hover:border-[#6366f1]/55 hover:bg-[#6366f1]/5 transition-all duration-200 cursor-pointer"
-                          onClick={() => {
+                          style={devStyles}
+                          aria-label={devMeta.ariaLabel}
+                          draggable={!isBlockLocked && !showThanksPage}
+                          onDragStart={(e) => {
+                            if (isBlockLocked || showThanksPage) return;
+                            e.dataTransfer.setData("application/keylink-block-id", block.id);
+                            e.dataTransfer.setData("text/plain", block.id);
+                            e.dataTransfer.effectAllowed = "move";
+                            setDraggingCanvasBlockId(block.id);
+                          }}
+                          onDragEnd={() => {
+                            setDraggingCanvasBlockId(null);
+                            setDragOverCanvasBlockId(null);
+                            setIsDraggingOutsidePreview(false);
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.dataTransfer.dropEffect = "move";
+                            if (dragOverCanvasBlockId !== block.id) {
+                              setDragOverCanvasBlockId(block.id);
+                            }
+                          }}
+                          onDragLeave={(e) => {
+                            e.stopPropagation();
+                            if (dragOverCanvasBlockId === block.id) {
+                              setDragOverCanvasBlockId(null);
+                            }
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const draggedBlockId = e.dataTransfer.getData("application/keylink-block-id") || (draggingCanvasBlockId !== block.id ? draggingCanvasBlockId : null);
+                            const newBlockType = e.dataTransfer.getData("text/plain") || activeDraggedBlockType;
+
+                            if (draggedBlockId && draggedBlockId !== block.id) {
+                              handleReorderCanvasBlock(draggedBlockId, block.id, "after");
+                            } else if (newBlockType && newBlockType !== block.id) {
+                              const targetIdx = canvasBlocks.findIndex((b) => b.id === block.id);
+                              handleAddBlock(newBlockType, targetIdx + 1);
+                            }
+
+                            setDraggingCanvasBlockId(null);
+                            setDragOverCanvasBlockId(null);
+                            setIsDraggingOutsidePreview(false);
+                          }}
+                          className={`group relative p-2 rounded-2xl border transition-all duration-200 cursor-pointer ${colSpanClass} ${devMeta.className} ${
+                            isBeingDragged
+                              ? "opacity-30 scale-95 border-dashed border-indigo-400 bg-indigo-500/10 ring-2 ring-indigo-400/40"
+                              : isDragOver
+                                ? "ring-2 ring-indigo-500 border-indigo-500 bg-indigo-500/10 shadow-lg scale-[1.01]"
+                                : isSelected
+                                  ? "key-canvas-block-active ring-2 ring-indigo-500 shadow-xl border-indigo-500 bg-indigo-500/5"
+                                  : isBlockHidden
+                                    ? "opacity-35 border-dashed border-slate-400/80 bg-slate-500/5"
+                                    : isHiddenOnThisDevice
+                                      ? "opacity-40 border-dashed border-amber-400/80 bg-amber-500/5 hover:opacity-80"
+                                      : "border-transparent hover:border-dashed hover:border-[#6366f1]/55 hover:bg-[#6366f1]/5"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCanvasBlockId(block.id);
                             setExpandedBlockId(block.id);
+                            setStudioNavTab("inspector");
+                            setIsDrawerOpen(true);
                             const el = document.getElementById(`editor-block-${block.id}`);
                             if (el) {
                               el.scrollIntoView({ behavior: "smooth", block: "center" });
                             }
                           }}
                         >
-                          <div className="absolute -top-3.5 right-1.5 hidden max-lg:flex lg:group-hover:flex items-center gap-1 bg-white border border-[#6366f1]/30 shadow-md py-0.5 px-1.5 rounded-lg z-30 animate-in zoom-in-95 duration-150">
-                            <span className="text-[7px] font-mono font-bold text-[#6366f1] uppercase tracking-widest mr-1">
-                              {block.type}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setExpandedBlockId(block.id);
-                                const el = document.getElementById(`editor-block-${block.id}`);
-                                if (el) {
-                                  el.scrollIntoView({ behavior: "smooth", block: "center" });
-                                }
-                              }}
-                              title="Edit Widget"
-                              className="p-1 hover:bg-indigo-500/10 rounded text-slate-500 hover:text-[#6366f1] transition-colors"
+                          {/* Device Hidden Badge in Live Preview */}
+                          {isHiddenOnThisDevice && (
+                            <div className="absolute -top-2 left-2 z-30 flex items-center gap-1 bg-amber-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow">
+                              <span>⚠️ Hidden on {isDesktopPreview ? "Tablet/Desktop" : "Phone"}</span>
+                            </div>
+                          )}
+
+                          {isBlockHidden && (
+                            <div className="absolute -top-2 right-2 z-30 flex items-center gap-1 bg-slate-700 text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow">
+                              <span>Hidden Node</span>
+                            </div>
+                          )}
+
+                          {/* Floating Action Pill over selected canvas block (Blocks Edit & Bricks Builder Style) */}
+                          {isSelected ? (
+                            <div
+                              className="key-canvas-block-actions-pill"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              <Edit3 className="h-2.5 w-2.5" />
-                            </button>
-                          </div>
+                              <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold bg-indigo-950 text-cyan-300 uppercase tracking-widest mr-1">
+                                {block.type}
+                              </span>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => handleMoveBlock(block.id, "up")}
+                                title="Move Block Up (↑)"
+                              >
+                                <ChevronUp className="w-3 h-3 text-cyan-300" />
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => handleMoveBlock(block.id, "down")}
+                                title="Move Block Down (↓)"
+                              >
+                                <ChevronDown className="w-3 h-3 text-cyan-300" />
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn key-canvas-block-actions-pill__btn--primary"
+                                onClick={() => {
+                                  setStudioNavTab("inspector");
+                                  setInspectorTab("content");
+                                  setIsDrawerOpen(true);
+                                  setExpandedBlockId(block.id);
+                                }}
+                                title="Edit Block Content & Markup"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                                <span>Content</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => {
+                                  setStudioNavTab("inspector");
+                                  setInspectorTab("style");
+                                  setIsDrawerOpen(true);
+                                  setExpandedBlockId(block.id);
+                                }}
+                                title="Edit Visual CSS Styles (Bricks Builder)"
+                              >
+                                <Sliders className="w-3 h-3 text-indigo-400" />
+                                <span>Style</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => handleToggleBlockLock(block.id)}
+                                title={isBlockLocked ? "Unlock Component" : "Lock Component (Blocks Edit)"}
+                              >
+                                {isBlockLocked ? <Lock className="w-3 h-3 text-amber-400" /> : <Unlock className="w-3 h-3" />}
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => handleToggleBlockHidden(block.id)}
+                                title={isBlockHidden ? "Show Component" : "Hide Component"}
+                              >
+                                {isBlockHidden ? <EyeOff className="w-3 h-3 text-amber-400" /> : <Eye className="w-3 h-3" />}
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn"
+                                onClick={() => handleDuplicateBlock(block.id)}
+                                title="Duplicate block"
+                              >
+                                <Copy className="w-3 h-3" />
+                                <span>Copy</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="key-canvas-block-actions-pill__btn key-canvas-block-actions-pill__btn--danger"
+                                onClick={() => handleDeleteBlock(block.id)}
+                                title="Delete block"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="absolute -top-3.5 right-1.5 hidden max-lg:flex lg:group-hover:flex items-center gap-1 bg-white dark:bg-slate-900 border border-[#6366f1]/30 shadow-md py-0.5 px-1.5 rounded-lg z-30 animate-in zoom-in-95 duration-150">
+                              <span className="text-[7px] font-mono font-bold text-[#6366f1] uppercase tracking-widest mr-1">
+                                {block.type}
+                              </span>
+                              {isBlockLocked && (
+                                <span className="text-[7px] font-bold text-amber-600 bg-amber-50 px-1 rounded mr-1">
+                                  🔒
+                                </span>
+                              )}
+                              {isBlockHidden && (
+                                <span className="text-[7px] font-bold text-slate-500 bg-slate-100 px-1 rounded mr-1">
+                                  HIDDEN
+                                </span>
+                              )}
+                              {block.colSpan === "half" && isDesktopPreview && (
+                                <span className="text-[7px] font-bold text-emerald-600 bg-emerald-50 px-1 rounded mr-1">
+                                  ½ Grid
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedCanvasBlockId(block.id);
+                                  setExpandedBlockId(block.id);
+                                  setStudioNavTab("inspector");
+                                  setInspectorTab("content");
+                                  setIsDrawerOpen(true);
+                                  const el = document.getElementById(`editor-block-${block.id}`);
+                                  if (el) {
+                                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
+                                }}
+                                title="Edit Widget Content"
+                                className="p-1 hover:bg-indigo-500/10 rounded text-slate-500 hover:text-[#6366f1] transition-colors"
+                              >
+                                <Edit3 className="h-2.5 w-2.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedCanvasBlockId(block.id);
+                                  setExpandedBlockId(block.id);
+                                  setStudioNavTab("inspector");
+                                  setInspectorTab("style");
+                                  setIsDrawerOpen(true);
+                                  const el = document.getElementById(`editor-block-${block.id}`);
+                                  if (el) {
+                                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
+                                }}
+                                title="Edit Visual CSS (Bricks Builder)"
+                                className="p-1 hover:bg-indigo-500/10 rounded text-slate-500 hover:text-[#6366f1] transition-colors"
+                              >
+                                <Sliders className="h-2.5 w-2.5 text-indigo-500" />
+                              </button>
+                            </div>
+                          )}
 
                           <div className="relative z-10">
                             <BlockRenderer
@@ -5998,12 +9213,41 @@ export default function BioPagesScreen({
                       );
                     })}
                   </div>
+                );
+              })()}
 
                   <div className="key-bio-page-footer key-phone-preview__footer">
                     <span>Powered by KEYLINK360</span>
                   </div>
                   </div>
                         </div>
+
+                  {/* Live Interactive Bio AI Chat Widget in Editor Preview */}
+                  {aiAssistantEnabled && (
+                    <BioAiChatWidget
+                      isEditorPreview={true}
+                      pageId={selectedEditPage?.id || "preview-editor"}
+                      pageTitle={editorTitle || "My Bio Page"}
+                      pageSlug={selectedEditPage?.slug || ""}
+                      pageBio={editorBio}
+                      settings={{
+                        enabled: aiAssistantEnabled,
+                        botName: aiBotName,
+                        welcomeMessage: aiWelcomeMessage,
+                        businessName: aiBusinessName || editorTitle,
+                        businessDescription: aiBusinessDescription || editorBio,
+                        contactPhone: aiContactPhone,
+                        contactEmail: aiContactEmail,
+                        primaryColor: aiPrimaryColor,
+                        autoLeadCapture: aiAutoLeadCapture,
+                        customFaqs: aiCustomFaqs
+                      }}
+                      blocks={editorBlocks as BioEditorBlock[]}
+                      onLeadCaptured={(name, phone) => {
+                        triggerSimulatorToast(`Lead captured by AI Assistant: ${name} (${phone})`);
+                      }}
+                    />
+                  )}
 
                   <ThankYouPageView
                     open={showThanksPage}
@@ -6125,15 +9369,157 @@ export default function BioPagesScreen({
                     </div>
                   )}
 
-                        <div className="key-phone-preview__home-bar" aria-hidden />
-                </div>
+                  </div>
+                </DeviceMockupFrame>
               </div>
-            </div>
-                  <div className="key-phone-preview__side-key key-phone-preview__side-key--power" aria-hidden />
-          </div>
-        </div>
-            </div>
-          </div>
+
+              {/* Phone Simulator Vertical Floating Toolbar */}
+              {showSimulatorToolbar && (
+                <PhoneSimulatorToolbar
+                  selectedDevice={selectedDevice}
+                  onOpenDeviceDrawer={() => setIsDeviceDrawerOpen(!isDeviceDrawerOpen)}
+                  isDeviceDrawerOpen={isDeviceDrawerOpen}
+                  isPreviewMode={isPreviewOnlyMode}
+                  onTogglePreviewMode={() => setIsPreviewOnlyMode(!isPreviewOnlyMode)}
+                  onCloseToolbar={() => setShowSimulatorToolbar(false)}
+                  deviceScope={editorDeviceScope}
+                  onChangeDeviceScope={(scope) => {
+                    setEditorDeviceScope(scope);
+                    triggerSimulatorToast(`Target scope set to: ${scope.replace(/_/g, " ")}`);
+                  }}
+                  zoom={viewportZoom}
+                  onChangeZoom={setViewportZoom}
+                  onOpenThemePicker={() => {
+                    setStudioNavTab("theme");
+                    setIsSidebarOpen(true);
+                  }}
+                  isLandscape={isLandscape}
+                  onToggleOrientation={() => setIsLandscape(!isLandscape)}
+                  activeThemeSwatch={BIO_PAGE_THEME_PRESETS.find((p) => p.id === editorPageTheme)?.swatch}
+                  activeFrameFinish={mockupFrameFinish}
+                  onSelectFrameFinish={setMockupFrameFinish}
+                  onShare={() => {
+                    const url = `${getShareableOrigin()}/${editorTitle || "page"}`;
+                    navigator.clipboard?.writeText?.(url);
+                    triggerSimulatorToast("Live link copied to clipboard!");
+                  }}
+                />
+              )}
+
+              {/* Visible Devices in the Tab Drawer (Screenshot 2) */}
+              <VisibleDevicesDrawer
+                isOpen={isDeviceDrawerOpen}
+                onClose={() => setIsDeviceDrawerOpen(false)}
+                selectedDevice={selectedDevice}
+                onSelectDevice={(dev) => {
+                  setSelectedDevice(dev);
+                  setIsDeviceDrawerOpen(false);
+                  if (dev.category === "apple" || dev.category === "android") {
+                    setViewportMode("mobile");
+                    setEditorDeviceScope("mobile_only");
+                  } else if (dev.category === "tablets") {
+                    setViewportMode("tablet");
+                    setEditorDeviceScope("mobile_tablet");
+                  } else if (
+                    dev.frameType === "laptop-macbook" ||
+                    dev.frameType === "laptop-macbook-rose" ||
+                    dev.frameType === "laptop-dell" ||
+                    dev.frameType === "laptop-asus-rog" ||
+                    dev.frameType === "laptop-asus-tuf" ||
+                    dev.frameType === "laptop-msi"
+                  ) {
+                    setViewportMode("laptop");
+                    setEditorDeviceScope("mobile_tablet_laptop");
+                  } else {
+                    setViewportMode("desktop");
+                    setEditorDeviceScope("all_devices");
+                  }
+                }}
+              />
+
+              {/* Centered Publish Success Modal Overlay */}
+              {showPublishSuccess && (
+                <div
+                  className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+                  onClick={() => setShowPublishSuccess(false)}
+                >
+                  <div
+                    className="bg-white rounded-3xl p-6 sm:p-8 text-center text-slate-900 shadow-2xl max-w-lg w-full border border-slate-100 animate-in zoom-in-95 duration-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Check className="h-12 w-12 mx-auto mb-3 bg-emerald-600 text-white p-2.5 rounded-full shadow-md" />
+                    <h4 className="font-display font-extrabold text-xl text-slate-900">
+                      Site Published Successfully!
+                    </h4>
+                    <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 shadow-2xs">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>Active Device Target:</span>
+                      <span className="font-extrabold capitalize text-indigo-700">
+                        {editorDeviceScope === "auto_adaptive"
+                          ? "🌐 Smart Fluid Responsive"
+                          : editorDeviceScope === "mobile_only"
+                            ? "📱 Mobile First Only"
+                            : editorDeviceScope === "mobile_tablet"
+                              ? "📟 Mobile + Tablets"
+                              : editorDeviceScope === "mobile_tablet_laptop"
+                                ? "💻 Mobile + Tablets + Laptops"
+                                : "🖥️ All Devices (Ultra-Wide)"}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-600 mt-3.5 leading-relaxed">
+                      Your changes are live and accessible globally at:
+                      {selectedEditPageLink && (
+                        <span className="block mt-1.5 font-mono font-bold text-indigo-600 bg-indigo-50/50 py-1.5 px-3 rounded-xl border border-indigo-100 break-all select-all">
+                          {selectedEditPageLink.displayLabel}
+                        </span>
+                      )}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                      {selectedEditPageLink && (
+                        <a
+                          href={`${selectedEditPageLink.openUrl}${
+                            selectedEditPageLink.openUrl.includes("?") ? "&" : "?"
+                          }device=${viewportMode}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          <span>Open Live Page</span>
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!selectedEditPageLink) return;
+                          void copyText(selectedEditPageLink.shareUrl, "🔗 Public shareable link copied!");
+                        }}
+                        className="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-2xs"
+                      >
+                        <Copy className="h-3.5 w-3.5 text-slate-500" />
+                        <span>Copy Share Link</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPublishSuccess(false)}
+                        className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors"
+                      >
+                        <span>Continue Editing</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={exitEditor}
+                        className="text-xs font-bold text-emerald-800 hover:underline px-2 py-1"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </main>
 
           {showCoverUrlModal && (
             <div
@@ -6274,6 +9660,37 @@ export default function BioPagesScreen({
           )}
         </div>
 
+          {/* FULLSCREEN IMMERSIVE GLOBAL PREVIEW OVERLAY */}
+          {isGlobalPreviewOpen && (
+            <div className="fixed inset-0 z-[200] bg-slate-950 overflow-y-auto no-scrollbar animate-in fade-in duration-150 flex flex-col items-center justify-start min-h-screen w-full">
+              <PublicBioPageView
+                pageId={selectedEditPage?.id || "preview-global"}
+                pageTitle={editorTitle || "BioLink"}
+                pageSlug={selectedEditPage?.slug || "preview"}
+                pageBio={editorBio}
+                pageCoverPhoto={editorCoverPhoto}
+                initialBlocks={editorBlocks as any}
+                initialDetails={{
+                  title: editorTitle,
+                  bio: editorBio,
+                  coverPhoto: editorCoverPhoto,
+                  coverSettings: editorCoverSettings,
+                  pageTheme: editorPageTheme,
+                  deviceScope: editorDeviceScope,
+                  paymentEnabled,
+                  paymentAmountInr,
+                  paymentDescription,
+                  thankYouTitle,
+                  thankYouMessage,
+                  thankYouEmoji,
+                  thankYouBlocks: thankYouBlocks as any
+                }}
+                mode="preview"
+                onExitPreview={() => setIsGlobalPreviewOpen(false)}
+              />
+            </div>
+          )}
+
           {toast && (
             <div className="key-editor-toast fixed bottom-6 right-6 z-[120] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-indigo-500/40 animate-in fade-in slide-in-from-bottom-5 duration-300">
               <span className="text-sm font-bold">{toast}</span>
@@ -6281,6 +9698,16 @@ export default function BioPagesScreen({
           )}
         </div>,
         document.body
+      )}
+
+      {/* 2.1 - Studio Personalization Themes Modal */}
+      {selectedEditPage && (
+        <PersonalizationModal
+          isOpen={isStudioPersonalizationOpen}
+          onClose={() => setIsStudioPersonalizationOpen(false)}
+          currentTheme={currentUiTheme}
+          onThemeChange={handleApplyStudioTheme}
+        />
       )}
 
       {/* 4th - QR Code Customizer Popup Modal matching screenshot 3 perfectly */}
@@ -6485,6 +9912,13 @@ export default function BioPagesScreen({
           <span className="text-sm font-bold">{toast}</span>
         </div>
       )}
+
+      {/* Multi-Language Interactive Setup Guide Modal */}
+      <InteractiveSetupGuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        initialTopic="bio_ai"
+      />
     </PageShell>
   );
 }
