@@ -9735,7 +9735,19 @@ export default function BioPagesScreen({
                 onUpdateBlocks={(newBlocks) => {
                   setEditorBlocks(newBlocks as any);
                   if (selectedEditPage) {
-                    updatePageBlocks(selectedEditPage.id, newBlocks as any);
+                    try {
+                      localStorage.setItem(`biolink_blocks_${selectedEditPage.id}`, JSON.stringify(newBlocks));
+                      if (selectedEditPage.slug) {
+                        localStorage.setItem(`biolink_blocks_${selectedEditPage.slug}`, JSON.stringify(newBlocks));
+                      }
+                      window.dispatchEvent(
+                        new CustomEvent("key-page-preview-updated", {
+                          detail: { pageId: selectedEditPage.id, pageSlug: selectedEditPage.slug, blocks: newBlocks }
+                        })
+                      );
+                    } catch {
+                      /* ignore */
+                    }
                   }
                 }}
               />
