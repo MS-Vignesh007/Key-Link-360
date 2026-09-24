@@ -8780,7 +8780,7 @@ export default function BioPagesScreen({
                   >
                     <Eye className="h-4 w-4 text-cyan-400" />
                   </button>
-                  <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/editprev:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                  <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/editprev:flex px-2 py-0.5 rounded-md bg-slate-950/90 text-[9px] font-normal text-slate-300 border border-slate-800/80 whitespace-nowrap shadow-lg z-50">
                     Edit Preview
                   </span>
                 </div>
@@ -8796,7 +8796,7 @@ export default function BioPagesScreen({
                 >
                   <Globe className="h-4 w-4 text-indigo-400" />
                 </button>
-                <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/globalprev:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+                <span className="pointer-events-none absolute -bottom-7 right-1/2 translate-x-1/2 hidden group-hover/globalprev:flex px-2 py-0.5 rounded-md bg-slate-950/90 text-[9px] font-normal text-slate-300 border border-slate-800/80 whitespace-nowrap shadow-lg z-50">
                   Global Preview
                 </span>
               </div>

@@ -851,13 +851,16 @@ export default function PublicBioPageView({
 
     return (
       <div
-        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 p-0 sm:py-8 sm:px-4${
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4${
           showThanksPage ? " key-public-bio-page--thanks-open" : ""
         }`}
         style={{
           backgroundColor: "#090d16",
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px)",
-          backgroundSize: "24px 24px"
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "repeat",
+          minHeight: "100vh"
         }}
       >
         {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
@@ -871,7 +874,7 @@ export default function PublicBioPageView({
             >
               <ArrowLeft className="w-5 h-5 text-cyan-400 group-hover/exitbtn:-translate-x-0.5 transition-transform" />
             </button>
-            <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitbtn:flex px-2 py-0.5 rounded bg-slate-950 text-[10px] font-bold text-white border border-slate-800 whitespace-nowrap shadow-xl z-50">
+            <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitbtn:flex px-2 py-0.5 rounded-md bg-slate-950/90 text-[9px] font-normal text-slate-300 border border-slate-800/80 whitespace-nowrap shadow-lg z-50">
               Exit Preview (Esc)
             </span>
           </div>
@@ -879,7 +882,7 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 my-[5px] rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
           style={getBioPageThemeStyle(pageTheme)}
         >
         <div
