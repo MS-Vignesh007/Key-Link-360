@@ -1158,12 +1158,12 @@ export default function PublicBioPageView({
     const isMobileView = (mode === "live" && isMobileLocked) || (mode === "preview" && effectiveDevice === "mobile");
     const isTabletView = (mode === "live" && isTabletLocked) || (mode === "preview" && effectiveDevice === "tablet");
 
-    // 100% full width, edge-to-edge, 0px margin, NO GAPS for laptop, desktop, and auto
+    // 100% full width, edge-to-edge, 0px margin, NO GAPS for laptop, desktop, tv, and auto
     const containerMaxWidthClass = isMobileView
       ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden mx-auto"
       : isTabletView
         ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden mx-auto"
-        : "w-full min-h-screen m-0 p-0 border-0 rounded-none shadow-none";
+        : "w-full min-h-screen m-0 p-0 border-0 rounded-none shadow-none !max-w-full !m-0 !rounded-none";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1237,7 +1237,7 @@ export default function PublicBioPageView({
         <div
           ref={publicScreenRef}
           className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} ${
-            isMobileView || isTabletView ? "mx-auto" : "m-0"
+            isMobileView || isTabletView ? "mx-auto" : "!m-0 !max-w-full w-full"
           } transition-all duration-300 relative min-h-screen`}
           style={{
             ...getBioPageThemeStyle(pageTheme),
@@ -1250,7 +1250,7 @@ export default function PublicBioPageView({
               ? "max-w-[430px] mx-auto px-3 sm:px-4"
               : isTabletView
                 ? "max-w-[820px] mx-auto px-4 sm:px-6"
-                : "w-full m-0 p-0 px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6"
+                : "w-full !max-w-full m-0 p-0 px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6"
           }`}
           hidden={showThanksPage}
           aria-hidden={showThanksPage}
@@ -1260,7 +1260,7 @@ export default function PublicBioPageView({
             alt="Hero Cover"
             settings={coverSettings}
             variant="preview"
-            className={`key-phone-preview__cover key-public-bio-page__cover w-full ${!isMobileView && !isTabletView ? "rounded-none !max-w-full" : ""}`}
+            className={`key-phone-preview__cover key-public-bio-page__cover w-full ${!isMobileView && !isTabletView ? "!rounded-none !max-w-full w-full" : ""}`}
           />
 
           <div className="key-phone-preview__body key-public-bio-page__body">
@@ -1331,17 +1331,18 @@ export default function PublicBioPageView({
             {visibleBlocks
               .filter((block) => !Boolean((block as any).isHidden || (block as any).styles?.isHidden))
               .map((block) => {
+                const b = block as any;
                 const visibilityClass =
                   effectiveDevice === "mobile"
-                    ? block.deviceVisibility === "desktop_only"
+                    ? b.deviceVisibility === "desktop_only"
                       ? "hidden"
                       : "block"
-                    : block.deviceVisibility === "mobile_only"
+                    : b.deviceVisibility === "mobile_only"
                       ? "block md:hidden"
-                      : block.deviceVisibility === "desktop_only"
+                      : b.deviceVisibility === "desktop_only"
                         ? "hidden md:block"
                         : "block";
-                const isWide = isWideBlock(block.type);
+                const isWide = isWideBlock(b.type);
                 const colSpanClass =
                   effectiveDevice === "mobile"
                     ? "col-span-1"
@@ -1353,7 +1354,7 @@ export default function PublicBioPageView({
                           : effectiveDevice === "desktop"
                             ? "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
                             : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 2xl:col-span-5"
-                      : block.colSpan === "half"
+                      : b.colSpan === "half"
                         ? "col-span-1"
                         : effectiveDevice === "tablet"
                           ? "col-span-1 sm:col-span-2"
@@ -1361,8 +1362,8 @@ export default function PublicBioPageView({
                             ? "col-span-1 sm:col-span-2 md:col-span-2"
                             : "col-span-1 sm:col-span-2";
 
-                const devStyles = computeBlockInlineStyles((block as any).styles);
-                const devMeta = getBlockCustomMeta((block as any).styles);
+                const devStyles = computeBlockInlineStyles(b.styles);
+                const devMeta = getBlockCustomMeta(b.styles);
 
                 return (
                   <div
@@ -1552,11 +1553,12 @@ export default function PublicBioPageView({
               <div className="flex items-center gap-1">
                 {(
                   [
-                    { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
-                    { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
+                    { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "100% Full" },
                     { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "100% Full" },
                     { id: "desktop" as const, label: "Desktop", icon: Monitor, widthLabel: "100% Full" },
-                    { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "100% Responsive" }
+                    { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
+                    { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
+                    { id: "tv" as const, label: "TV", icon: Tv, widthLabel: "100% Full" }
                   ] as const
                 ).map(({ id, label, icon: Icon, widthLabel }) => {
                   const isActive = activeDeviceMode === id;
