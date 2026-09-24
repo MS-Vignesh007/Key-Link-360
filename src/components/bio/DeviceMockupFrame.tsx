@@ -319,10 +319,13 @@ export default function DeviceMockupFrame({
     scale = zoom;
   }
 
+  const screenClass = `key-mockup-screen ${effectiveLandscape ? "key-mockup-screen--landscape" : "key-mockup-screen--portrait"} flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative`;
+
   return (
     <div
       ref={containerRef}
-      className={`key-mockup-stage flex items-center justify-center w-full h-full min-h-[500px] max-h-full overflow-hidden p-2 relative select-none transition-all duration-300 ${className}`}
+      data-orientation={effectiveLandscape ? "landscape" : "portrait"}
+      className={`key-mockup-stage ${effectiveLandscape ? "key-mockup-stage--landscape" : "key-mockup-stage--portrait"} flex items-center justify-center w-full h-full min-h-[500px] max-h-full overflow-hidden p-2 relative select-none transition-all duration-300 ${className}`}
     >
       <div
         className="key-mockup-scaler transition-transform duration-200 origin-center flex items-center justify-center"
@@ -393,7 +396,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -489,7 +492,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -578,7 +581,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -677,7 +680,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -776,7 +779,7 @@ export default function DeviceMockupFrame({
                 onDragEnter={onDragEnter}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
-                className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                className={screenClass}
               >
                 {children}
               </div>
@@ -883,7 +886,7 @@ export default function DeviceMockupFrame({
                 onDragEnter={onDragEnter}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
-                className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                className={screenClass}
               >
                 {children}
               </div>
@@ -1002,7 +1005,7 @@ export default function DeviceMockupFrame({
                 onDragEnter={onDragEnter}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
-                className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                className={screenClass}
               >
                 {children}
               </div>
@@ -1102,7 +1105,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -1170,7 +1173,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -1229,7 +1232,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -1300,7 +1303,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>
@@ -1393,7 +1396,7 @@ export default function DeviceMockupFrame({
                   onDragEnter={onDragEnter}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className="key-mockup-screen flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative"
+                  className={screenClass}
                 >
                   {children}
                 </div>

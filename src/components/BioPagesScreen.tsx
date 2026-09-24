@@ -9205,7 +9205,8 @@ export default function BioPagesScreen({
                   <div
                     className={`key-preview-isolate w-full min-h-full ${getBioPageThemeClass(editorPageTheme)} no-scrollbar transition-all duration-200 ${
                       showThanksPage ? "key-phone-preview__screen--thanks-open" : ""
-                    }`}
+                    } ${isLandscape ? "key-preview-isolate--landscape" : "key-preview-isolate--portrait"}`}
+                    data-orientation={isLandscape ? "landscape" : "portrait"}
                     style={{
                       ...getBioPageThemeStyle(editorPageTheme),
                       minHeight: "100%"
@@ -9214,15 +9215,17 @@ export default function BioPagesScreen({
                     {/* Bio page content layout matching target device scope */}
                     <div
                       className={`key-phone-preview__bio-layer transition-all duration-300 ${
-                        editorDeviceScope === "mobile_only"
-                          ? "max-w-md mx-auto"
-                          : editorDeviceScope === "mobile_tablet"
-                            ? "max-w-2xl mx-auto"
-                            : editorDeviceScope === "mobile_tablet_laptop"
-                              ? "max-w-4xl mx-auto"
-                              : editorDeviceScope === "all_devices"
-                                ? "max-w-6xl mx-auto"
-                                : "max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto"
+                        isLandscape
+                          ? "w-full max-w-full px-2 sm:px-4 md:px-6"
+                          : editorDeviceScope === "mobile_only"
+                            ? "max-w-md mx-auto"
+                            : editorDeviceScope === "mobile_tablet"
+                              ? "max-w-2xl mx-auto"
+                              : editorDeviceScope === "mobile_tablet_laptop"
+                                ? "max-w-4xl mx-auto"
+                                : editorDeviceScope === "all_devices"
+                                  ? "max-w-6xl mx-auto"
+                                  : "max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto"
                       }`}
                       hidden={showThanksPage}
                       aria-hidden={showThanksPage}
@@ -9232,10 +9235,10 @@ export default function BioPagesScreen({
                             editorCoverPhoto ||
                             "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"
                           }
-                      alt="Hero Cover"
+                          alt="Hero Cover"
                           settings={editorCoverSettings}
                           variant="preview"
-                          className="key-phone-preview__cover key-public-bio-page__cover"
+                          className={`key-phone-preview__cover key-public-bio-page__cover ${isLandscape ? "w-full !max-w-full" : ""}`}
                         />
 
                         <div className="key-phone-preview__body key-public-bio-page__body">
@@ -9296,29 +9299,49 @@ export default function BioPagesScreen({
                           )}
 
                           {(() => {
+                            const isMobileCategory =
+                              selectedDevice?.category === "android" ||
+                              selectedDevice?.category === "apple" ||
+                              (selectedDevice?.width || 0) < 600;
+                            const isTabletCategory =
+                              selectedDevice?.category === "tablets" ||
+                              selectedDevice?.frameType === "tablet-classic" ||
+                              selectedDevice?.frameType === "tablet-ipad" ||
+                              selectedDevice?.frameType === "tablet-android";
+
                             const isMobileMockup =
-                              editorDeviceScope === "mobile_only" ||
-                              ((selectedDevice?.category === "mobile" || (selectedDevice?.width || 0) < 500) && !isLandscape);
-                            const gridLayoutClass = isMobileMockup
-                              ? "grid-cols-1 gap-3.5"
-                              : selectedDevice?.category === "tablet" || editorDeviceScope === "mobile_tablet"
-                                ? "grid-cols-1 sm:grid-cols-2 gap-3.5"
-                                : "grid-cols-1 md:grid-cols-2 gap-4";
+                              !isLandscape &&
+                              (editorDeviceScope === "mobile_only" ||
+                                (isMobileCategory && editorDeviceScope !== "all_devices"));
+
+                            const gridLayoutClass = isLandscape
+                              ? (isTabletCategory || editorDeviceScope === "mobile_tablet"
+                                  ? "grid-cols-1 md:grid-cols-2 gap-4"
+                                  : "grid-cols-1 sm:grid-cols-2 gap-3.5")
+                              : (isMobileMockup
+                                  ? "grid-cols-1 gap-3.5"
+                                  : isTabletCategory || editorDeviceScope === "mobile_tablet"
+                                    ? "grid-cols-1 sm:grid-cols-2 gap-3.5"
+                                    : "grid-cols-1 md:grid-cols-2 gap-4");
 
                             return (
-                              <div className={`key-phone-preview__blocks grid ${gridLayoutClass}`}>
+                              <div className={`key-phone-preview__blocks grid ${gridLayoutClass} w-full`}>
                                 {filterVisibleBioBlocks(editorBlocks).map((block) => {
-                                  const isDesktopPreview = editorDeviceScope !== "mobile_only" && !isMobileMockup && viewportMode !== "mobile";
+                                  const isDesktopPreview =
+                                    isLandscape ||
+                                    (editorDeviceScope !== "mobile_only" && !isMobileMockup && viewportMode !== "mobile");
                                   const isHiddenOnThisDevice =
-                                    (block.deviceVisibility === "mobile_only" && isDesktopPreview) ||
+                                    (block.deviceVisibility === "mobile_only" && isDesktopPreview && !isLandscape) ||
                                     (block.deviceVisibility === "desktop_only" && !isDesktopPreview);
                                   const isBlockHidden = Boolean(block.isHidden || (block as any).styles?.isHidden);
                                   const isBlockLocked = Boolean(block.isLocked || (block as any).styles?.isLocked);
                                   const colSpanClass = isMobileMockup
                                     ? "col-span-1"
-                                    : isDesktopPreview && block.colSpan === "half"
+                                    : isLandscape && block.colSpan === "half"
                                       ? "col-span-1"
-                                      : "col-span-1 md:col-span-2";
+                                      : isDesktopPreview && block.colSpan === "half"
+                                        ? "col-span-1"
+                                        : "col-span-1 sm:col-span-2 md:col-span-2";
                                   const isSelected = selectedCanvasBlockId === block.id;
 
                                   const devStyles = computeBlockInlineStyles((block as any).styles);

@@ -12810,5 +12810,110 @@ body.key-editor-open header.key-glass-header {
   color: #ecfdf5 !important;
 }
 
+/* ========================================================================= */
+/* BIO PREVIEW & PUBLIC PAGE: LANDSCAPE ORIENTATION RESPONSIVE SYSTEM        */
+/* ========================================================================= */
 
+/* 1. Live Simulator in Landscape Mode (Triggered by Rotate to Landscape) */
+.key-preview-isolate--landscape,
+.key-mockup-screen--landscape .key-preview-isolate {
+  width: 100% !important;
+  max-width: 100% !important;
+}
 
+.key-preview-isolate--landscape .key-phone-preview__bio-layer,
+.key-mockup-screen--landscape .key-phone-preview__bio-layer {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+.key-preview-isolate--landscape .key-cover-photo,
+.key-mockup-screen--landscape .key-cover-photo {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border-radius: 0.875rem !important;
+}
+
+.key-preview-isolate--landscape .key-phone-preview__body,
+.key-preview-isolate--landscape .key-public-bio-page__body,
+.key-mockup-screen--landscape .key-phone-preview__body,
+.key-mockup-screen--landscape .key-public-bio-page__body {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: clamp(0.75rem, 3vw, 2rem) !important;
+  padding-right: clamp(0.75rem, 3vw, 2rem) !important;
+}
+
+.key-preview-isolate--landscape .key-phone-preview__bio-text,
+.key-mockup-screen--landscape .key-phone-preview__bio-text {
+  max-width: min(680px, 92%) !important;
+}
+
+.key-preview-isolate--landscape .key-phone-preview__blocks,
+.key-mockup-screen--landscape .key-phone-preview__blocks,
+.key-phone-preview__blocks.grid {
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 2. Media Queries for Real Devices in Landscape (Phones & Tablets) */
+@media screen and (orientation: landscape) and (max-height: 520px) {
+  /* Real Mobile Smartphones in Landscape Viewport */
+  .key-public-bio-page--mobile {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    border-radius: 1.25rem !important;
+  }
+  .key-public-bio-page--mobile .key-public-bio-page__body {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+  .key-public-bio-page--mobile .key-cover-photo {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .key-public-bio-page--mobile .key-phone-preview__bio-text {
+    max-width: min(600px, 90%) !important;
+  }
+  .key-public-bio-page--mobile .key-phone-preview__blocks {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media screen and (orientation: landscape) and (min-width: 768px) and (max-width: 1366px) and (min-height: 521px) {
+  /* Real Tablets (iPad, Galaxy Tab) in Landscape Viewport */
+  .key-public-bio-page--tablet {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 1.5rem !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .key-public-bio-page--tablet .key-public-bio-page__body {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  .key-public-bio-page--tablet .key-cover-photo {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .key-public-bio-page--tablet .key-phone-preview__bio-text {
+    max-width: min(720px, 90%) !important;
+  }
+  .key-public-bio-page--tablet .key-phone-preview__blocks {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
