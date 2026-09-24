@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { screenToPath } from "../navigation";
@@ -1126,6 +1126,85 @@ export default function BioPagesScreen({
       setToast(null);
     }, 3000);
   };
+
+  // Filtered Device Models based on Active Target Scope for the Preview Slider
+  const scopedDeviceCatalog = useMemo(() => {
+    if (editorDeviceScope === "mobile_only") {
+      // All Mobile phone models (Android + Apple)
+      return DEVICE_CATALOG.filter((d) => d.category === "android" || d.category === "apple");
+    }
+    if (editorDeviceScope === "mobile_tablet") {
+      // All Tablet models
+      return DEVICE_CATALOG.filter((d) => d.category === "tablets");
+    }
+    if (editorDeviceScope === "mobile_tablet_laptop") {
+      // All Laptop and Desktop models
+      return DEVICE_CATALOG.filter((d) => d.category === "specials");
+    }
+    // "all_devices" (Ultra-Wide): all devices across the catalog
+    return DEVICE_CATALOG;
+  }, [editorDeviceScope]);
+
+  const currentModelIndex = useMemo(() => {
+    const idx = scopedDeviceCatalog.findIndex((d) => d.id === selectedDevice.id);
+    return idx >= 0 ? idx : 0;
+  }, [scopedDeviceCatalog, selectedDevice.id]);
+
+  // When scope changes, automatically ensure selectedDevice belongs to the scoped catalog
+  useEffect(() => {
+    const isCurrentInScope = scopedDeviceCatalog.some((d) => d.id === selectedDevice.id);
+    if (!isCurrentInScope && scopedDeviceCatalog.length > 0) {
+      const nextDevice = scopedDeviceCatalog[0];
+      setSelectedDevice(nextDevice);
+      if (nextDevice.category === "specials") {
+        setIsLandscape(false);
+      }
+    }
+  }, [editorDeviceScope, scopedDeviceCatalog, selectedDevice.id]);
+
+  const handlePrevModel = useCallback(() => {
+    if (scopedDeviceCatalog.length === 0) return;
+    const newIndex = (currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length;
+    const nextDev = scopedDeviceCatalog[newIndex];
+    setSelectedDevice(nextDev);
+    if (nextDev.category === "specials") {
+      setIsLandscape(false);
+    }
+    triggerToast(`Mockup: ${nextDev.name} (${newIndex + 1}/${scopedDeviceCatalog.length})`);
+  }, [scopedDeviceCatalog, currentModelIndex]);
+
+  const handleNextModel = useCallback(() => {
+    if (scopedDeviceCatalog.length === 0) return;
+    const newIndex = (currentModelIndex + 1) % scopedDeviceCatalog.length;
+    const nextDev = scopedDeviceCatalog[newIndex];
+    setSelectedDevice(nextDev);
+    if (nextDev.category === "specials") {
+      setIsLandscape(false);
+    }
+    triggerToast(`Mockup: ${nextDev.name} (${newIndex + 1}/${scopedDeviceCatalog.length})`);
+  }, [scopedDeviceCatalog, currentModelIndex]);
+
+  // Keyboard navigation for mockup slider (Left/Right arrows when not typing in form inputs)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          (activeEl as HTMLElement).isContentEditable)
+      ) {
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        handlePrevModel();
+      } else if (e.key === "ArrowRight") {
+        handleNextModel();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handlePrevModel, handleNextModel]);
 
   const handleUpdateBlockField = (blockId: string, field: string, value: any) => {
     setCanvasBlocks((prev) => {
@@ -4821,6 +4900,55 @@ export default function BioPagesScreen({
                             </div>
                           </div>
                         )}
+
+
+                        {/* Live Mockup Models Slider Controller in Sidebar */}
+                        <div className="p-3.5 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-400" />
+                              <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">
+                                Mockup Models Slider
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-mono text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/30">
+                              {currentModelIndex + 1} / {scopedDeviceCatalog.length}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2 bg-slate-950/70 p-2.5 rounded-xl border border-white/10">
+                            <button
+                              type="button"
+                              onClick={handlePrevModel}
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1"
+                              title="Previous Mockup Model"
+                            >
+                              <ChevronLeft className="w-4 h-4 text-indigo-400" />
+                              <span className="text-[10px] font-bold hidden sm:inline">Prev</span>
+                            </button>
+                            <div className="text-center min-w-0 flex-1 px-1">
+                              <div className="text-xs font-bold text-white truncate">
+                                {selectedDevice.name}
+                              </div>
+                              <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                                {selectedDevice.width} × {selectedDevice.height} · {selectedDevice.os}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleNextModel}
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1"
+                              title="Next Mockup Model"
+                            >
+                              <span className="text-[10px] font-bold hidden sm:inline">Next</span>
+                              <ChevronRight className="w-4 h-4 text-indigo-400" />
+                            </button>
+                          </div>
+
+                          <p className="text-[10px] text-slate-400 leading-relaxed">
+                            💡 <strong className="text-slate-300">Preview Experience:</strong> Use the left/right buttons in the preview stage or above to explore models. When published, the page always uses the realistic responsive scope sizing for all visitor devices.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -9658,6 +9786,86 @@ export default function BioPagesScreen({
             )}
 
             <div className="key-editor-preview-rail__stage w-full h-full overflow-hidden flex justify-center items-center relative p-2">
+                {/* 1. Left Navigation Slider Arrow Button */}
+                {scopedDeviceCatalog.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevModel();
+                    }}
+                    className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-full bg-slate-900/90 hover:bg-indigo-600 text-white border border-white/20 shadow-2xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer group flex items-center justify-center ring-1 ring-white/10"
+                    title={`Previous Model: ${scopedDeviceCatalog[(currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length]?.name || ""} (←)`}
+                    aria-label="Previous Mockup Model"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-indigo-300 group-hover:text-white group-hover:-translate-x-0.5 transition-transform" />
+                  </button>
+                )}
+
+                {/* 2. Right Navigation Slider Arrow Button */}
+                {scopedDeviceCatalog.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextModel();
+                    }}
+                    className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-full bg-slate-900/90 hover:bg-indigo-600 text-white border border-white/20 shadow-2xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer group flex items-center justify-center ring-1 ring-white/10"
+                    title={`Next Model: ${scopedDeviceCatalog[(currentModelIndex + 1) % scopedDeviceCatalog.length]?.name || ""} (→)`}
+                    aria-label="Next Mockup Model"
+                  >
+                    <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                )}
+
+                {/* 3. Floating Model Slider Controller Bar (Bottom) */}
+                {scopedDeviceCatalog.length > 1 && (
+                  <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-[94vw] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/90 border border-white/15 backdrop-blur-2xl shadow-2xl text-xs text-white">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrevModel();
+                        }}
+                        className="p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        title="Previous Model (Left Arrow)"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-1 select-none">
+                        <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+                          {editorDeviceScope === "mobile_only"
+                            ? "📱 Mobile Only"
+                            : editorDeviceScope === "mobile_tablet"
+                              ? "📱 Tablet Only"
+                              : editorDeviceScope === "mobile_tablet_laptop"
+                                ? "💻 Laptop & Desktop"
+                                : "🖥️ Ultra-Wide"}
+                        </span>
+                        <span className="text-[11px] sm:text-xs font-bold text-slate-100 max-w-[120px] sm:max-w-[220px] truncate">
+                          {selectedDevice.name}
+                        </span>
+                        <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 shrink-0">
+                          ({currentModelIndex + 1}/{scopedDeviceCatalog.length})
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNextModel();
+                        }}
+                        className="p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        title="Next Model (Right Arrow)"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <DeviceMockupFrame
                   device={selectedDevice}
                   zoom={viewportZoom}
