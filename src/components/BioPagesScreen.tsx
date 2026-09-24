@@ -9786,46 +9786,49 @@ export default function BioPagesScreen({
             )}
 
             <div className="key-editor-preview-rail__stage w-full h-full overflow-hidden flex justify-center items-center relative p-2">
-                {/* Unified Bottom Mockup Model Slider with Left/Right Buttons and Watermark Model Label */}
+                {/* 1. Left Corner Navigation Button (Watermark Style) */}
                 {scopedDeviceCatalog.length > 1 && (
-                  <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 max-w-[94vw] pointer-events-auto flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    {/* Left Navigation Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePrevModel();
-                      }}
-                      className="p-2 sm:p-2.5 rounded-full bg-slate-900/85 hover:bg-indigo-600 text-white/70 hover:text-white border border-white/15 shadow-xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center ring-1 ring-white/10 shrink-0"
-                      title={`Previous Model: ${scopedDeviceCatalog[(currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length]?.name || ""} (←)`}
-                      aria-label="Previous Mockup Model"
-                    >
-                      <ChevronLeft className="w-4 h-4 text-indigo-300 hover:text-white transition-colors" />
-                    </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevModel();
+                    }}
+                    className="absolute bottom-2.5 sm:bottom-3 left-3 sm:left-5 z-30 p-2.5 sm:p-3 rounded-full bg-slate-950/40 hover:bg-slate-900/75 text-white/50 hover:text-white border border-white/[0.08] hover:border-white/20 shadow-lg backdrop-blur-md hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group ring-1 ring-white/5"
+                    title={`Previous Model: ${scopedDeviceCatalog[(currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length]?.name || ""} (←)`}
+                    aria-label="Previous Mockup Model"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-white/45 group-hover:text-white transition-colors" />
+                  </button>
+                )}
 
-                    {/* Watermark style Model Title & Count (No Scope Name) */}
-                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/40 hover:bg-slate-950/70 border border-white/[0.08] backdrop-blur-md shadow-lg transition-all select-none">
-                      <span className="text-xs font-medium text-white/45 tracking-wide max-w-[150px] sm:max-w-[260px] truncate">
+                {/* 2. Right Corner Navigation Button (Watermark Style) */}
+                {scopedDeviceCatalog.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextModel();
+                    }}
+                    className="absolute bottom-2.5 sm:bottom-3 right-3 sm:right-5 z-30 p-2.5 sm:p-3 rounded-full bg-slate-950/40 hover:bg-slate-900/75 text-white/50 hover:text-white border border-white/[0.08] hover:border-white/20 shadow-lg backdrop-blur-md hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group ring-1 ring-white/5"
+                    title={`Next Model: ${scopedDeviceCatalog[(currentModelIndex + 1) % scopedDeviceCatalog.length]?.name || ""} (→)`}
+                    aria-label="Next Mockup Model"
+                  >
+                    <ChevronRight className="w-5 h-5 text-white/45 group-hover:text-white transition-colors" />
+                  </button>
+                )}
+
+                {/* 3. Center Bottom Watermark Model Title & Count (No Scope Name) */}
+                {scopedDeviceCatalog.length > 1 && (
+                  <div className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-30 max-w-[80vw] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/40 hover:bg-slate-950/60 border border-white/[0.06] backdrop-blur-md shadow-lg transition-all select-none">
+                      <span className="text-xs font-medium text-white/45 tracking-wide max-w-[160px] sm:max-w-[280px] truncate">
                         {selectedDevice.name}
                       </span>
                       <span className="text-[10px] font-mono text-white/35 font-medium shrink-0">
                         ({currentModelIndex + 1}/{scopedDeviceCatalog.length})
                       </span>
                     </div>
-
-                    {/* Right Navigation Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNextModel();
-                      }}
-                      className="p-2 sm:p-2.5 rounded-full bg-slate-900/85 hover:bg-indigo-600 text-white/70 hover:text-white border border-white/15 shadow-xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center ring-1 ring-white/10 shrink-0"
-                      title={`Next Model: ${scopedDeviceCatalog[(currentModelIndex + 1) % scopedDeviceCatalog.length]?.name || ""} (→)`}
-                      aria-label="Next Mockup Model"
-                    >
-                      <ChevronRight className="w-4 h-4 text-indigo-300 hover:text-white transition-colors" />
-                    </button>
                   </div>
                 )}
                 <DeviceMockupFrame
