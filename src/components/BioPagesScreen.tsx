@@ -9786,84 +9786,46 @@ export default function BioPagesScreen({
             )}
 
             <div className="key-editor-preview-rail__stage w-full h-full overflow-hidden flex justify-center items-center relative p-2">
-                {/* 1. Left Navigation Slider Arrow Button */}
+                {/* Unified Bottom Mockup Model Slider with Left/Right Buttons and Watermark Model Label */}
                 {scopedDeviceCatalog.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePrevModel();
-                    }}
-                    className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-full bg-slate-900/90 hover:bg-indigo-600 text-white border border-white/20 shadow-2xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer group flex items-center justify-center ring-1 ring-white/10"
-                    title={`Previous Model: ${scopedDeviceCatalog[(currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length]?.name || ""} (←)`}
-                    aria-label="Previous Mockup Model"
-                  >
-                    <ChevronLeft className="w-5 h-5 text-indigo-300 group-hover:text-white group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                )}
+                  <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 max-w-[94vw] pointer-events-auto flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    {/* Left Navigation Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrevModel();
+                      }}
+                      className="p-2 sm:p-2.5 rounded-full bg-slate-900/85 hover:bg-indigo-600 text-white/70 hover:text-white border border-white/15 shadow-xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center ring-1 ring-white/10 shrink-0"
+                      title={`Previous Model: ${scopedDeviceCatalog[(currentModelIndex - 1 + scopedDeviceCatalog.length) % scopedDeviceCatalog.length]?.name || ""} (←)`}
+                      aria-label="Previous Mockup Model"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-indigo-300 hover:text-white transition-colors" />
+                    </button>
 
-                {/* 2. Right Navigation Slider Arrow Button */}
-                {scopedDeviceCatalog.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNextModel();
-                    }}
-                    className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-full bg-slate-900/90 hover:bg-indigo-600 text-white border border-white/20 shadow-2xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer group flex items-center justify-center ring-1 ring-white/10"
-                    title={`Next Model: ${scopedDeviceCatalog[(currentModelIndex + 1) % scopedDeviceCatalog.length]?.name || ""} (→)`}
-                    aria-label="Next Mockup Model"
-                  >
-                    <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                )}
-
-                {/* 3. Floating Model Slider Controller Bar (Bottom) */}
-                {scopedDeviceCatalog.length > 1 && (
-                  <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-[94vw] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/90 border border-white/15 backdrop-blur-2xl shadow-2xl text-xs text-white">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePrevModel();
-                        }}
-                        className="p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                        title="Previous Model (Left Arrow)"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-
-                      <div className="flex items-center gap-1.5 sm:gap-2 px-1 select-none">
-                        <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
-                          {editorDeviceScope === "mobile_only"
-                            ? "📱 Mobile Only"
-                            : editorDeviceScope === "mobile_tablet"
-                              ? "📱 Tablet Only"
-                              : editorDeviceScope === "mobile_tablet_laptop"
-                                ? "💻 Laptop & Desktop"
-                                : "🖥️ All Devices"}
-                        </span>
-                        <span className="text-[11px] sm:text-xs font-bold text-slate-100 max-w-[120px] sm:max-w-[220px] truncate">
-                          {selectedDevice.name}
-                        </span>
-                        <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 shrink-0">
-                          ({currentModelIndex + 1}/{scopedDeviceCatalog.length})
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNextModel();
-                        }}
-                        className="p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                        title="Next Model (Right Arrow)"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
+                    {/* Watermark style Model Title & Count (No Scope Name) */}
+                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/40 hover:bg-slate-950/70 border border-white/[0.08] backdrop-blur-md shadow-lg transition-all select-none">
+                      <span className="text-xs font-medium text-white/45 tracking-wide max-w-[150px] sm:max-w-[260px] truncate">
+                        {selectedDevice.name}
+                      </span>
+                      <span className="text-[10px] font-mono text-white/35 font-medium shrink-0">
+                        ({currentModelIndex + 1}/{scopedDeviceCatalog.length})
+                      </span>
                     </div>
+
+                    {/* Right Navigation Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNextModel();
+                      }}
+                      className="p-2 sm:p-2.5 rounded-full bg-slate-900/85 hover:bg-indigo-600 text-white/70 hover:text-white border border-white/15 shadow-xl backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center ring-1 ring-white/10 shrink-0"
+                      title={`Next Model: ${scopedDeviceCatalog[(currentModelIndex + 1) % scopedDeviceCatalog.length]?.name || ""} (→)`}
+                      aria-label="Next Mockup Model"
+                    >
+                      <ChevronRight className="w-4 h-4 text-indigo-300 hover:text-white transition-colors" />
+                    </button>
                   </div>
                 )}
                 <DeviceMockupFrame
