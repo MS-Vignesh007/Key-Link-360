@@ -851,7 +851,7 @@ export default function BioPagesScreen({
 
   // AI Sales & Support Assistant States
   const [aiAssistantEnabled, setAiAssistantEnabled] = useState(false);
-  const [aiBotName, setAiBotName] = useState("AI Sales Assistant");
+  const [aiBotName, setAiBotName] = useState("AI Assistant");
   const [aiWelcomeMessage, setAiWelcomeMessage] = useState(
     "👋 Hi! How can I help you explore our products, pricing, or services today?"
   );
@@ -4017,16 +4017,16 @@ export default function BioPagesScreen({
                   {settingsSubPanel === "root" && (
                     <div className="space-y-4 animate-in fade-in duration-200">
                       <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-                        <div>
-                          <h3 className="font-display font-bold text-base text-slate-100 flex items-center gap-2">
-                            <Settings className="w-4.5 h-4.5 text-indigo-400" />
-                            <span>Page Settings</span>
+                        <div className="min-w-0 pr-2">
+                          <h3 className="font-display font-bold text-sm text-slate-100 flex items-center gap-2">
+                            <Settings className="w-4 h-4 text-indigo-400 shrink-0" />
+                            <span className="truncate">Page Settings</span>
                           </h3>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
-                            Select any section below to customize in a dedicated slidebar
+                          <p className="text-[10.5px] text-slate-400 mt-0.5 truncate">
+                            Configure modules for your bio site
                           </p>
                         </div>
-                        <span className="text-[10px] font-bold text-indigo-400 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25">
+                        <span className="text-[10px] font-bold text-indigo-300 px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 whitespace-nowrap shrink-0">
                           5 Sections
                         </span>
                       </div>
@@ -4045,9 +4045,9 @@ export default function BioPagesScreen({
                             <div className="min-w-0 flex-1 space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors">
-                                  SEO & Search Meta
+                                  SEO & Meta
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                                   seoIndexingEnabled
                                     ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
                                     : "bg-slate-700/30 text-slate-400 border-slate-600/30"
@@ -4056,7 +4056,7 @@ export default function BioPagesScreen({
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 line-clamp-1">
-                                Meta title, description, keywords & search preview
+                                Title, meta tags & search preview
                               </p>
                             </div>
                           </div>
@@ -4097,9 +4097,9 @@ export default function BioPagesScreen({
                             <div className="min-w-0 flex-1 space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-xs font-bold text-white group-hover:text-pink-300 transition-colors">
-                                  Form Payment (Razorpay)
+                                  Form Payment
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                                   paymentEnabled
                                     ? "bg-pink-500/15 text-pink-300 border-pink-500/30"
                                     : "bg-slate-700/30 text-slate-400 border-slate-600/30"
@@ -4108,7 +4108,7 @@ export default function BioPagesScreen({
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 line-clamp-1">
-                                Collect instant fees on forms or smart forms
+                                Collect fees on form submissions
                               </p>
                             </div>
                           </div>
@@ -4149,9 +4149,9 @@ export default function BioPagesScreen({
                             <div className="min-w-0 flex-1 space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
-                                  AI Sales Assistant
+                                  AI Assistant
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                                   aiAssistantEnabled
                                     ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
                                     : "bg-slate-700/30 text-slate-400 border-slate-600/30"
@@ -4160,7 +4160,7 @@ export default function BioPagesScreen({
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 line-clamp-1">
-                                24/7 intelligent sales agent trained on your brand
+                                24/7 smart bot for sales & chat
                               </p>
                             </div>
                           </div>
@@ -4189,7 +4189,7 @@ export default function BioPagesScreen({
                           </div>
                         </div>
 
-                        {/* 4. Target Devices Scope Card */}
+                        {/* 4. Target Devices Card */}
                         <div
                           onClick={() => setSettingsSubPanel("devices")}
                           className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-indigo-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-indigo-500/10"
@@ -4201,9 +4201,9 @@ export default function BioPagesScreen({
                             <div className="min-w-0 flex-1 space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">
-                                  Target Devices Scope
+                                  Target Devices
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                                   isTargetDevicesCustomEnabled
                                     ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
                                     : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
@@ -4216,11 +4216,11 @@ export default function BioPagesScreen({
                                           : editorDeviceScope === "mobile_tablet_laptop"
                                             ? "Laptop/PC"
                                             : "All Devices")
-                                    : "All Devices (Ultra-Wide)"}
+                                    : "All Devices"}
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 line-clamp-1">
-                                Ultra-Wide automated fluid vs locked viewport
+                                Responsive layout for all screens
                               </p>
                             </div>
                           </div>
@@ -4262,9 +4262,9 @@ export default function BioPagesScreen({
                             <div className="min-w-0 flex-1 space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
-                                  Thank You Page Screen
+                                  Thank You Page
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                                   isThankYouEnabled
                                     ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
                                     : "bg-slate-700/30 text-slate-400 border-slate-600/30"
@@ -4273,7 +4273,7 @@ export default function BioPagesScreen({
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 line-clamp-1">
-                                Post-submit confirmation screen for forms & payments
+                                Confirmation screen after form submission
                               </p>
                             </div>
                           </div>
@@ -4729,11 +4729,11 @@ export default function BioPagesScreen({
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-white block">TARGET DEVICES</span>
                               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                {isTargetDevicesCustomEnabled ? "Custom Mode" : "Auto Fluid"}
+                                {isTargetDevicesCustomEnabled ? "Custom" : "Auto"}
                               </span>
                             </div>
                             <span className="text-[10px] text-slate-400 block mt-0.5">
-                              Default is Ultra-Wide responsive. Enable to choose locked screen divisions.
+                              Default is All Devices. Enable for custom screen locking.
                             </span>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -4746,8 +4746,8 @@ export default function BioPagesScreen({
                                 setEditorDeviceScope("all_devices");
                                 triggerToast(
                                   enabled
-                                    ? "Target Devices enabled · All Devices (Ultra-Wide) active by default"
-                                    : "Target Devices disabled · Reset to All Devices (Ultra-Wide) fluid"
+                                    ? "Target Devices enabled · All Devices active"
+                                    : "Target Devices disabled · Reset to All Devices"
                                 );
                               }}
                               className="sr-only peer"
@@ -4766,33 +4766,33 @@ export default function BioPagesScreen({
                                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
                                 <span className="text-xs font-bold text-emerald-300">
-                                  All Devices (Ultra-Wide) · Default Active
+                                  All Devices · Default Active
                                 </span>
                               </div>
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                Fluid Auto
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 whitespace-nowrap shrink-0">
+                                Auto Fluid
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-300 leading-relaxed">
                               Published bio site automatically scales across all visitor screens — Ultra-Wide (up to 1680px, 4-col), Laptops (3-col), Tablets (2-col), and Mobile phones (1-col) via dynamic responsive media queries.
                             </p>
                             <div className="pt-2 flex items-center justify-between text-[10px] text-indigo-300/80 font-medium bg-black/20 p-2.5 rounded-xl border border-white/[0.04]">
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
                                 <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                <span>Ultra-Wide</span>
+                                <span>Desktop</span>
                               </div>
                               <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
                                 <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                                 <span>Laptop</span>
                               </div>
                               <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
                                 <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                                 <span>Tablet</span>
                               </div>
                               <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
                                 <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                                 <span>Mobile</span>
                               </div>
@@ -4807,7 +4807,7 @@ export default function BioPagesScreen({
                               </span>
                               <span className="text-[10px] text-indigo-400 font-semibold">
                                 {editorDeviceScope === "all_devices"
-                                  ? "Ultra-Wide Fluid (Default)"
+                                  ? "All Devices (Default)"
                                   : editorDeviceScope === "mobile_only"
                                     ? "Mobile Locked (430px)"
                                     : editorDeviceScope === "mobile_tablet"
@@ -4820,16 +4820,16 @@ export default function BioPagesScreen({
                               {[
                                 {
                                   id: "all_devices" as const,
-                                  title: "All Devices (Ultra-Wide)",
-                                  desc: "Automated fluid responsiveness across 4K, Desktop, Tablet & Phone",
-                                  badge: "Default · Recommended",
-                                  badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                                  title: "All Devices",
+                                  desc: "Fluid auto layout for Desktop, Tablet & Mobile",
+                                  badge: "Default",
+                                  badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 whitespace-nowrap shrink-0",
                                   icon: Monitor
                                 },
                                 {
                                   id: "mobile_only" as const,
                                   title: "Mobile Only",
-                                  desc: "Strictly locked to phone screen (430px card) on all laptops & PCs",
+                                  desc: "Locked to mobile phone width (430px)",
                                   badge: "Phone Only",
                                   badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
                                   icon: Smartphone
@@ -4837,15 +4837,15 @@ export default function BioPagesScreen({
                                 {
                                   id: "mobile_tablet" as const,
                                   title: "Tablet Only",
-                                  desc: "Locked to tablet viewport (768px container) across all devices",
+                                  desc: "Locked to tablet width (768px)",
                                   badge: "Tablet View",
                                   badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
                                   icon: Tablet
                                 },
                                 {
                                   id: "mobile_tablet_laptop" as const,
-                                  title: "Laptop & Desktop Only",
-                                  desc: "Standard desktop/laptop layout (1150px container)",
+                                  title: "Laptop & Desktop",
+                                  desc: "Locked to laptop & PC width (1150px)",
                                   badge: "Laptop / PC",
                                   badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
                                   icon: Laptop
@@ -4902,16 +4902,16 @@ export default function BioPagesScreen({
                         )}
 
 
-                        {/* Live Mockup Models Slider Controller in Sidebar */}
+                        {/* Live Model Slider Controller in Sidebar */}
                         <div className="p-3.5 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25 space-y-2.5">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-400" />
-                              <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">
-                                Mockup Models Slider
+                              <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider whitespace-nowrap">
+                                Model Slider
                               </span>
                             </div>
-                            <span className="text-[10px] font-mono text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/30">
+                            <span className="text-[10px] font-mono text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 whitespace-nowrap shrink-0">
                               {currentModelIndex + 1} / {scopedDeviceCatalog.length}
                             </span>
                           </div>
@@ -4931,7 +4931,7 @@ export default function BioPagesScreen({
                                 {selectedDevice.name}
                               </div>
                               <div className="text-[10px] text-slate-400 truncate mt-0.5">
-                                {selectedDevice.width} × {selectedDevice.height} · {selectedDevice.os}
+                                {selectedDevice.os} · {selectedDevice.width}×{selectedDevice.height}
                               </div>
                             </div>
                             <button
@@ -5047,7 +5047,7 @@ export default function BioPagesScreen({
                             {showThanksPage && (
                               <div className="flex items-center justify-between p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs">
                                 <span className="text-purple-200 font-medium text-[11px]">
-                                  🎉 Live Preview is showing the Thank You page in the phone simulator!
+                                  🎉 Live Preview showing Thank You page in simulator
                                 </span>
                                 <button
                                   type="button"
@@ -9626,7 +9626,7 @@ export default function BioPagesScreen({
                   )}
                   <span className="hidden sm:inline text-[11px] font-semibold">
                     {editorDeviceScope === "all_devices"
-                      ? "All Devices (Ultra-Wide)"
+                      ? "All Devices"
                       : editorDeviceScope === "mobile_only"
                         ? "Mobile Only"
                         : editorDeviceScope === "mobile_tablet"
@@ -9655,10 +9655,10 @@ export default function BioPagesScreen({
                       {[
                         {
                           id: "all_devices" as const,
-                          title: "All Devices (Ultra-Wide)",
-                          desc: "Fluid responsiveness (4K, Desktop, Tablet, Phone)",
+                          title: "All Devices",
+                          desc: "Fluid auto layout for all screens",
                           badge: "Default",
-                          badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                          badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 whitespace-nowrap shrink-0",
                           icon: Monitor
                         },
                         {
@@ -9842,7 +9842,7 @@ export default function BioPagesScreen({
                               ? "📱 Tablet Only"
                               : editorDeviceScope === "mobile_tablet_laptop"
                                 ? "💻 Laptop & Desktop"
-                                : "🖥️ Ultra-Wide"}
+                                : "🖥️ All Devices"}
                         </span>
                         <span className="text-[11px] sm:text-xs font-bold text-slate-100 max-w-[120px] sm:max-w-[220px] truncate">
                           {selectedDevice.name}
