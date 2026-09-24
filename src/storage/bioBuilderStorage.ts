@@ -300,7 +300,8 @@ export function buildEditorState(
     description?: string;
   },
   aiAssistant?: BioPagePreviewDetails["aiAssistant"],
-  deviceScope?: DeviceTargetScope
+  deviceScope?: DeviceTargetScope,
+  targetDevicesCustomEnabled?: boolean
 ): BioEditorState {
   return {
     pageMeta: {
@@ -312,6 +313,7 @@ export function buildEditorState(
       pageTheme,
       ...(coverSettings ? { coverSettings } : {}),
       ...(deviceScope ? { deviceScope } : {}),
+      ...(typeof targetDevicesCustomEnabled === "boolean" ? { targetDevicesCustomEnabled } : {}),
       ...(thankYou?.title ? { thankYouTitle: thankYou.title } : {}),
       ...(thankYou?.message ? { thankYouMessage: thankYou.message } : {}),
       ...(thankYou?.emoji ? { thankYouEmoji: thankYou.emoji } : {}),

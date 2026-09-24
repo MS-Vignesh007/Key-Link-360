@@ -828,7 +828,14 @@ export default function PublicBioPageView({
     }
   };
 
-    const deviceScope = customDetails?.deviceScope || "auto_adaptive";
+    const currentPageMeta = allPages?.find((p) => p.id === pageId || (pageSlug && p.slug === pageSlug));
+    const isCustomDeviceScopeEnabled =
+      Boolean(customDetails?.targetDevicesCustomEnabled ?? currentPageMeta?.targetDevicesCustomEnabled);
+    // If custom device scope is not enabled, default to "all_devices" (Ultra-wide auto-fluid)
+    const deviceScope = isCustomDeviceScopeEnabled
+      ? (customDetails?.deviceScope || currentPageMeta?.deviceScope || "all_devices")
+      : "all_devices";
+
     const effectiveDevice: DeviceViewportMode =
       activeDeviceMode !== "auto"
         ? activeDeviceMode
@@ -842,12 +849,12 @@ export default function PublicBioPageView({
 
     const containerMaxWidthClass =
       effectiveDevice === "mobile"
-        ? "max-w-md key-public-bio-page--mobile"
+        ? "max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-[2.5rem] border border-white/15 my-6"
         : effectiveDevice === "tablet"
-          ? "max-w-3xl key-public-bio-page--tablet"
+          ? "max-w-[768px] key-public-bio-page--tablet shadow-2xl rounded-[2rem] border border-white/15 my-6"
           : effectiveDevice === "laptop"
-            ? "max-w-5xl key-public-bio-page--laptop"
-            : "max-w-7xl key-public-bio-page--desktop";
+            ? "max-w-[1150px] key-public-bio-page--laptop shadow-2xl rounded-[1.5rem] border border-white/15 my-6"
+            : "w-full max-w-[1440px] 2xl:max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-[5px] rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -883,7 +890,9 @@ export default function PublicBioPageView({
         ? "grid-cols-1 gap-3.5"
         : effectiveDevice === "tablet"
           ? "grid-cols-1 sm:grid-cols-2 gap-4"
-          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5";
+          : effectiveDevice === "laptop"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
 
     return (
       <div
@@ -918,7 +927,7 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 my-[5px] rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
           style={getBioPageThemeStyle(pageTheme)}
         >
         <div
@@ -965,11 +974,15 @@ export default function PublicBioPageView({
               .filter((block) => !Boolean((block as any).isHidden || (block as any).styles?.isHidden))
               .map((block) => {
                 const visibilityClass =
-                  block.deviceVisibility === "mobile_only"
-                    ? "block md:hidden"
-                    : block.deviceVisibility === "desktop_only"
-                      ? "hidden md:block"
-                      : "block";
+                  effectiveDevice === "mobile"
+                    ? block.deviceVisibility === "desktop_only"
+                      ? "hidden"
+                      : "block"
+                    : block.deviceVisibility === "mobile_only"
+                      ? "block md:hidden"
+                      : block.deviceVisibility === "desktop_only"
+                        ? "hidden md:block"
+                        : "block";
                 const isWide = isWideBlock(block.type);
                 const colSpanClass =
                   effectiveDevice === "mobile"
@@ -977,7 +990,9 @@ export default function PublicBioPageView({
                     : isWide
                       ? effectiveDevice === "tablet"
                         ? "col-span-1 sm:col-span-2"
-                        : "col-span-1 md:col-span-2 lg:col-span-3"
+                        : effectiveDevice === "laptop"
+                          ? "col-span-1 md:col-span-2 lg:col-span-3"
+                          : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
                       : block.colSpan === "half"
                         ? "col-span-1"
                         : effectiveDevice === "tablet"
@@ -1165,60 +1180,62 @@ export default function PublicBioPageView({
           blocks={blocks as any}
         />
 
-        {/* Floating Live Device Preview Switcher Dock */}
-        {showDeviceDock ? (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white shadow-2xl backdrop-blur-md border border-white/20 transition-all text-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 pl-1 hidden sm:inline">
-              Preview:
-            </span>
-            <div className="flex items-center gap-1">
-              {(
-                [
-                  { id: "mobile" as const, label: "Phone", icon: Smartphone },
-                  { id: "tablet" as const, label: "Tablet", icon: Tablet },
-                  { id: "laptop" as const, label: "Laptop", icon: Laptop },
-                  { id: "desktop" as const, label: "Desktop", icon: Monitor },
-                  { id: "auto" as const, label: "Auto", icon: Globe }
-                ] as const
-              ).map(({ id, label, icon: Icon }) => {
-                const isActive = activeDeviceMode === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setActiveDeviceMode(id)}
-                    title={`Switch View: ${label}`}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-indigo-600 text-white shadow-sm font-bold"
-                        : "text-slate-300 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    <Icon className="h-3 w-3" />
-                    <span className="hidden xs:inline">{label}</span>
-                  </button>
-                );
-              })}
+        {/* Floating Live Device Preview Switcher Dock (Preview Mode Only) */}
+        {mode === "preview" && (
+          showDeviceDock ? (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white shadow-2xl backdrop-blur-md border border-white/20 transition-all text-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 pl-1 hidden sm:inline">
+                Preview:
+              </span>
+              <div className="flex items-center gap-1">
+                {(
+                  [
+                    { id: "mobile" as const, label: "Phone", icon: Smartphone },
+                    { id: "tablet" as const, label: "Tablet", icon: Tablet },
+                    { id: "laptop" as const, label: "Laptop", icon: Laptop },
+                    { id: "desktop" as const, label: "Desktop", icon: Monitor },
+                    { id: "auto" as const, label: "Auto", icon: Globe }
+                  ] as const
+                ).map(({ id, label, icon: Icon }) => {
+                  const isActive = activeDeviceMode === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setActiveDeviceMode(id)}
+                      title={`Switch View: ${label}`}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-indigo-600 text-white shadow-sm font-bold"
+                          : "text-slate-300 hover:text-white hover:bg-white/10"
+                      }`}
+                    >
+                      <Icon className="h-3 w-3" />
+                      <span className="hidden xs:inline">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeviceDock(false)}
+                title="Hide Preview Dock"
+                className="ml-1 p-1 rounded-full hover:bg-white/20 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
+          ) : (
             <button
               type="button"
-              onClick={() => setShowDeviceDock(false)}
-              title="Hide Preview Dock"
-              className="ml-1 p-1 rounded-full hover:bg-white/20 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              onClick={() => setShowDeviceDock(true)}
+              title="Show Device Preview Switcher"
+              className="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/85 hover:bg-slate-900 text-white shadow-xl backdrop-blur-md border border-white/20 text-xs font-semibold transition-all cursor-pointer"
             >
-              <X className="h-3.5 w-3.5" />
+              <Monitor className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Devices</span>
             </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowDeviceDock(true)}
-            title="Show Device Preview Switcher"
-            className="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/85 hover:bg-slate-900 text-white shadow-xl backdrop-blur-md border border-white/20 text-xs font-semibold transition-all cursor-pointer"
-          >
-            <Monitor className="h-3.5 w-3.5 text-indigo-400" />
-            <span>Devices</span>
-          </button>
+          )
         )}
 
       </div>

@@ -53,6 +53,8 @@ export interface BioPage {
   pageKind?: "bio" | "thanks";
   /** Target device scope: Mobile only, Mobile+Tablet, Mobile+Tablet+Laptop, All Devices, or Auto-Adaptive. */
   deviceScope?: DeviceTargetScope;
+  /** True if the user explicitly enabled custom target devices selection; otherwise defaults to All Devices Ultra-Wide */
+  targetDevicesCustomEnabled?: boolean;
   /** True while editing a template before Save Draft / Publish — hidden from Bio Pages history. */
   isUncommitted?: boolean;
 }
@@ -519,6 +521,8 @@ export interface BioPagePreviewDetails {
   aiAssistant?: BioAiAssistantSettings;
   /** Target device scope: Mobile only, Mobile+Tablet, Mobile+Tablet+Laptop, All Devices, or Auto-Adaptive. */
   deviceScope?: DeviceTargetScope;
+  /** True if the user explicitly enabled custom target devices selection; otherwise defaults to All Devices Ultra-Wide */
+  targetDevicesCustomEnabled?: boolean;
 }
 
 /** Full restorable editor state for drafts and templates */
@@ -539,6 +543,7 @@ export interface BioEditorState {
     paymentDescription?: string;
     aiAssistant?: BioAiAssistantSettings;
     deviceScope?: DeviceTargetScope;
+    targetDevicesCustomEnabled?: boolean;
   };
   blocks: BioEditorBlock[];
   thankYouBlocks?: BioEditorBlock[];

@@ -796,7 +796,8 @@ export default function BioPagesScreen({
   // Multi-Device Viewport & Scope states
   const [viewportMode, setViewportMode] = useState<DeviceViewportMode>("mobile");
   const [viewportZoom, setViewportZoom] = useState<"fit" | number>("fit");
-  const [editorDeviceScope, setEditorDeviceScope] = useState<DeviceTargetScope>("auto_adaptive");
+  const [editorDeviceScope, setEditorDeviceScope] = useState<DeviceTargetScope>("all_devices");
+  const [isTargetDevicesCustomEnabled, setIsTargetDevicesCustomEnabled] = useState<boolean>(false);
 
   // Modern Studio Nav Tab & Sliding Sidebar states
   const [studioNavTab, setStudioNavTab] = useState<
@@ -1437,7 +1438,8 @@ export default function BioPagesScreen({
         autoLeadCapture: aiAutoLeadCapture,
         customFaqs: aiCustomFaqs
       },
-      editorDeviceScope
+      editorDeviceScope,
+      isTargetDevicesCustomEnabled
     );
 
   const buildCurrentPreviewDetails = (theme: BioPagePreviewTheme = editorPageTheme) => {
@@ -1456,6 +1458,7 @@ export default function BioPagesScreen({
       pageTheme: theme,
       coverSettings: editorCoverSettings,
       deviceScope: editorDeviceScope,
+      targetDevicesCustomEnabled: isTargetDevicesCustomEnabled,
       templateId: linkedTpl?.id || linkedTemplateId || undefined,
       templateName: linkedTpl?.name || undefined,
       thankYouTitle,
@@ -1779,7 +1782,8 @@ export default function BioPagesScreen({
     setEditorCoverPhoto(state.pageMeta.coverImage);
     setEditorCoverSettings(normalizeCoverSettings(state.pageMeta.coverSettings));
     setEditorPageTheme(normalizePageTheme(state.pageMeta.pageTheme));
-    setEditorDeviceScope(state.pageMeta.deviceScope ?? "auto_adaptive");
+    setEditorDeviceScope(state.pageMeta.deviceScope ?? "all_devices");
+    setIsTargetDevicesCustomEnabled(Boolean(state.pageMeta.targetDevicesCustomEnabled));
     setEditorBlocks(cloneBlocks(state.blocks));
     hydrateThankYouFromDetails(null, state);
   };
@@ -1828,7 +1832,8 @@ export default function BioPagesScreen({
     setEditorCoverPhoto(details?.coverPhoto || page.coverPhoto || DEFAULT_COVER);
     setEditorPageTheme(normalizePageTheme(details?.pageTheme ?? readStoredPageTheme(page.id, page.slug)));
     setEditorCoverSettings(normalizeCoverSettings(details?.coverSettings ?? readStoredPageDetails(page.id, page.slug)?.coverSettings));
-    setEditorDeviceScope(details?.deviceScope ?? page.deviceScope ?? "auto_adaptive");
+    setEditorDeviceScope(details?.deviceScope ?? page.deviceScope ?? "all_devices");
+    setIsTargetDevicesCustomEnabled(Boolean(details?.targetDevicesCustomEnabled ?? page.targetDevicesCustomEnabled));
     hydrateThankYouFromDetails(details);
   };
 
@@ -1897,6 +1902,7 @@ export default function BioPagesScreen({
       handle: editorHandle,
       status: nextStatus,
       deviceScope: editorDeviceScope,
+      targetDevicesCustomEnabled: isTargetDevicesCustomEnabled,
       isUncommitted: undefined
     });
     return pages.map((page) =>
@@ -1909,6 +1915,7 @@ export default function BioPagesScreen({
             handle: editorHandle,
             status: nextStatus,
             deviceScope: editorDeviceScope,
+            targetDevicesCustomEnabled: isTargetDevicesCustomEnabled,
             isUncommitted: undefined
           }
         : page
@@ -4206,91 +4213,178 @@ export default function BioPagesScreen({
                     </div>
 
                     {/* Target Devices & Responsive Layout Scope */}
-                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
-                      <div>
-                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block">
-                          Target Devices
-                        </span>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          Choose screen viewport optimization for your page.
-                        </p>
+                    <div className="pt-4 border-t border-white/[0.08] space-y-3.5">
+                      <div className="flex items-center justify-between gap-3 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.07]">
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-white tracking-wide">
+                              TARGET DEVICES
+                            </span>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              {isTargetDevicesCustomEnabled ? "Custom Mode" : "Auto Fluid"}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 leading-tight">
+                            Enable to choose target screen divisions. Default is Ultra-Wide responsive.
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={isTargetDevicesCustomEnabled}
+                            onChange={(e) => {
+                              const enabled = e.target.checked;
+                              setIsTargetDevicesCustomEnabled(enabled);
+                              // Before and immediately after enabling, All Devices Ultra-Wide is default
+                              setEditorDeviceScope("all_devices");
+                              triggerToast(
+                                enabled
+                                  ? "Target Devices enabled · All Devices (Ultra-Wide) active by default"
+                                  : "Target Devices disabled · Reset to All Devices (Ultra-Wide) fluid"
+                              );
+                            }}
+                            className="sr-only peer"
+                          />
+                          <div className="w-10 h-5.5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600 border border-white/20"></div>
+                        </label>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-2">
-                        {[
-                          {
-                            id: "auto_adaptive" as const,
-                            title: "Smart Fluid",
-                            desc: "All screens auto-adaptive",
-                            badge: "Universal",
-                            badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          },
-                          {
-                            id: "mobile_only" as const,
-                            title: "Mobile Only",
-                            desc: "Classic bio-link column (480px)",
-                            badge: "Mobile",
-                            badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                          },
-                          {
-                            id: "mobile_tablet" as const,
-                            title: "Mobile + Tablets",
-                            desc: "Handheld screens (up to 768px)",
-                            badge: "Handheld",
-                            badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
-                          },
-                          {
-                            id: "mobile_tablet_laptop" as const,
-                            title: "Mobile + Laptop",
-                            desc: "Standard laptops (up to 1024px)",
-                            badge: "Laptop",
-                            badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                          },
-                          {
-                            id: "all_devices" as const,
-                            title: "All Devices",
-                            desc: "Wide desktops & Smart TV (1320px+)",
-                            badge: "Ultra-Wide",
-                            badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                          }
-                        ].map((option) => {
-                          const isSelected = editorDeviceScope === option.id;
-                          return (
-                            <button
-                              key={option.id}
-                              type="button"
-                              onClick={() => {
-                                setEditorDeviceScope(option.id);
-                                triggerToast(`Target layout set to: ${option.title}`);
-                              }}
-                              className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 cursor-pointer min-w-0 ${
-                                isSelected
-                                  ? "bg-indigo-600/15 border-indigo-500/60 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/30"
-                                  : "bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06]"
-                              }`}
-                            >
-                              <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-xs font-bold truncate ${isSelected ? "text-indigo-200" : "text-slate-200"}`}>
-                                    {option.title}
-                                  </span>
-                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${option.badgeColor}`}>
-                                    {option.badge}
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-slate-400 leading-snug truncate">
-                                  {option.desc}
-                                </p>
-                              </div>
-                              <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
-                                isSelected ? "border-indigo-400 bg-indigo-600" : "border-white/20 bg-slate-900"
-                              }`}>
-                                {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {/* When Checkbox is NOT enabled: Default Ultra-Wide Active State */}
+                      {!isTargetDevicesCustomEnabled ? (
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900/60 to-purple-950/30 border border-indigo-500/30 shadow-lg shadow-indigo-950/30 space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="flex h-2 w-2 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                              <span className="text-xs font-bold text-emerald-300">
+                                All Devices (Ultra-Wide) · Default Active
+                              </span>
+                            </div>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                              Fluid Auto
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-300 leading-relaxed">
+                            Published bio site automatically scales across all visitor screens — Ultra-Wide (up to 1680px, 4-col), Laptops (3-col), Tablets (2-col), and Mobile phones (1-col) via dynamic responsive media queries.
+                          </p>
+                          <div className="pt-1.5 flex items-center gap-2 text-[10px] text-indigo-300/80 font-medium">
+                            <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <span>Ultra-Wide</span>
+                            <span className="text-slate-600">→</span>
+                            <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <span>Laptop</span>
+                            <span className="text-slate-600">→</span>
+                            <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <span>Tablet</span>
+                            <span className="text-slate-600">→</span>
+                            <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <span>Mobile</span>
+                          </div>
+                        </div>
+                      ) : (
+                        /* When Checkbox IS enabled: show all selectable device divisions with All Devices Ultra-Wide selected by default */
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between px-0.5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                              Select Target Screen Division
+                            </span>
+                            <span className="text-[10px] text-indigo-400 font-medium">
+                              {editorDeviceScope === "all_devices"
+                                ? "Ultra-Wide Fluid (Default)"
+                                : editorDeviceScope === "mobile_only"
+                                  ? "Mobile Locked (430px)"
+                                  : editorDeviceScope === "mobile_tablet"
+                                    ? "Tablet Locked (768px)"
+                                    : "Laptop/Desktop (1150px)"}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-2">
+                            {[
+                              {
+                                id: "all_devices" as const,
+                                title: "All Devices (Ultra-Wide)",
+                                desc: "Automated fluid responsiveness across 4K, Desktop, Tablet & Phone",
+                                badge: "Default · Recommended",
+                                badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                                icon: Monitor
+                              },
+                              {
+                                id: "mobile_only" as const,
+                                title: "Mobile Only",
+                                desc: "Strictly locked to phone screen (430px card) on all laptops & PCs",
+                                badge: "Phone Only",
+                                badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                                icon: Smartphone
+                              },
+                              {
+                                id: "mobile_tablet" as const,
+                                title: "Tablet Only",
+                                desc: "Locked to tablet viewport (768px container) across all devices",
+                                badge: "Tablet View",
+                                badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+                                icon: Tablet
+                              },
+                              {
+                                id: "mobile_tablet_laptop" as const,
+                                title: "Laptop & Desktop Only",
+                                desc: "Standard desktop/laptop layout (1150px container)",
+                                badge: "Laptop / PC",
+                                badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+                                icon: Laptop
+                              }
+                            ].map((option) => {
+                              const isSelected = editorDeviceScope === option.id;
+                              const IconComponent = option.icon;
+                              return (
+                                <button
+                                  key={option.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setEditorDeviceScope(option.id);
+                                    triggerToast(`Target device set to: ${option.title}`);
+                                  }}
+                                  className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 cursor-pointer min-w-0 ${
+                                    isSelected
+                                      ? "bg-indigo-600/20 border-indigo-500/70 shadow-lg shadow-indigo-500/15 ring-1 ring-indigo-500/40"
+                                      : "bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06]"
+                                  }`}
+                                >
+                                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                    <div className={`mt-0.5 p-1.5 rounded-lg border shrink-0 ${
+                                      isSelected
+                                        ? "bg-indigo-500/20 border-indigo-400/50 text-indigo-300"
+                                        : "bg-white/[0.04] border-white/10 text-slate-400"
+                                    }`}>
+                                      <IconComponent className="h-4 w-4" />
+                                    </div>
+                                    <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-xs font-bold truncate ${isSelected ? "text-indigo-200" : "text-slate-200"}`}>
+                                          {option.title}
+                                        </span>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${option.badgeColor}`}>
+                                          {option.badge}
+                                        </span>
+                                      </div>
+                                      <p className="text-[11px] text-slate-400 leading-snug">
+                                        {option.desc}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                    isSelected ? "border-indigo-400 bg-indigo-600" : "border-white/20 bg-slate-900"
+                                  }`}>
+                                    {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -9031,17 +9125,19 @@ export default function BioPagesScreen({
                           )}
 
                           {(() => {
-                            const isMobileMockup = (selectedDevice?.category === "mobile" || (selectedDevice?.width || 0) < 500) && !isLandscape;
+                            const isMobileMockup =
+                              editorDeviceScope === "mobile_only" ||
+                              ((selectedDevice?.category === "mobile" || (selectedDevice?.width || 0) < 500) && !isLandscape);
                             const gridLayoutClass = isMobileMockup
                               ? "grid-cols-1 gap-3.5"
-                              : selectedDevice?.category === "tablet"
+                              : selectedDevice?.category === "tablet" || editorDeviceScope === "mobile_tablet"
                                 ? "grid-cols-1 sm:grid-cols-2 gap-3.5"
                                 : "grid-cols-1 md:grid-cols-2 gap-4";
 
                             return (
                               <div className={`key-phone-preview__blocks grid ${gridLayoutClass}`}>
                                 {filterVisibleBioBlocks(editorBlocks).map((block) => {
-                                  const isDesktopPreview = !isMobileMockup && viewportMode !== "mobile";
+                                  const isDesktopPreview = editorDeviceScope !== "mobile_only" && !isMobileMockup && viewportMode !== "mobile";
                                   const isHiddenOnThisDevice =
                                     (block.deviceVisibility === "mobile_only" && isDesktopPreview) ||
                                     (block.deviceVisibility === "desktop_only" && !isDesktopPreview);
@@ -9795,6 +9891,7 @@ export default function BioPagesScreen({
                   coverSettings: editorCoverSettings,
                   pageTheme: editorPageTheme,
                   deviceScope: editorDeviceScope,
+                  targetDevicesCustomEnabled: isTargetDevicesCustomEnabled,
                   paymentEnabled,
                   paymentAmountInr,
                   paymentDescription,
