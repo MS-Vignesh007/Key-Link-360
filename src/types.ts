@@ -422,6 +422,11 @@ export interface BlockDeveloperStyles {
   customAriaLabel?: string;
   isLocked?: boolean;
   isHidden?: boolean;
+
+  // Interactive Size & Scale Dimensions
+  scale?: number;
+  customScale?: number;
+  minHeight?: number;
 }
 
 /** Bio Page Editor block — supports extra widget fields via index signature and developer styles */

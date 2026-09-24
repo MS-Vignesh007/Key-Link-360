@@ -115,6 +115,19 @@ export function computeBlockInlineStyles(
     }
   }
 
+  // 6. Interactive Size & Scale Dimensions
+  if (typeof styles.scale === "number" && styles.scale > 0 && styles.scale !== 1) {
+    css.transform = `scale(${styles.scale})`;
+    css.transformOrigin = "center center";
+  } else if (typeof styles.customScale === "number" && styles.customScale > 0 && styles.customScale !== 1) {
+    css.transform = `scale(${styles.customScale})`;
+    css.transformOrigin = "center center";
+  }
+
+  if (typeof styles.minHeight === "number" && styles.minHeight > 0) {
+    css.minHeight = `${styles.minHeight}px`;
+  }
+
   return css;
 }
 
