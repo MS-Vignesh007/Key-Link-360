@@ -4939,25 +4939,42 @@ export default function BioPagesScreen({
                             <p className="text-[11px] text-slate-300 leading-relaxed">
                               Published bio site automatically scales across all visitor screens — Ultra-Wide (up to 1680px, 4-col), Laptops (3-col), Tablets (2-col), and Mobile phones (1-col) via dynamic responsive media queries.
                             </p>
-                            <div className="pt-2 flex items-center justify-between text-[10px] text-indigo-300/80 font-medium bg-black/20 p-2.5 rounded-xl border border-white/[0.04]">
-                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
-                                <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                <span>Desktop</span>
+                            <div className="space-y-1.5 pt-1">
+                              <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/25 border border-white/[0.04]">
+                                <div className="flex items-center gap-2">
+                                  <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                  <span className="text-[11px] font-semibold text-slate-200">Desktop</span>
+                                </div>
+                                <span className="text-[9px] font-mono text-indigo-300/80 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                                  4-col
+                                </span>
                               </div>
-                              <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
-                                <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                <span>Laptop</span>
+                              <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/25 border border-white/[0.04]">
+                                <div className="flex items-center gap-2">
+                                  <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                  <span className="text-[11px] font-semibold text-slate-200">Laptop</span>
+                                </div>
+                                <span className="text-[9px] font-mono text-indigo-300/80 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                                  3-col
+                                </span>
                               </div>
-                              <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
-                                <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                <span>Tablet</span>
+                              <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/25 border border-white/[0.04]">
+                                <div className="flex items-center gap-2">
+                                  <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                  <span className="text-[11px] font-semibold text-slate-200">Tablet</span>
+                                </div>
+                                <span className="text-[9px] font-mono text-indigo-300/80 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                                  2-col
+                                </span>
                               </div>
-                              <span className="text-slate-600">→</span>
-                              <div className="flex items-center gap-1 whitespace-nowrap shrink-0">
-                                <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                <span>Mobile</span>
+                              <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/25 border border-white/[0.04]">
+                                <div className="flex items-center gap-2">
+                                  <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                  <span className="text-[11px] font-semibold text-slate-200">Mobile</span>
+                                </div>
+                                <span className="text-[9px] font-mono text-indigo-300/80 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                                  1-col
+                                </span>
                               </div>
                             </div>
                           </div>
