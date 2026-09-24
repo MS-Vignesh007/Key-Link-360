@@ -1120,7 +1120,13 @@ export default function BioPagesScreen({
   };
 
   const handleUpdateBlockField = (blockId: string, field: string, value: any) => {
-    setCanvasBlocks((prev) => prev.map((b) => (b.id === blockId ? { ...b, [field]: value } : b)));
+    setCanvasBlocks((prev) => {
+      const updated = prev.map((b) => (b.id === blockId ? { ...b, [field]: value } : b));
+      if (selectedEditPage && !editingThankYouPage) {
+        updatePageBlocks(selectedEditPage.id, updated as any);
+      }
+      return updated;
+    });
   };
 
   const handleUpdateBlockStyles = (blockId: string, styles: BlockDeveloperStyles) => {

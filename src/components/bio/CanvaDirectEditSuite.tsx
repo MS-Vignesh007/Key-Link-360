@@ -43,6 +43,7 @@ export interface CanvaInlineTextProps {
   value: string;
   onChange: (newValue: string) => void;
   isEditingAllowed?: boolean;
+  enabled?: boolean;
   className?: string;
   placeholder?: string;
   multiline?: boolean;
@@ -69,7 +70,8 @@ const POPULAR_EMOJIS = ["🔥", "✨", "🚀", "💎", "💡", "⚡", "⭐", "�
 export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   value,
   onChange,
-  isEditingAllowed = true,
+  isEditingAllowed: isEditingAllowedProp,
+  enabled,
   className = "",
   placeholder = "Type something...",
   multiline = false,
@@ -79,6 +81,7 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   onDoubleClick,
   allowFormatting = true
 }) => {
+  const isEditingAllowed = enabled !== undefined ? Boolean(enabled) : (isEditingAllowedProp !== undefined ? Boolean(isEditingAllowedProp) : true);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(value || "");
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -89,6 +92,7 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   const [customColor, setCustomColor] = useState<string>("");
   const [toolbarPlacement, setToolbarPlacement] = useState<"top" | "bottom">("top");
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const lastTapRef = useRef<number>(0);
 
   useEffect(() => {
     setDraft(value || "");
@@ -107,20 +111,29 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
     }
   }, [isEditing]);
 
-  const handleStartEditing = (e: React.MouseEvent) => {
+  const handleStartEditing = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isEditingAllowed) return;
     e.stopPropagation();
     e.preventDefault();
     setDraft(value || "");
     setIsEditing(true);
-    onDoubleClick?.(e);
+    onDoubleClick?.(e as any);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isEditingAllowed) return;
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      handleStartEditing(e);
+    }
+    lastTapRef.current = now;
   };
 
   const handleCommit = () => {
     setIsEditing(false);
     setShowColorPicker(false);
     setShowEmojiPicker(false);
-    if (draft.trim() !== (value || "").trim()) {
+    if (draft !== value) {
       onChange(draft);
     }
   };
@@ -174,8 +187,12 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
               {/* Bold Toggle */}
               <button
                 type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
                 onClick={() => setIsBold((b) => !b)}
-                className={`p-1 rounded-md transition-colors ${
+                className={`p-1 rounded-md transition-colors cursor-pointer ${
                   isBold ? "bg-indigo-600 text-white" : "hover:bg-slate-800 text-slate-300"
                 }`}
                 title="Bold (Ctrl+B)"
@@ -186,8 +203,12 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
               {/* Italic Toggle */}
               <button
                 type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
                 onClick={() => setIsItalic((i) => !i)}
-                className={`p-1 rounded-md transition-colors ${
+                className={`p-1 rounded-md transition-colors cursor-pointer ${
                   isItalic ? "bg-indigo-600 text-white" : "hover:bg-slate-800 text-slate-300"
                 }`}
                 title="Italic (Ctrl+I)"
@@ -199,24 +220,36 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
               <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-md p-0.5">
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onClick={() => setTextAlign("left")}
-                  className={`p-1 rounded ${textAlign === "left" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
+                  className={`p-1 rounded cursor-pointer ${textAlign === "left" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
                   title="Align Left"
                 >
                   <AlignLeft className="w-2.5 h-2.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onClick={() => setTextAlign("center")}
-                  className={`p-1 rounded ${textAlign === "center" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
+                  className={`p-1 rounded cursor-pointer ${textAlign === "center" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
                   title="Align Center"
                 >
                   <AlignCenter className="w-2.5 h-2.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onClick={() => setTextAlign("right")}
-                  className={`p-1 rounded ${textAlign === "right" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
+                  className={`p-1 rounded cursor-pointer ${textAlign === "right" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
                   title="Align Right"
                 >
                   <AlignRight className="w-2.5 h-2.5" />
@@ -227,11 +260,15 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onClick={() => {
                     setShowColorPicker((c) => !c);
                     setShowEmojiPicker(false);
                   }}
-                  className="p-1 hover:bg-slate-800 rounded-md text-slate-300 flex items-center gap-1"
+                  className="p-1 hover:bg-slate-800 rounded-md text-slate-300 flex items-center gap-1 cursor-pointer"
                   title="Text Color"
                 >
                   <Palette className="w-3 h-3 text-pink-400" />
@@ -246,11 +283,15 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
                       <button
                         key={sw.value}
                         type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                         onClick={() => {
                           setCustomColor(sw.value);
                           setShowColorPicker(false);
                         }}
-                        className="w-4 h-4 rounded-full border border-white/30 hover:scale-125 transition-transform"
+                        className="w-4 h-4 rounded-full border border-white/30 hover:scale-125 transition-transform cursor-pointer"
                         style={{ backgroundColor: sw.value }}
                         title={sw.label}
                       />
@@ -263,11 +304,15 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onClick={() => {
                     setShowEmojiPicker((e) => !e);
                     setShowColorPicker(false);
                   }}
-                  className="p-1 hover:bg-slate-800 rounded-md text-amber-400"
+                  className="p-1 hover:bg-slate-800 rounded-md text-amber-400 cursor-pointer"
                   title="Quick Emoji Insert"
                 >
                   <Smile className="w-3 h-3" />
@@ -279,8 +324,12 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
                       <button
                         key={em}
                         type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                         onClick={() => insertEmoji(em)}
-                        className="p-1 text-sm hover:bg-slate-800 rounded text-center hover:scale-125 transition-transform"
+                        className="p-1 text-sm hover:bg-slate-800 rounded text-center hover:scale-125 transition-transform cursor-pointer"
                       >
                         {em}
                       </button>
@@ -382,7 +431,8 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
       style={style}
       onClick={onClick}
       onDoubleClick={handleStartEditing}
-      title={isEditingAllowed ? "Canva Direct: Double-click to edit text & format inline" : undefined}
+      onTouchEnd={handleTouchEnd}
+      title={isEditingAllowed ? "Smart Direct: Double-click to edit text & format inline" : undefined}
       className={`${className} ${
         isEditingAllowed
           ? "cursor-text hover:outline-dashed hover:outline-2 hover:outline-indigo-500 hover:bg-indigo-500/10 hover:rounded-lg transition-all duration-150 relative group/canvatext"
@@ -406,6 +456,7 @@ export interface CanvaInlineImageProps {
   onChange?: (newSrc: string) => void;
   onSave?: (newSrc: string) => void;
   isEditingAllowed?: boolean;
+  enabled?: boolean;
   className?: string;
   shape?: "circle" | "rounded" | "square" | "banner";
   aspectRatio?: string;
@@ -427,11 +478,13 @@ export const CanvaInlineImage: React.FC<CanvaInlineImageProps> = ({
   altText,
   onChange,
   onSave,
-  isEditingAllowed = true,
+  isEditingAllowed: isEditingAllowedProp,
+  enabled,
   className = "",
   shape = "rounded",
   aspectRatio
 }) => {
+  const isEditingAllowed = enabled !== undefined ? Boolean(enabled) : (isEditingAllowedProp !== undefined ? Boolean(isEditingAllowedProp) : true);
   const activeSrc = src || currentUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800";
   const activeAlt = alt || altText || "Image";
   const handleSave = (val: string) => {
