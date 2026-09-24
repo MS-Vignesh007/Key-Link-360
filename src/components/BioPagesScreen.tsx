@@ -1121,11 +1121,32 @@ export default function BioPagesScreen({
 
   const handleUpdateBlockField = (blockId: string, field: string, value: any) => {
     setCanvasBlocks((prev) => {
-      const updated = prev.map((b) => (b.id === blockId ? { ...b, [field]: value } : b));
-      if (selectedEditPage && !editingThankYouPage) {
-        updatePageBlocks(selectedEditPage.id, updated as any);
+      const next = prev.map((b) => {
+        if (b.id !== blockId) return b;
+        if (field === "headline") {
+          return { ...b, headline: value, label: value };
+        }
+        if (field === "subheadline") {
+          return { ...b, subheadline: value, value: value };
+        }
+        return { ...b, [field]: value };
+      });
+      if (selectedEditPage) {
+        try {
+          localStorage.setItem(`biolink_blocks_${selectedEditPage.id}`, JSON.stringify(next));
+          if (selectedEditPage.slug) {
+            localStorage.setItem(`biolink_blocks_${selectedEditPage.slug}`, JSON.stringify(next));
+          }
+          window.dispatchEvent(
+            new CustomEvent("key-page-preview-updated", {
+              detail: { pageId: selectedEditPage.id, pageSlug: selectedEditPage.slug, blocks: next }
+            })
+          );
+        } catch {
+          /* ignore quota */
+        }
       }
-      return updated;
+      return next;
     });
   };
 
@@ -9029,6 +9050,15 @@ export default function BioPagesScreen({
                                       : "border-transparent hover:border-dashed hover:border-[#6366f1]/55 hover:bg-[#6366f1]/5"
                           }`}
                           onClick={(e) => {
+                            const target = e.target as HTMLElement | null;
+                            if (
+                              target?.closest?.(".key-canva-inline-active") ||
+                              target?.tagName === "INPUT" ||
+                              target?.tagName === "TEXTAREA" ||
+                              target?.closest?.("button")
+                            ) {
+                              return;
+                            }
                             e.stopPropagation();
                             setSelectedCanvasBlockId(block.id);
                             setExpandedBlockId(block.id);

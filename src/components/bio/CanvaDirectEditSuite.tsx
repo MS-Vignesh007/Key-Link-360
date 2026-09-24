@@ -36,8 +36,49 @@ import {
 } from "lucide-react";
 
 // ============================================================================
-// 1. CANVA INLINE TEXT WITH FLOATING FORMATTING QUICK-BAR
+// 1. SMART INLINE TEXT WITH FLOATING FORMATTING QUICK-BAR
 // ============================================================================
+
+export function parseFormattedText(val: string | unknown) {
+  if (!val) return { text: "", bold: false, italic: false, align: "center" as const, color: "" };
+  const str = typeof val === "string" ? val : String(val || "");
+  const spanMatch = str.match(/^<span style="([^"]*)">(.*)<\/span>$/s);
+  if (spanMatch) {
+    const styleStr = spanMatch[1];
+    const text = spanMatch[2];
+    const bold = styleStr.includes("font-weight:bold");
+    const italic = styleStr.includes("font-style:italic");
+    const colorMatch = styleStr.match(/color:\s*([^;]+)/);
+    const alignMatch = styleStr.match(/text-align:\s*([^;]+)/);
+    return {
+      text,
+      bold,
+      italic,
+      align: (alignMatch?.[1] as "left" | "center" | "right") || "center",
+      color: colorMatch?.[1] || ""
+    };
+  }
+  let text = str;
+  let bold = false;
+  let italic = false;
+  if (text.startsWith("**") && text.endsWith("**") && text.length >= 4) {
+    bold = true;
+    text = text.slice(2, -2);
+  }
+  return { text, bold, italic, align: "center" as const, color: "" };
+}
+
+export function serializeFormattedText(text: string, bold: boolean, italic: boolean, align: string, color: string): string {
+  if (!bold && !italic && !color && (!align || align === "center")) {
+    return text;
+  }
+  const styles: string[] = [];
+  if (bold) styles.push("font-weight:bold");
+  if (italic) styles.push("font-style:italic");
+  if (align && align !== "center") styles.push(`text-align:${align}`);
+  if (color) styles.push(`color:${color}`);
+  return `<span style="${styles.join(";")}">${text}</span>`;
+}
 
 export interface CanvaInlineTextProps {
   value: string;
@@ -71,7 +112,7 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   value,
   onChange,
   isEditingAllowed: isEditingAllowedProp,
-  enabled,
+  enabled: enabledProp,
   className = "",
   placeholder = "Type something...",
   multiline = false,
@@ -81,23 +122,34 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   onDoubleClick,
   allowFormatting = true
 }) => {
-  const isEditingAllowed = enabled !== undefined ? Boolean(enabled) : (isEditingAllowedProp !== undefined ? Boolean(isEditingAllowedProp) : true);
+  const isEditingAllowed = isEditingAllowedProp ?? enabledProp ?? true;
+  const initialParsed = parseFormattedText(value || "");
+
   const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState(value || "");
+  const [draft, setDraft] = useState(initialParsed.text);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
-  const [customColor, setCustomColor] = useState<string>("");
+  const [isBold, setIsBold] = useState(initialParsed.bold);
+  const [isItalic, setIsItalic] = useState(initialParsed.italic);
+  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">(initialParsed.align);
+  const [customColor, setCustomColor] = useState<string>(initialParsed.color);
   const [toolbarPlacement, setToolbarPlacement] = useState<"top" | "bottom">("top");
+
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const lastTapRef = useRef<number>(0);
 
+  // Sync state if value prop changes from outside
   useEffect(() => {
-    setDraft(value || "");
+    const parsed = parseFormattedText(value || "");
+    setDraft(parsed.text);
+    setIsBold(parsed.bold);
+    setIsItalic(parsed.italic);
+    setTextAlign(parsed.align);
+    setCustomColor(parsed.color);
   }, [value]);
 
+  // Focus & measure position on start editing
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
@@ -111,39 +163,63 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
     }
   }, [isEditing]);
 
-  const handleStartEditing = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleStartEditing = (e?: React.MouseEvent | React.TouchEvent) => {
     if (!isEditingAllowed) return;
-    e.stopPropagation();
-    e.preventDefault();
-    setDraft(value || "");
-    setIsEditing(true);
-    onDoubleClick?.(e as any);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isEditingAllowed) return;
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) {
-      handleStartEditing(e);
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
     }
-    lastTapRef.current = now;
+    const parsed = parseFormattedText(value || "");
+    setDraft(parsed.text);
+    setIsBold(parsed.bold);
+    setIsItalic(parsed.italic);
+    setTextAlign(parsed.align);
+    setCustomColor(parsed.color);
+    setIsEditing(true);
+    if (e && "clientX" in e) {
+      onDoubleClick?.(e as React.MouseEvent);
+    }
   };
 
   const handleCommit = () => {
     setIsEditing(false);
     setShowColorPicker(false);
     setShowEmojiPicker(false);
-    if (draft !== value) {
-      onChange(draft);
+    const finalVal = serializeFormattedText(draft, isBold, isItalic, textAlign, customColor);
+    if (finalVal !== (value || "")) {
+      onChange(finalVal);
     }
   };
 
   const handleCancel = () => {
-    setDraft(value || "");
+    const parsed = parseFormattedText(value || "");
+    setDraft(parsed.text);
+    setIsBold(parsed.bold);
+    setIsItalic(parsed.italic);
+    setTextAlign(parsed.align);
+    setCustomColor(parsed.color);
     setIsEditing(false);
     setShowColorPicker(false);
     setShowEmojiPicker(false);
   };
+
+  // Auto-Save when clicking outside the smart edit box
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handlePointerDownOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        handleCommit();
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDownOutside);
+    document.addEventListener("touchstart", handlePointerDownOutside);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDownOutside);
+      document.removeEventListener("touchstart", handlePointerDownOutside);
+    };
+  }, [isEditing, draft, isBold, isItalic, textAlign, customColor, value]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -158,9 +234,38 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   };
 
   const insertEmoji = (emoji: string) => {
-    setDraft((prev) => `${prev} ${emoji}`.trim());
-    setShowEmojiPicker(false);
-    if (inputRef.current) inputRef.current.focus();
+    if (inputRef.current) {
+      const input = inputRef.current;
+      const start = input.selectionStart ?? draft.length;
+      const end = input.selectionEnd ?? draft.length;
+      const nextDraft = draft.slice(0, start) + emoji + draft.slice(end);
+      setDraft(nextDraft);
+      setShowEmojiPicker(false);
+      setTimeout(() => {
+        input.focus();
+        input.setSelectionRange(start + emoji.length, start + emoji.length);
+      }, 10);
+    } else {
+      setDraft((prev) => `${prev} ${emoji}`.trim());
+      setShowEmojiPicker(false);
+    }
+  };
+
+  // Double tap / double click detection
+  const handlePointerOrClick = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isEditingAllowed) return;
+    const now = Date.now();
+    if (now - lastTapRef.current < 350) {
+      e.stopPropagation();
+      e.preventDefault();
+      lastTapRef.current = 0;
+      handleStartEditing(e);
+    } else {
+      lastTapRef.current = now;
+      if ("clientX" in e) {
+        onClick?.(e as React.MouseEvent);
+      }
+    }
   };
 
   if (isEditing && isEditingAllowed) {
@@ -171,12 +276,24 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
 
     return (
       <div
-        className="relative inline-block w-full max-w-full z-[999] animate-in fade-in zoom-in-95 duration-150"
+        ref={containerRef}
+        className="key-canva-inline-active relative inline-block w-full max-w-full z-[999] animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Floating Smart Edit Pro Quick Action Toolbar */}
-        <div className={`absolute ${toolbarPosClass} z-[9999] flex items-center gap-1 p-1 bg-slate-900/98 text-white rounded-xl shadow-2xl border border-indigo-500/60 backdrop-blur-xl pointer-events-auto ring-1 ring-cyan-500/30 whitespace-nowrap`}>
+        <div
+          className={`absolute ${toolbarPosClass} z-[9999] flex items-center gap-1 p-1 bg-slate-900/98 text-white rounded-xl shadow-2xl border border-indigo-500/60 backdrop-blur-xl pointer-events-auto ring-1 ring-cyan-500/30 whitespace-nowrap`}
+          onMouseDown={(e) => {
+            // Keep input focus alive when interacting with toolbar!
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg bg-indigo-950/90 border border-indigo-500/40 text-[9px] font-extrabold text-cyan-300 font-mono select-none mr-0.5">
             <Sparkles className="w-2.5 h-2.5 text-cyan-400" />
             <span>SMART EDIT</span>
@@ -278,7 +395,10 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
                 </button>
 
                 {showColorPicker && (
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 p-2 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl flex items-center gap-1.5 z-50 animate-in zoom-in-95">
+                  <div
+                    className="absolute top-8 left-1/2 -translate-x-1/2 p-2 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl flex items-center gap-1.5 z-50 animate-in zoom-in-95"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
                     {COLOR_SWATCHES.map((sw) => (
                       <button
                         key={sw.value}
@@ -288,10 +408,12 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
                           e.stopPropagation();
                         }}
                         onClick={() => {
-                          setCustomColor(sw.value);
+                          setCustomColor((prev) => (prev === sw.value ? "" : sw.value));
                           setShowColorPicker(false);
                         }}
-                        className="w-4 h-4 rounded-full border border-white/30 hover:scale-125 transition-transform cursor-pointer"
+                        className={`w-4 h-4 rounded-full border hover:scale-125 transition-transform cursor-pointer ${
+                          customColor === sw.value ? "ring-2 ring-cyan-400 border-white scale-110" : "border-white/30"
+                        }`}
                         style={{ backgroundColor: sw.value }}
                         title={sw.label}
                       />
@@ -319,7 +441,10 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 p-2 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl grid grid-cols-7 gap-1 z-50 w-48 animate-in zoom-in-95">
+                  <div
+                    className="absolute top-8 left-1/2 -translate-x-1/2 p-2 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl grid grid-cols-7 gap-1 z-50 w-48 animate-in zoom-in-95"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
                     {POPULAR_EMOJIS.map((em) => (
                       <button
                         key={em}
@@ -388,7 +513,6 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            onBlur={handleCommit}
             onKeyDown={handleKeyDown}
             style={{
               ...style,
@@ -407,7 +531,6 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            onBlur={handleCommit}
             onKeyDown={handleKeyDown}
             style={{
               ...style,
@@ -424,22 +547,29 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
     );
   }
 
+  const currentParsed = parseFormattedText(value || "");
   const Tag = tagName as any;
 
   return (
     <Tag
-      style={style}
-      onClick={onClick}
+      style={{
+        ...style,
+        fontWeight: currentParsed.bold ? "bold" : style?.fontWeight,
+        fontStyle: currentParsed.italic ? "italic" : style?.fontStyle,
+        textAlign: currentParsed.align !== "center" ? currentParsed.align : style?.textAlign,
+        color: currentParsed.color || style?.color
+      }}
+      onClick={handlePointerOrClick}
+      onTouchEnd={handlePointerOrClick}
       onDoubleClick={handleStartEditing}
-      onTouchEnd={handleTouchEnd}
-      title={isEditingAllowed ? "Smart Direct: Double-click to edit text & format inline" : undefined}
+      title={isEditingAllowed ? "Smart Edit: Double-click or double-tap to edit & format inline" : undefined}
       className={`${className} ${
         isEditingAllowed
           ? "cursor-text hover:outline-dashed hover:outline-2 hover:outline-indigo-500 hover:bg-indigo-500/10 hover:rounded-lg transition-all duration-150 relative group/canvatext"
           : ""
       }`}
     >
-      {value || placeholder}
+      {currentParsed.text || placeholder}
     </Tag>
   );
 };
@@ -456,7 +586,6 @@ export interface CanvaInlineImageProps {
   onChange?: (newSrc: string) => void;
   onSave?: (newSrc: string) => void;
   isEditingAllowed?: boolean;
-  enabled?: boolean;
   className?: string;
   shape?: "circle" | "rounded" | "square" | "banner";
   aspectRatio?: string;
@@ -478,13 +607,11 @@ export const CanvaInlineImage: React.FC<CanvaInlineImageProps> = ({
   altText,
   onChange,
   onSave,
-  isEditingAllowed: isEditingAllowedProp,
-  enabled,
+  isEditingAllowed = true,
   className = "",
   shape = "rounded",
   aspectRatio
 }) => {
-  const isEditingAllowed = enabled !== undefined ? Boolean(enabled) : (isEditingAllowedProp !== undefined ? Boolean(isEditingAllowedProp) : true);
   const activeSrc = src || currentUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800";
   const activeAlt = alt || altText || "Image";
   const handleSave = (val: string) => {

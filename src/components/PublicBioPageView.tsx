@@ -82,11 +82,26 @@ function readCachedPage(pageId: string): { blocks?: Block[]; details?: BioPagePr
   }
 }
 
-function writeCachedPage(pageId: string, blocks: Block[], details: BioPagePreviewDetails | null) {
+function writeCachedPage(pageId: string, blocks: Block[], details: BioPagePreviewDetails | null, pageSlug?: string) {
   try {
     sessionStorage.setItem(
       `keys_public_page_${pageId}`,
       JSON.stringify({ blocks, details, cachedAt: Date.now() })
+    );
+    if (pageSlug) {
+      sessionStorage.setItem(
+        `keys_public_page_${pageSlug}`,
+        JSON.stringify({ blocks, details, cachedAt: Date.now() })
+      );
+    }
+    localStorage.setItem(`biolink_blocks_${pageId}`, JSON.stringify(blocks));
+    if (pageSlug) {
+      localStorage.setItem(`biolink_blocks_${pageSlug}`, JSON.stringify(blocks));
+    }
+    window.dispatchEvent(
+      new CustomEvent("key-page-preview-updated", {
+        detail: { pageId, pageSlug, blocks, details }
+      })
     );
   } catch {
     /* ignore quota errors */
@@ -652,8 +667,17 @@ export default function PublicBioPageView({
     onWhatsApp: openWhatsAppLink,
     onInlineTextChange: (blockId, field, val) => {
       setBlocks((prevBlocks) => {
-        const updated = prevBlocks.map((b) => (b.id === blockId ? { ...b, [field]: val } : b));
-        writeCachedPage(displayPageId, updated, customDetails);
+        const updated = prevBlocks.map((b) => {
+          if (b.id !== blockId) return b;
+          if (field === "headline") {
+            return { ...b, headline: val, label: val };
+          }
+          if (field === "subheadline") {
+            return { ...b, subheadline: val, value: val };
+          }
+          return { ...b, [field]: val };
+        });
+        writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
         onUpdateBlocks?.(updated);
         return updated;
       });
