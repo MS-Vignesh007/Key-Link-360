@@ -208,7 +208,8 @@ import {
   PanelLeft,
   CheckCircle,
   BookmarkCheck,
-  Target
+  Target,
+  CreditCard
 } from "lucide-react";
 import PageShell, { PageHeader, StatCard, StatCardGrid, Workspace } from "./layout/PageShell";
 import { AppTheme, ALL_THEMES, getStoredTheme, saveTheme } from "../lib/themeStorage";
@@ -799,6 +800,10 @@ export default function BioPagesScreen({
   const [viewportZoom, setViewportZoom] = useState<"fit" | number>("fit");
   const [editorDeviceScope, setEditorDeviceScope] = useState<DeviceTargetScope>("all_devices");
   const [isTargetDevicesCustomEnabled, setIsTargetDevicesCustomEnabled] = useState<boolean>(false);
+  const [settingsSubPanel, setSettingsSubPanel] = useState<"root" | "seo" | "payment" | "ai" | "devices" | "thanks">("root");
+  const [seoIndexingEnabled, setSeoIndexingEnabled] = useState<boolean>(true);
+  const [editorMetaDescription, setEditorMetaDescription] = useState<string>("Official Marvel-Inspired Toys & Collectibles. Safe, fun & exciting toys for young superheroes.");
+  const [isThankYouEnabled, setIsThankYouEnabled] = useState<boolean>(true);
 
   // Modern Studio Nav Tab & Sliding Sidebar states
   const [studioNavTab, setStudioNavTab] = useState<
@@ -3879,15 +3884,19 @@ export default function BioPagesScreen({
                     <button
                       type="button"
                       onClick={() => {
+                        if (studioNavTab === "settings" && settingsSubPanel !== "root") {
+                          setSettingsSubPanel("root");
+                          return;
+                        }
                         setStudioNavTab("menu");
                         setShowThanksPage(false);
                         setEditorTab("Edit");
                       }}
                       className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-indigo-300 hover:text-white text-xs font-bold border border-white/[0.08] shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
-                      title="Return to Main Menu"
+                      title={studioNavTab === "settings" && settingsSubPanel !== "root" ? "Back to Page Settings" : "Return to Main Menu"}
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
-                      <span>Menu</span>
+                      <span>{studioNavTab === "settings" && settingsSubPanel !== "root" ? "Settings" : "Menu"}</span>
                     </button>
 
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200 truncate">
@@ -3895,7 +3904,14 @@ export default function BioPagesScreen({
                       {studioNavTab === "layers" && `📑 Structure (${canvasBlocks.length})`}
                       {studioNavTab === "inspector" && "✏️ Block Inspector"}
                       {studioNavTab === "theme" && "🎨 Themes & Styling"}
-                      {studioNavTab === "settings" && "⚙️ Page Settings"}
+                      {studioNavTab === "settings" && (
+                        settingsSubPanel === "seo" ? "🌐 SEO & Meta" :
+                        settingsSubPanel === "payment" ? "💳 Form Payment" :
+                        settingsSubPanel === "ai" ? "🤖 AI Assistant" :
+                        settingsSubPanel === "devices" ? "📱 Target Devices" :
+                        settingsSubPanel === "thanks" ? "🎉 Thank You Page" :
+                        "⚙️ Page Settings"
+                      )}
                       {studioNavTab === "drafts" && "💾 Saved Templates"}
                     </h3>
                   </div>
@@ -3918,563 +3934,1017 @@ export default function BioPagesScreen({
                 <div className="flex-1 overflow-y-auto p-3.5 space-y-4 no-scrollbar">
                 {studioNavTab === "settings" && (
                 <div className="max-w-xl mx-auto key-workspace key-workspace--stack w-full space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-display font-bold text-base text-slate-100 flex items-center gap-2">
-                      <Settings className="w-4 h-4 text-indigo-400" />
-                      <span>Page Settings</span>
-                    </h3>
-                    <span className="text-[10px] font-semibold text-slate-400 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
-                      Global SEO & Scope
-                    </span>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-5 shadow-2xl">
-                    {/* SEO Meta */}
-                    <div className="space-y-3.5">
-                      <div>
-                        <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">Meta Title</label>
-                        <input
-                          type="text"
-                          value={editorTitle}
-                          onChange={(e) => setEditorTitle(e.target.value)}
-                          className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-white placeholder:text-slate-500 transition-all"
-                          placeholder="Page title for search engines..."
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">Meta Description</label>
-                        <textarea
-                          defaultValue="Official Marvel-Inspired Toys & Collectibles. Safe, fun & exciting toys for young superheroes."
-                          className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 h-20 resize-none transition-all"
-                        />
-                      </div>
-                      <div className="flex items-center justify-between py-2 border-t border-white/[0.06]">
+                  {/* ROOT OVERVIEW PANEL */}
+                  {settingsSubPanel === "root" && (
+                    <div className="space-y-4 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
                         <div>
-                          <span className="text-xs font-bold block text-slate-200">Search Engine Indexing</span>
-                          <span className="text-[10px] text-slate-400 block">Allow Google & Bing to index</span>
+                          <h3 className="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+                            <Settings className="w-4.5 h-4.5 text-indigo-400" />
+                            <span>Page Settings</span>
+                          </h3>
+                          <p className="text-[11px] text-slate-400 mt-0.5">
+                            Select any section below to customize in a dedicated slidebar
+                          </p>
                         </div>
-                        <input type="checkbox" defaultChecked className="rounded border-white/20 bg-slate-950 accent-indigo-500 h-4.5 w-4.5 cursor-pointer" />
-                      </div>
-                    </div>
-
-                    {/* Razorpay Form Payment */}
-                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-bold text-pink-400 uppercase tracking-widest block">
-                            Form Payment (Razorpay)
-                          </span>
-                          <span className="text-[10px] text-slate-400 block mt-0.5">
-                            Charge fixed fee upon form submission
-                          </span>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={paymentEnabled}
-                          onChange={(e) => setPaymentEnabled(e.target.checked)}
-                          className="rounded border-white/20 bg-slate-950 accent-pink-500 h-4.5 w-4.5 cursor-pointer"
-                        />
+                        <span className="text-[10px] font-bold text-indigo-400 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25">
+                          5 Sections
+                        </span>
                       </div>
 
-                      {paymentEnabled && (
-                        <div className="space-y-3 bg-pink-500/[0.05] border border-pink-500/20 rounded-2xl p-3.5 animate-in fade-in duration-150">
-                          <div>
-                            <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
-                              Amount (INR)
-                            </label>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-pink-400">₹</span>
-                              <input
-                                type="number"
-                                min={1}
-                                step={1}
-                                value={paymentAmountInr}
-                                onChange={(e) => {
-                                  const n = Number(e.target.value);
-                                  setPaymentAmountInr(
-                                    Number.isFinite(n) && n > 0 ? Math.round(n) : 1
-                                  );
-                                }}
-                                className="w-full bg-slate-950/60 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
-                              />
+                      {/* Modular Glass Cards */}
+                      <div className="space-y-3">
+                        {/* 1. SEO & Meta Data Card */}
+                        <div
+                          onClick={() => setSettingsSubPanel("seo")}
+                          className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-blue-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-blue-500/10"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                            <div className="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 group-hover:scale-105 group-hover:bg-blue-500/25 transition-all">
+                              <Globe className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors">
+                                  SEO & Search Meta
+                                </span>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                  seoIndexingEnabled
+                                    ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
+                                    : "bg-slate-700/30 text-slate-400 border-slate-600/30"
+                                }`}>
+                                  {seoIndexingEnabled ? "Index Active" : "No-Index"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1">
+                                Meta title, description, keywords & search preview
+                              </p>
                             </div>
                           </div>
-                          <div>
-                            <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
-                              Checkout Description
+                          <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={seoIndexingEnabled}
+                                onChange={(e) => {
+                                  const val = e.target.checked;
+                                  setSeoIndexingEnabled(val);
+                                  if (val) setSettingsSubPanel("seo");
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 border border-white/20"></div>
                             </label>
-                            <input
-                              type="text"
-                              value={paymentDescription}
-                              onChange={(e) => setPaymentDescription(e.target.value)}
-                              className="w-full bg-slate-950/60 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
-                              placeholder="Bio page form payment"
-                            />
+                            <button
+                              type="button"
+                              onClick={() => setSettingsSubPanel("seo")}
+                              className="p-1 rounded-lg text-slate-400 group-hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Open SEO Slidebar"
+                            >
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditorTab("Edit");
-                              setEditorViewPanel("preview");
-                              triggerToast(
-                                `Payment ON — Form / Smart Form now show Pay ₹${paymentAmountInr} in Live Preview`
-                              );
-                            }}
-                            className="w-full rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold py-2 shadow-lg shadow-pink-500/20 transition-all cursor-pointer"
-                          >
-                            Preview Form Pay (₹{paymentAmountInr})
-                          </button>
                         </div>
-                      )}
-                    </div>
 
-                    {/* AI Sales & Support Assistant (Live Chatbot) */}
-                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-                            AI Sales Assistant
-                          </span>
-                          <span className="text-[10px] text-slate-400 block mt-0.5">
-                            24/7 AI agent on your page
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setIsGuideModalOpen(true)}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30 transition-colors cursor-pointer mt-1"
-                          >
-                            <BookOpen className="w-3 h-3 text-cyan-400" />
-                            <span>Setup Tutorial</span>
-                          </button>
+                        {/* 2. Razorpay Form Payment Card */}
+                        <div
+                          onClick={() => setSettingsSubPanel("payment")}
+                          className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-pink-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-pink-500/10"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                            <div className="w-11 h-11 rounded-xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 shrink-0 group-hover:scale-105 group-hover:bg-pink-500/25 transition-all">
+                              <CreditCard className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-white group-hover:text-pink-300 transition-colors">
+                                  Form Payment (Razorpay)
+                                </span>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                  paymentEnabled
+                                    ? "bg-pink-500/15 text-pink-300 border-pink-500/30"
+                                    : "bg-slate-700/30 text-slate-400 border-slate-600/30"
+                                }`}>
+                                  {paymentEnabled ? `₹${paymentAmountInr} Active` : "Disabled"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1">
+                                Collect instant fees on forms or smart forms
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={paymentEnabled}
+                                onChange={(e) => {
+                                  const val = e.target.checked;
+                                  setPaymentEnabled(val);
+                                  if (val) setSettingsSubPanel("payment");
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-600 border border-white/20"></div>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSettingsSubPanel("payment")}
+                              className="p-1 rounded-lg text-slate-400 group-hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Open Payment Slidebar"
+                            >
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
                         </div>
-                        <input
-                          type="checkbox"
-                          checked={aiAssistantEnabled}
-                          onChange={(e) => setAiAssistantEnabled(e.target.checked)}
-                          className="rounded border-white/20 bg-slate-950 accent-cyan-500 h-5 w-5 cursor-pointer"
-                        />
+
+                        {/* 3. AI Sales Assistant Card */}
+                        <div
+                          onClick={() => setSettingsSubPanel("ai")}
+                          className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-cyan-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-cyan-500/10"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                            <div className="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 group-hover:scale-105 group-hover:bg-cyan-500/25 transition-all">
+                              <Sparkles className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
+                                  AI Sales Assistant
+                                </span>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                  aiAssistantEnabled
+                                    ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
+                                    : "bg-slate-700/30 text-slate-400 border-slate-600/30"
+                                }`}>
+                                  {aiAssistantEnabled ? (aiBotName || "Active") : "Disabled"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1">
+                                24/7 intelligent sales agent trained on your brand
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={aiAssistantEnabled}
+                                onChange={(e) => {
+                                  const val = e.target.checked;
+                                  setAiAssistantEnabled(val);
+                                  if (val) setSettingsSubPanel("ai");
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600 border border-white/20"></div>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSettingsSubPanel("ai")}
+                              className="p-1 rounded-lg text-slate-400 group-hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Open AI Assistant Slidebar"
+                            >
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 4. Target Devices Scope Card */}
+                        <div
+                          onClick={() => setSettingsSubPanel("devices")}
+                          className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-indigo-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-indigo-500/10"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                            <div className="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 group-hover:scale-105 group-hover:bg-indigo-500/25 transition-all">
+                              <Smartphone className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">
+                                  Target Devices Scope
+                                </span>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                  isTargetDevicesCustomEnabled
+                                    ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                                    : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                                }`}>
+                                  {isTargetDevicesCustomEnabled
+                                    ? (editorDeviceScope === "mobile_only"
+                                        ? "Mobile Only"
+                                        : editorDeviceScope === "mobile_tablet"
+                                          ? "Tablet Only"
+                                          : editorDeviceScope === "mobile_tablet_laptop"
+                                            ? "Laptop/PC"
+                                            : "All Devices")
+                                    : "All Devices (Ultra-Wide)"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1">
+                                Ultra-Wide automated fluid vs locked viewport
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={isTargetDevicesCustomEnabled}
+                                onChange={(e) => {
+                                  const enabled = e.target.checked;
+                                  setIsTargetDevicesCustomEnabled(enabled);
+                                  setEditorDeviceScope("all_devices");
+                                  if (enabled) setSettingsSubPanel("devices");
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 border border-white/20"></div>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSettingsSubPanel("devices")}
+                              className="p-1 rounded-lg text-slate-400 group-hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Open Target Devices Slidebar"
+                            >
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 5. Thank You Page Card */}
+                        <div
+                          onClick={() => setSettingsSubPanel("thanks")}
+                          className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900/90 border border-white/[0.08] hover:border-purple-500/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-purple-500/10"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                            <div className="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-105 group-hover:bg-purple-500/25 transition-all">
+                              <CheckCircle className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
+                                  Thank You Page Screen
+                                </span>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                  isThankYouEnabled
+                                    ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                                    : "bg-slate-700/30 text-slate-400 border-slate-600/30"
+                                }`}>
+                                  {isThankYouEnabled ? "Enabled" : "Disabled"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1">
+                                Post-submit confirmation screen for forms & payments
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={isThankYouEnabled}
+                                onChange={(e) => {
+                                  const val = e.target.checked;
+                                  setIsThankYouEnabled(val);
+                                  if (val) setSettingsSubPanel("thanks");
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600 border border-white/20"></div>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSettingsSubPanel("thanks")}
+                              className="p-1 rounded-lg text-slate-400 group-hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Open Thank You Page Slidebar"
+                            >
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUBPANEL 1: SEO & META DATA */}
+                  {settingsSubPanel === "seo" && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                        <button
+                          type="button"
+                          onClick={() => setSettingsSubPanel("root")}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white text-xs font-bold border border-white/10 transition-all cursor-pointer"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-blue-400" />
+                          <span>← Back to Settings</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-blue-300 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 flex items-center gap-1.5">
+                          <Globe className="w-3 h-3 text-blue-400" />
+                          <span>SEO Meta</span>
+                        </span>
                       </div>
 
-                      {aiAssistantEnabled && (
-                        <div className="space-y-3 bg-cyan-500/[0.04] p-3.5 rounded-2xl border border-cyan-500/20 animate-in fade-in duration-150">
+                      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                        {/* Indexing Switch */}
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.08]">
                           <div>
-                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
-                              Bot Name
-                            </label>
+                            <span className="text-xs font-bold text-white block">Search Engine Indexing</span>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">Allow Google, Bing & DuckDuckGo to index this page</span>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
                             <input
-                              type="text"
-                              value={aiBotName}
-                              onChange={(e) => setAiBotName(e.target.value)}
-                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
-                              placeholder="e.g. Maya, Sales Bot"
+                              type="checkbox"
+                              checked={seoIndexingEnabled}
+                              onChange={(e) => setSeoIndexingEnabled(e.target.checked)}
+                              className="sr-only peer"
                             />
-                          </div>
+                            <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 border border-white/20"></div>
+                          </label>
+                        </div>
 
+                        {/* Meta Title */}
+                        <div>
+                          <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">
+                            Meta Title <span className="text-slate-500 font-normal">({editorTitle.length}/60 chars)</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={editorTitle}
+                            onChange={(e) => setEditorTitle(e.target.value)}
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-blue-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-white placeholder:text-slate-500 transition-all"
+                            placeholder="Official Marvel-Inspired Toys & Collectibles..."
+                          />
+                        </div>
+
+                        {/* Meta Description */}
+                        <div>
+                          <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">
+                            Meta Description <span className="text-slate-500 font-normal">({editorMetaDescription.length}/160 chars)</span>
+                          </label>
+                          <textarea
+                            value={editorMetaDescription}
+                            onChange={(e) => setEditorMetaDescription(e.target.value)}
+                            rows={3}
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-blue-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
+                            placeholder="Safe, fun & exciting collectibles for young superheroes and fans..."
+                          />
+                        </div>
+
+                        {/* Google Live Search Snippet */}
+                        <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/10 space-y-1.5">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                            Google Search Live Preview
+                          </span>
+                          <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                            <span className="w-3.5 h-3.5 rounded-full bg-blue-500/20 text-blue-400 inline-flex items-center justify-center text-[9px] font-bold">G</span>
+                            <span className="truncate">https://keyslink360.com/{selectedEditPage.slug || "page"}</span>
+                          </div>
+                          <div className="text-xs font-semibold text-blue-400 hover:underline cursor-pointer truncate">
+                            {editorTitle || "Official Bio Page"} | KEYLINK360
+                          </div>
+                          <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
+                            {editorMetaDescription || "Explore links, products, portfolio, and contact info in one place."}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUBPANEL 2: RAZORPAY FORM PAYMENT */}
+                  {settingsSubPanel === "payment" && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                        <button
+                          type="button"
+                          onClick={() => setSettingsSubPanel("root")}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white text-xs font-bold border border-white/10 transition-all cursor-pointer"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-pink-400" />
+                          <span>← Back to Settings</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-pink-300 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/25 flex items-center gap-1.5">
+                          <CreditCard className="w-3 h-3 text-pink-400" />
+                          <span>Razorpay</span>
+                        </span>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                        {/* Main Payment Switch */}
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-pink-500/[0.06] border border-pink-500/20">
                           <div>
-                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
-                              Welcome Greeting
-                            </label>
-                            <textarea
-                              value={aiWelcomeMessage}
-                              onChange={(e) => setAiWelcomeMessage(e.target.value)}
-                              rows={2}
-                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white resize-none"
-                              placeholder="👋 Hi! How can I assist you today?"
-                            />
+                            <span className="text-xs font-bold text-white block">Form Payment (Razorpay)</span>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">Charge a fixed fee when visitors submit a form</span>
                           </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={paymentEnabled}
+                              onChange={(e) => setPaymentEnabled(e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-600 border border-white/20"></div>
+                          </label>
+                        </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {paymentEnabled ? (
+                          <div className="space-y-3.5 pt-1">
                             <div>
-                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
-                                Brand Name
+                              <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
+                                Fee Amount (INR)
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-pink-400 px-2.5 py-1.5 bg-pink-500/10 border border-pink-500/20 rounded-xl">₹</span>
+                                <input
+                                  type="number"
+                                  min={1}
+                                  step={1}
+                                  value={paymentAmountInr}
+                                  onChange={(e) => {
+                                    const n = Number(e.target.value);
+                                    setPaymentAmountInr(
+                                      Number.isFinite(n) && n > 0 ? Math.round(n) : 1
+                                    );
+                                  }}
+                                  className="w-full bg-slate-950/70 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
+                                Checkout Description
                               </label>
                               <input
                                 type="text"
-                                value={aiBusinessName}
-                                onChange={(e) => setAiBusinessName(e.target.value)}
-                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
-                                placeholder={editorTitle || "Brand Name"}
+                                value={paymentDescription}
+                                onChange={(e) => setPaymentDescription(e.target.value)}
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white"
+                                placeholder="Bio page form payment"
                               />
                             </div>
-                            <div>
-                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
-                                WhatsApp Contact
-                              </label>
-                              <input
-                                type="tel"
-                                value={aiContactPhone}
-                                onChange={(e) => setAiContactPhone(e.target.value)}
-                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
-                                placeholder="+91 9876543210"
-                              />
-                            </div>
-                          </div>
 
-                          <div>
-                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
-                              Offerings & Knowledge
-                            </label>
-                            <textarea
-                              value={aiBusinessDescription}
-                              onChange={(e) => setAiBusinessDescription(e.target.value)}
-                              rows={3}
-                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white resize-none"
-                              placeholder="Products, pricing, delivery times, store hours..."
-                            />
-                          </div>
-
-                          {/* Custom FAQs */}
-                          <div className="space-y-2 pt-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-bold text-slate-200">
-                                Instant FAQs
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setAiCustomFaqs((prev) => [
-                                    ...prev,
-                                    { question: "", answer: "" }
-                                  ])
-                                }
-                                className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                              >
-                                <Plus className="h-3 w-3" />
-                                <span>Add FAQ</span>
-                              </button>
-                            </div>
-
-                            {aiCustomFaqs.map((faq, idx) => (
-                              <div
-                                key={idx}
-                                className="p-2.5 bg-slate-950/70 border border-white/10 rounded-xl space-y-1.5 relative group"
-                              >
-                                <div className="flex items-center justify-between gap-2">
-                                  <input
-                                    type="text"
-                                    value={faq.question}
-                                    onChange={(e) => {
-                                      const updated = [...aiCustomFaqs];
-                                      updated[idx].question = e.target.value;
-                                      setAiCustomFaqs(updated);
-                                    }}
-                                    placeholder="Question..."
-                                    className="flex-1 text-xs font-semibold text-white border-b border-white/10 focus:border-cyan-500 focus:outline-none py-1 bg-transparent"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setAiCustomFaqs((prev) =>
-                                        prev.filter((_, i) => i !== idx)
-                                      )
-                                    }
-                                    className="text-slate-400 hover:text-rose-400 p-1 cursor-pointer"
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </button>
-                                </div>
-                                <textarea
-                                  value={faq.answer}
-                                  onChange={(e) => {
-                                    const updated = [...aiCustomFaqs];
-                                    updated[idx].answer = e.target.value;
-                                    setAiCustomFaqs(updated);
-                                  }}
-                                  rows={2}
-                                  placeholder="Answer..."
-                                  className="w-full text-xs text-slate-300 bg-transparent focus:outline-none resize-none pt-1"
-                                />
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="flex items-center justify-between py-1 border-t border-cyan-500/20 pt-2">
-                            <div>
-                              <span className="text-xs font-bold block text-slate-200">
-                                Auto Lead Capture
-                              </span>
-                              <span className="text-[10px] text-slate-400 block">
-                                Save visitor numbers to CRM
-                              </span>
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={aiAutoLeadCapture}
-                              onChange={(e) => setAiAutoLeadCapture(e.target.checked)}
-                              className="rounded border-white/20 bg-slate-950 accent-cyan-500 h-4.5 w-4.5 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Target Devices & Responsive Layout Scope */}
-                    <div className="pt-4 border-t border-white/[0.08] space-y-3.5">
-                      <div className="flex items-center justify-between gap-3 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.07]">
-                        <div className="space-y-0.5 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white tracking-wide">
-                              TARGET DEVICES
-                            </span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                              {isTargetDevicesCustomEnabled ? "Custom Mode" : "Auto Fluid"}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-400 leading-tight">
-                            Enable to choose target screen divisions. Default is Ultra-Wide responsive.
-                          </p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                          <input
-                            type="checkbox"
-                            checked={isTargetDevicesCustomEnabled}
-                            onChange={(e) => {
-                              const enabled = e.target.checked;
-                              setIsTargetDevicesCustomEnabled(enabled);
-                              // Before and immediately after enabling, All Devices Ultra-Wide is default
-                              setEditorDeviceScope("all_devices");
-                              triggerToast(
-                                enabled
-                                  ? "Target Devices enabled · All Devices (Ultra-Wide) active by default"
-                                  : "Target Devices disabled · Reset to All Devices (Ultra-Wide) fluid"
-                              );
-                            }}
-                            className="sr-only peer"
-                          />
-                          <div className="w-10 h-5.5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600 border border-white/20"></div>
-                        </label>
-                      </div>
-
-                      {/* When Checkbox is NOT enabled: Default Ultra-Wide Active State */}
-                      {!isTargetDevicesCustomEnabled ? (
-                        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900/60 to-purple-950/30 border border-indigo-500/30 shadow-lg shadow-indigo-950/30 space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              <span className="flex h-2 w-2 relative">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                              </span>
-                              <span className="text-xs font-bold text-emerald-300">
-                                All Devices (Ultra-Wide) · Default Active
-                              </span>
-                            </div>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                              Fluid Auto
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-300 leading-relaxed">
-                            Published bio site automatically scales across all visitor screens — Ultra-Wide (up to 1680px, 4-col), Laptops (3-col), Tablets (2-col), and Mobile phones (1-col) via dynamic responsive media queries.
-                          </p>
-                          <div className="pt-1.5 flex items-center gap-2 text-[10px] text-indigo-300/80 font-medium">
-                            <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                            <span>Ultra-Wide</span>
-                            <span className="text-slate-600">→</span>
-                            <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                            <span>Laptop</span>
-                            <span className="text-slate-600">→</span>
-                            <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                            <span>Tablet</span>
-                            <span className="text-slate-600">→</span>
-                            <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                            <span>Mobile</span>
-                          </div>
-                        </div>
-                      ) : (
-                        /* When Checkbox IS enabled: show all selectable device divisions with All Devices Ultra-Wide selected by default */
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between px-0.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                              Select Target Screen Division
-                            </span>
-                            <span className="text-[10px] text-indigo-400 font-medium">
-                              {editorDeviceScope === "all_devices"
-                                ? "Ultra-Wide Fluid (Default)"
-                                : editorDeviceScope === "mobile_only"
-                                  ? "Mobile Locked (430px)"
-                                  : editorDeviceScope === "mobile_tablet"
-                                    ? "Tablet Locked (768px)"
-                                    : "Laptop/Desktop (1150px)"}
-                            </span>
-                          </div>
-
-                          <div className="grid grid-cols-1 gap-2">
-                            {[
-                              {
-                                id: "all_devices" as const,
-                                title: "All Devices (Ultra-Wide)",
-                                desc: "Automated fluid responsiveness across 4K, Desktop, Tablet & Phone",
-                                badge: "Default · Recommended",
-                                badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-                                icon: Monitor
-                              },
-                              {
-                                id: "mobile_only" as const,
-                                title: "Mobile Only",
-                                desc: "Strictly locked to phone screen (430px card) on all laptops & PCs",
-                                badge: "Phone Only",
-                                badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-                                icon: Smartphone
-                              },
-                              {
-                                id: "mobile_tablet" as const,
-                                title: "Tablet Only",
-                                desc: "Locked to tablet viewport (768px container) across all devices",
-                                badge: "Tablet View",
-                                badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-                                icon: Tablet
-                              },
-                              {
-                                id: "mobile_tablet_laptop" as const,
-                                title: "Laptop & Desktop Only",
-                                desc: "Standard desktop/laptop layout (1150px container)",
-                                badge: "Laptop / PC",
-                                badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-                                icon: Laptop
-                              }
-                            ].map((option) => {
-                              const isSelected = editorDeviceScope === option.id;
-                              const IconComponent = option.icon;
-                              return (
-                                <button
-                                  key={option.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setEditorDeviceScope(option.id);
-                                    triggerToast(`Target device set to: ${option.title}`);
-                                  }}
-                                  className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 cursor-pointer min-w-0 ${
-                                    isSelected
-                                      ? "bg-indigo-600/20 border-indigo-500/70 shadow-lg shadow-indigo-500/15 ring-1 ring-indigo-500/40"
-                                      : "bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06]"
-                                  }`}
-                                >
-                                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                                    <div className={`mt-0.5 p-1.5 rounded-lg border shrink-0 ${
-                                      isSelected
-                                        ? "bg-indigo-500/20 border-indigo-400/50 text-indigo-300"
-                                        : "bg-white/[0.04] border-white/10 text-slate-400"
-                                    }`}>
-                                      <IconComponent className="h-4 w-4" />
-                                    </div>
-                                    <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-xs font-bold truncate ${isSelected ? "text-indigo-200" : "text-slate-200"}`}>
-                                          {option.title}
-                                        </span>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${option.badgeColor}`}>
-                                          {option.badge}
-                                        </span>
-                                      </div>
-                                      <p className="text-[11px] text-slate-400 leading-snug">
-                                        {option.desc}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
-                                    isSelected ? "border-indigo-400 bg-indigo-600" : "border-white/20 bg-slate-900"
-                                  }`}>
-                                    {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Thank You Page Division */}
-                    <div className="pt-4 border-t border-white/[0.08] space-y-3.5">
-                      <div className="flex items-center justify-between gap-3 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.07]">
-                        <div className="space-y-0.5 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-pink-400 shrink-0" />
-                            <span className="text-xs font-bold text-white tracking-wide">
-                              THANK YOU PAGE
-                            </span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
-                              Post-Submit
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-400 leading-tight">
-                            Shown to visitors after Form or Smart Form submit, lead capture & payments.
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const nextState = !showThanksPage;
-                            setShowThanksPage(nextState);
-                            setEditorTab(nextState ? "Thank You" : "Settings");
-                            triggerToast(nextState ? "Previewing Thank You Page Screen" : "Back to Page Settings View");
-                          }}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                            showThanksPage
-                              ? "bg-pink-600 text-white border-pink-400 shadow-md shadow-pink-500/30 ring-1 ring-pink-400"
-                              : "bg-white/[0.05] hover:bg-white/[0.1] text-pink-300 border-pink-500/30 hover:border-pink-500/60"
-                          }`}
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>{showThanksPage ? "Preview Active" : "Preview Screen"}</span>
-                        </button>
-                      </div>
-
-                      <div className="p-4 rounded-2xl border border-pink-500/20 bg-pink-500/[0.02] backdrop-blur-xl space-y-3.5">
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div>
-                            <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Nav Title</label>
-                            <input
-                              type="text"
-                              value={thankYouTitle}
-                              onChange={(e) => setThankYouTitle(e.target.value)}
-                              className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
-                              placeholder="Thank You"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Hero Mark</label>
-                            <input
-                              type="text"
-                              value={thankYouEmoji}
-                              onChange={(e) => setThankYouEmoji(e.target.value)}
-                              className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
-                              placeholder="✓"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Supporting Message</label>
-                          <textarea
-                            value={thankYouMessage}
-                            onChange={(e) => setThankYouMessage(e.target.value)}
-                            rows={3}
-                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
-                            placeholder="Thanks for connecting with us on KEYLINK360..."
-                          />
-                        </div>
-
-                        {showThanksPage && (
-                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 text-xs">
-                            <span className="text-pink-200 font-medium text-[11px]">
-                              🎉 Live Preview is showing the Thank You page in the phone simulator!
-                            </span>
                             <button
                               type="button"
                               onClick={() => {
-                                setShowThanksPage(false);
-                                setEditorTab("Settings");
+                                setEditorTab("Edit");
+                                setEditorViewPanel("preview");
+                                triggerToast(
+                                  `Payment ON — Form / Smart Form now show Pay ₹${paymentAmountInr} in Live Preview`
+                                );
                               }}
-                              className="text-[10px] font-bold text-white bg-pink-600/80 hover:bg-pink-600 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                              className="w-full rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold py-2.5 shadow-lg shadow-pink-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
                             >
-                              Back to Main View
+                              <Eye className="w-4 h-4" />
+                              <span>Preview Form Pay (₹{paymentAmountInr})</span>
                             </button>
+
+                            <p className="text-[10px] text-slate-400 text-center leading-relaxed">
+                              🔒 Payments are safely processed via Razorpay standard checkout popup.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-1.5">
+                            <span className="text-xs font-bold text-slate-300 block">Form Payment is Currently Inactive</span>
+                            <p className="text-[11px] text-slate-400">
+                              Toggle the switch above to collect payments directly on your bio page form blocks.
+                            </p>
                           </div>
                         )}
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* SUBPANEL 3: AI SALES ASSISTANT */}
+                  {settingsSubPanel === "ai" && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                        <button
+                          type="button"
+                          onClick={() => setSettingsSubPanel("root")}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white text-xs font-bold border border-white/10 transition-all cursor-pointer"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-cyan-400" />
+                          <span>← Back to Settings</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-cyan-300 px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/25 flex items-center gap-1.5">
+                          <Sparkles className="w-3 h-3 text-cyan-400" />
+                          <span>AI Agent</span>
+                        </span>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                        {/* Main AI Switch & Tutorial */}
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-cyan-500/[0.06] border border-cyan-500/20">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-white block">AI Sales Assistant</span>
+                              <button
+                                type="button"
+                                onClick={() => setIsGuideModalOpen(true)}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-bold hover:bg-cyan-500/30 transition-colors cursor-pointer"
+                              >
+                                <BookOpen className="w-2.5 h-2.5 text-cyan-300" />
+                                <span>Tutorial</span>
+                              </button>
+                            </div>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">24/7 intelligent sales agent on your bio page</span>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={aiAssistantEnabled}
+                              onChange={(e) => setAiAssistantEnabled(e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600 border border-white/20"></div>
+                          </label>
+                        </div>
+
+                        {aiAssistantEnabled ? (
+                          <div className="space-y-3.5 pt-1">
+                            <div>
+                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                Bot Name
+                              </label>
+                              <input
+                                type="text"
+                                value={aiBotName}
+                                onChange={(e) => setAiBotName(e.target.value)}
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white"
+                                placeholder="e.g. Maya, Sales Bot"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                Welcome Greeting
+                              </label>
+                              <textarea
+                                value={aiWelcomeMessage}
+                                onChange={(e) => setAiWelcomeMessage(e.target.value)}
+                                rows={2}
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white resize-none"
+                                placeholder="👋 Hi! How can I assist you today?"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                  Brand Name
+                                </label>
+                                <input
+                                  type="text"
+                                  value={aiBusinessName}
+                                  onChange={(e) => setAiBusinessName(e.target.value)}
+                                  className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white"
+                                  placeholder={editorTitle || "Brand Name"}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                  WhatsApp Contact
+                                </label>
+                                <input
+                                  type="tel"
+                                  value={aiContactPhone}
+                                  onChange={(e) => setAiContactPhone(e.target.value)}
+                                  className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white"
+                                  placeholder="+91 9876543210"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                Offerings & Knowledge Base
+                              </label>
+                              <textarea
+                                value={aiBusinessDescription}
+                                onChange={(e) => setAiBusinessDescription(e.target.value)}
+                                rows={3}
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white resize-none"
+                                placeholder="Products, pricing, delivery times, store hours..."
+                              />
+                            </div>
+
+                            {/* Custom FAQs */}
+                            <div className="space-y-2 pt-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[11px] font-bold text-slate-200">
+                                  Instant FAQs
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setAiCustomFaqs((prev) => [
+                                      ...prev,
+                                      { question: "", answer: "" }
+                                    ])
+                                  }
+                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                  <span>Add FAQ</span>
+                                </button>
+                              </div>
+
+                              {aiCustomFaqs.map((faq, idx) => (
+                                <div
+                                  key={idx}
+                                  className="p-3 bg-slate-950/70 border border-white/10 rounded-xl space-y-1.5 relative group"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <input
+                                      type="text"
+                                      value={faq.question}
+                                      onChange={(e) => {
+                                        const updated = [...aiCustomFaqs];
+                                        updated[idx].question = e.target.value;
+                                        setAiCustomFaqs(updated);
+                                      }}
+                                      placeholder="Question..."
+                                      className="flex-1 text-xs font-semibold text-white border-b border-white/10 focus:border-cyan-500 focus:outline-none py-1 bg-transparent"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setAiCustomFaqs((prev) =>
+                                          prev.filter((_, i) => i !== idx)
+                                        )
+                                      }
+                                      className="text-slate-400 hover:text-rose-400 p-1 cursor-pointer"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                  <textarea
+                                    value={faq.answer}
+                                    onChange={(e) => {
+                                      const updated = [...aiCustomFaqs];
+                                      updated[idx].answer = e.target.value;
+                                      setAiCustomFaqs(updated);
+                                    }}
+                                    rows={2}
+                                    placeholder="Answer..."
+                                    className="w-full text-xs text-slate-300 bg-transparent focus:outline-none resize-none pt-1"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center justify-between py-2 border-t border-cyan-500/20 pt-3">
+                              <div>
+                                <span className="text-xs font-bold block text-slate-200">
+                                  Auto Lead Capture
+                                </span>
+                                <span className="text-[10px] text-slate-400 block">
+                                  Save visitor phone & email to CRM
+                                </span>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={aiAutoLeadCapture}
+                                  onChange={(e) => setAiAutoLeadCapture(e.target.checked)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600 border border-white/20"></div>
+                              </label>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-1.5">
+                            <span className="text-xs font-bold text-slate-300 block">AI Assistant is Inactive</span>
+                            <p className="text-[11px] text-slate-400">
+                              Toggle the switch above to empower your bio page with a 24/7 AI conversational agent.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUBPANEL 4: TARGET DEVICES SCOPE */}
+                  {settingsSubPanel === "devices" && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                        <button
+                          type="button"
+                          onClick={() => setSettingsSubPanel("root")}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white text-xs font-bold border border-white/10 transition-all cursor-pointer"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-indigo-400" />
+                          <span>← Back to Settings</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-indigo-300 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25 flex items-center gap-1.5">
+                          <Smartphone className="w-3 h-3 text-indigo-400" />
+                          <span>Screen Scope</span>
+                        </span>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                        {/* Scope Toggle Switch */}
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-white block">TARGET DEVICES</span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                {isTargetDevicesCustomEnabled ? "Custom Mode" : "Auto Fluid"}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">
+                              Default is Ultra-Wide responsive. Enable to choose locked screen divisions.
+                            </span>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input
+                              type="checkbox"
+                              checked={isTargetDevicesCustomEnabled}
+                              onChange={(e) => {
+                                const enabled = e.target.checked;
+                                setIsTargetDevicesCustomEnabled(enabled);
+                                setEditorDeviceScope("all_devices");
+                                triggerToast(
+                                  enabled
+                                    ? "Target Devices enabled · All Devices (Ultra-Wide) active by default"
+                                    : "Target Devices disabled · Reset to All Devices (Ultra-Wide) fluid"
+                                );
+                              }}
+                              className="sr-only peer"
+                            />
+                            <div className="w-10 h-5.5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600 border border-white/20"></div>
+                          </label>
+                        </div>
+
+                        {/* When Checkbox is NOT enabled: Default Ultra-Wide Active State */}
+                        {!isTargetDevicesCustomEnabled ? (
+                          <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900/60 to-purple-950/30 border border-indigo-500/30 shadow-lg shadow-indigo-950/30 space-y-2.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="flex h-2 w-2 relative">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span className="text-xs font-bold text-emerald-300">
+                                  All Devices (Ultra-Wide) · Default Active
+                                </span>
+                              </div>
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                Fluid Auto
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                              Published bio site automatically scales across all visitor screens — Ultra-Wide (up to 1680px, 4-col), Laptops (3-col), Tablets (2-col), and Mobile phones (1-col) via dynamic responsive media queries.
+                            </p>
+                            <div className="pt-2 flex items-center justify-between text-[10px] text-indigo-300/80 font-medium bg-black/20 p-2.5 rounded-xl border border-white/[0.04]">
+                              <div className="flex items-center gap-1.5">
+                                <Monitor className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                <span>Ultra-Wide</span>
+                              </div>
+                              <span className="text-slate-600">→</span>
+                              <div className="flex items-center gap-1.5">
+                                <Laptop className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                <span>Laptop</span>
+                              </div>
+                              <span className="text-slate-600">→</span>
+                              <div className="flex items-center gap-1.5">
+                                <Tablet className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                <span>Tablet</span>
+                              </div>
+                              <span className="text-slate-600">→</span>
+                              <div className="flex items-center gap-1.5">
+                                <Smartphone className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                <span>Mobile</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          /* When Checkbox IS enabled: show all selectable device divisions with All Devices Ultra-Wide selected by default */
+                          <div className="space-y-2.5">
+                            <div className="flex items-center justify-between px-0.5">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                Select Target Screen Division
+                              </span>
+                              <span className="text-[10px] text-indigo-400 font-semibold">
+                                {editorDeviceScope === "all_devices"
+                                  ? "Ultra-Wide Fluid (Default)"
+                                  : editorDeviceScope === "mobile_only"
+                                    ? "Mobile Locked (430px)"
+                                    : editorDeviceScope === "mobile_tablet"
+                                      ? "Tablet Locked (768px)"
+                                      : "Laptop/Desktop (1150px)"}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-2.5">
+                              {[
+                                {
+                                  id: "all_devices" as const,
+                                  title: "All Devices (Ultra-Wide)",
+                                  desc: "Automated fluid responsiveness across 4K, Desktop, Tablet & Phone",
+                                  badge: "Default · Recommended",
+                                  badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                                  icon: Monitor
+                                },
+                                {
+                                  id: "mobile_only" as const,
+                                  title: "Mobile Only",
+                                  desc: "Strictly locked to phone screen (430px card) on all laptops & PCs",
+                                  badge: "Phone Only",
+                                  badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                                  icon: Smartphone
+                                },
+                                {
+                                  id: "mobile_tablet" as const,
+                                  title: "Tablet Only",
+                                  desc: "Locked to tablet viewport (768px container) across all devices",
+                                  badge: "Tablet View",
+                                  badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+                                  icon: Tablet
+                                },
+                                {
+                                  id: "mobile_tablet_laptop" as const,
+                                  title: "Laptop & Desktop Only",
+                                  desc: "Standard desktop/laptop layout (1150px container)",
+                                  badge: "Laptop / PC",
+                                  badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+                                  icon: Laptop
+                                }
+                              ].map((option) => {
+                                const isSelected = editorDeviceScope === option.id;
+                                const IconComponent = option.icon;
+                                return (
+                                  <button
+                                    key={option.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setEditorDeviceScope(option.id);
+                                      triggerToast(`Target device set to: ${option.title}`);
+                                    }}
+                                    className={`text-left p-3 sm:p-3.5 rounded-xl border transition-all flex items-start justify-between gap-3 cursor-pointer min-w-0 ${
+                                      isSelected
+                                        ? "bg-indigo-600/20 border-indigo-500/70 shadow-lg shadow-indigo-500/15 ring-1 ring-indigo-500/40"
+                                        : "bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06]"
+                                    }`}
+                                  >
+                                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                      <div className={`mt-0.5 p-1.5 rounded-lg border shrink-0 ${
+                                        isSelected
+                                          ? "bg-indigo-500/20 border-indigo-400/50 text-indigo-300"
+                                          : "bg-white/[0.04] border-white/10 text-slate-400"
+                                      }`}>
+                                        <IconComponent className="h-4 w-4" />
+                                      </div>
+                                      <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
+                                        <div className="flex items-center gap-2">
+                                          <span className={`text-xs font-bold truncate ${isSelected ? "text-indigo-200" : "text-slate-200"}`}>
+                                            {option.title}
+                                          </span>
+                                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${option.badgeColor}`}>
+                                            {option.badge}
+                                          </span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 leading-snug">
+                                          {option.desc}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                      isSelected ? "border-indigo-400 bg-indigo-600" : "border-white/20 bg-slate-900"
+                                    }`}>
+                                      {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUBPANEL 5: THANK YOU PAGE */}
+                  {settingsSubPanel === "thanks" && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                        <button
+                          type="button"
+                          onClick={() => setSettingsSubPanel("root")}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white text-xs font-bold border border-white/10 transition-all cursor-pointer"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-purple-400" />
+                          <span>← Back to Settings</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-purple-300 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/25 flex items-center gap-1.5">
+                          <CheckCircle className="w-3 h-3 text-purple-400" />
+                          <span>Thank You</span>
+                        </span>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                        {/* Thank You Page Switch & Preview Button */}
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-purple-500/[0.06] border border-purple-500/20">
+                          <div>
+                            <span className="text-xs font-bold text-white block">Thank You Page Screen</span>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">Shown after lead capture, forms & payments</span>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextState = !showThanksPage;
+                                setShowThanksPage(nextState);
+                                setEditorTab(nextState ? "Thank You" : "Settings");
+                                triggerToast(nextState ? "Previewing Thank You Page Screen" : "Back to Page Settings View");
+                              }}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all flex items-center gap-1 cursor-pointer ${
+                                showThanksPage
+                                  ? "bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-500/30 ring-1 ring-purple-400"
+                                  : "bg-white/[0.05] hover:bg-white/[0.1] text-purple-300 border-purple-500/30 hover:border-purple-500/60"
+                              }`}
+                            >
+                              <Eye className="w-3 h-3" />
+                              <span>{showThanksPage ? "Preview Active" : "Preview"}</span>
+                            </button>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={isThankYouEnabled}
+                                onChange={(e) => setIsThankYouEnabled(e.target.checked)}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600 border border-white/20"></div>
+                            </label>
+                          </div>
+                        </div>
+
+                        {isThankYouEnabled ? (
+                          <div className="space-y-3.5 pt-1">
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <div>
+                                <label className="block text-[11px] font-semibold text-purple-300 mb-1.5">Nav Title</label>
+                                <input
+                                  type="text"
+                                  value={thankYouTitle}
+                                  onChange={(e) => setThankYouTitle(e.target.value)}
+                                  className="w-full bg-white/[0.04] border border-white/10 focus:border-purple-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
+                                  placeholder="Thank You"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-semibold text-purple-300 mb-1.5">Hero Mark</label>
+                                <input
+                                  type="text"
+                                  value={thankYouEmoji}
+                                  onChange={(e) => setThankYouEmoji(e.target.value)}
+                                  className="w-full bg-white/[0.04] border border-white/10 focus:border-purple-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
+                                  placeholder="✓"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-semibold text-purple-300 mb-1.5">Supporting Message</label>
+                              <textarea
+                                value={thankYouMessage}
+                                onChange={(e) => setThankYouMessage(e.target.value)}
+                                rows={3}
+                                className="w-full bg-white/[0.04] border border-white/10 focus:border-purple-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
+                                placeholder="Thanks for connecting with us on KEYLINK360..."
+                              />
+                            </div>
+
+                            {showThanksPage && (
+                              <div className="flex items-center justify-between p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs">
+                                <span className="text-purple-200 font-medium text-[11px]">
+                                  🎉 Live Preview is showing the Thank You page in the phone simulator!
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setShowThanksPage(false);
+                                    setEditorTab("Settings");
+                                  }}
+                                  className="text-[10px] font-bold text-white bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                                >
+                                  Back to Main View
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-1.5">
+                            <span className="text-xs font-bold text-slate-300 block">Thank You Page is Inactive</span>
+                            <p className="text-[11px] text-slate-400">
+                              Toggle the switch above to display a dedicated celebratory completion screen after visitors submit forms.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
