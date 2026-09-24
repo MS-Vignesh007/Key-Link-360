@@ -309,6 +309,12 @@ export default function PublicBioPageView({
     return "auto";
   });
   const [showDeviceDock, setShowDeviceDock] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1440));
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Super Smart Edit State for Global Preview
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -1136,27 +1142,44 @@ export default function PublicBioPageView({
             ? "laptop"
             : "desktop";
 
-    // In live published mode, strictly honor the author's published device target.
-    // In preview mode, allow manual activeDeviceMode switcher if toggled.
+    // In live published mode, if mobile_only is set, show mobile container; otherwise show true full-screen responsive website
+    const isMobileLocked = deviceScope === "mobile_only";
     const effectiveDevice: DeviceViewportMode =
       mode === "live"
-        ? targetScopeDevice
+        ? (isMobileLocked ? "mobile" : "desktop")
         : activeDeviceMode !== "auto"
           ? activeDeviceMode
           : targetScopeDevice;
 
+    // Smart Fit Zoom scaling for Desktop (1920px) and TV (2560px) when viewed on laptop displays
+    let previewScale = 1;
+    let desktopTargetWidth = 1920;
+    let tvTargetWidth = 2560;
+
+    if (mode === "preview") {
+      if (activeDeviceMode === "desktop" && windowWidth < 1920) {
+        previewScale = Math.min(1, Math.max(0.35, (windowWidth - 32) / desktopTargetWidth));
+      } else if (activeDeviceMode === "tv" && windowWidth < 2560) {
+        previewScale = Math.min(1, Math.max(0.25, (windowWidth - 32) / tvTargetWidth));
+      }
+    }
+
     const containerMaxWidthClass =
-      effectiveDevice === "mobile"
-        ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
-        : effectiveDevice === "tablet"
-          ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
-          : effectiveDevice === "laptop"
-            ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6"
-            : effectiveDevice === "desktop"
-              ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
-              : effectiveDevice === "tv"
-                ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
-                : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
+      mode === "live"
+        ? (isMobileLocked
+            ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2.5rem] border border-white/10 my-0 sm:my-6 overflow-hidden"
+            : "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8")
+        : activeDeviceMode === "mobile"
+          ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/15 my-6 overflow-hidden"
+          : activeDeviceMode === "tablet"
+            ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/15 my-6 overflow-hidden"
+            : activeDeviceMode === "laptop"
+              ? "w-full max-w-[1440px] key-public-bio-page--laptop my-0 sm:my-2 px-4 sm:px-8"
+              : activeDeviceMode === "desktop"
+                ? "w-[1920px] max-w-[1920px] key-public-bio-page--desktop shadow-2xl rounded-2xl border border-white/15 my-4 px-12 py-10"
+                : activeDeviceMode === "tv"
+                  ? "w-[2560px] max-w-[2560px] key-public-bio-page--tv shadow-2xl rounded-2xl border border-white/15 my-4 px-16 py-12"
+                  : "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 my-0 sm:my-2";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1202,17 +1225,26 @@ export default function PublicBioPageView({
 
     return (
       <div
-        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4${
-          showThanksPage ? " key-public-bio-page--thanks-open" : ""
-        }`}
-        style={{
-          backgroundColor: "#090d16",
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "repeat",
-          minHeight: "100vh"
-        }}
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto text-slate-100 transition-colors duration-300 relative ${
+          mode === "live"
+            ? `${getBioPageThemeClass(pageTheme)} p-0 m-0`
+            : "bg-[#090d16] py-0 px-0 sm:px-4"
+        }${showThanksPage ? " key-public-bio-page--thanks-open" : ""}`}
+        style={
+          mode === "live"
+            ? {
+                ...getBioPageThemeStyle(pageTheme),
+                minHeight: "100vh"
+              }
+            : {
+                backgroundColor: "#090d16",
+                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+                backgroundAttachment: "fixed",
+                backgroundRepeat: "repeat",
+                minHeight: "100vh"
+              }
+        }
       >
         {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
         {onExitPreview && (
@@ -1233,8 +1265,17 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
-          style={getBioPageThemeStyle(pageTheme)}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen relative`}
+          style={{
+            ...getBioPageThemeStyle(pageTheme),
+            ...(previewScale < 1 && (activeDeviceMode === "desktop" || activeDeviceMode === "tv")
+              ? {
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: "top center",
+                  marginBottom: `-${Math.round((1 - previewScale) * 100)}%`
+                }
+              : {})
+          }}
         >
         <div
           className="key-phone-preview__bio-layer"
@@ -1538,12 +1579,22 @@ export default function PublicBioPageView({
               <div className="flex items-center gap-1">
                 {(
                   [
-                    { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
+                    { id: "auto" as const, label: "Auto Full", icon: Globe, widthLabel: "100% Live" },
+                    { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "15.6\" Full" },
                     { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
-                    { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "1280px" },
-                    { id: "desktop" as const, label: "Desktop", icon: Monitor, widthLabel: "1536px" },
-                    { id: "tv" as const, label: "TV", icon: Tv, widthLabel: "1920px" },
-                    { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "Responsive" }
+                    { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
+                    {
+                      id: "desktop" as const,
+                      label: "Desktop",
+                      icon: Monitor,
+                      widthLabel: previewScale < 1 && activeDeviceMode === "desktop" ? `1920px · ${Math.round(previewScale * 100)}% Fit` : "1920px"
+                    },
+                    {
+                      id: "tv" as const,
+                      label: "TV",
+                      icon: Tv,
+                      widthLabel: previewScale < 1 && activeDeviceMode === "tv" ? `2560px · ${Math.round(previewScale * 100)}% Fit` : "2560px"
+                    }
                   ] as const
                 ).map(({ id, label, icon: Icon, widthLabel }) => {
                   const isActive = activeDeviceMode === id;
@@ -1552,7 +1603,7 @@ export default function PublicBioPageView({
                       key={id}
                       type="button"
                       onClick={() => setActiveDeviceMode(id)}
-                      title={`Real Live Device View: ${label} (${widthLabel})`}
+                      title={`Real Live Device Output: ${label} (${widthLabel})`}
                       className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                         isActive
                           ? "bg-indigo-600 text-white shadow-md font-bold ring-1 ring-indigo-400/50"
@@ -1561,7 +1612,7 @@ export default function PublicBioPageView({
                     >
                       <Icon className="h-3.5 w-3.5 shrink-0" />
                       <span>{label}</span>
-                      <span className="text-[9px] font-mono opacity-60 hidden md:inline">({widthLabel})</span>
+                      <span className="text-[9px] font-mono opacity-70 hidden sm:inline">({widthLabel})</span>
                     </button>
                   );
                 })}
