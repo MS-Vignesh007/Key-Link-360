@@ -3839,7 +3839,7 @@ export default function BioPagesScreen({
                 </nav>
 
                 {/* Mobile & Small Tablet Full Screen Live Preview Switcher Button */}
-                <div className="p-2.5 px-3 border-t border-slate-800/80 bg-slate-900/95 md:hidden shrink-0">
+                <div className="p-2.5 px-3 border-t border-white/[0.08] bg-slate-950/80 backdrop-blur-md md:hidden shrink-0">
                   <button
                     type="button"
                     onClick={() => {
@@ -3857,12 +3857,12 @@ export default function BioPagesScreen({
                 </div>
 
                 {/* Single Sidebar Footer */}
-                <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between shrink-0">
+                <div className="p-3 border-t border-white/[0.08] bg-white/[0.02] backdrop-blur-md flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
-                    <span className="text-[11px] font-medium text-slate-400">Keys-Link Studio v360</span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
+                    <span className="text-[11px] font-semibold text-slate-300">Keys-Link Studio v360</span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">Pro Editor</span>
+                  <span className="text-[10px] text-indigo-400/90 font-mono font-semibold bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">Pro Editor</span>
                 </div>
               </div>
             ) : (
@@ -4387,10 +4387,10 @@ export default function BioPagesScreen({
                     <div className="key-editor-blocks-palette">
                       <div className="mb-2.5 flex items-center justify-between">
                         <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          🚀 Modern Hero & Navigation
+                          🚀 Hero & Headers
                         </span>
                         <span className="text-[9px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
-                          Pro Hero
+                          Hero
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2.5">
@@ -4398,10 +4398,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Navbar")}
                           onClick={() => handleAddBlock("Navbar")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Floating navigation bar"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🧭
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4414,10 +4414,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Split Hero")}
                           onClick={() => handleAddBlock("Split Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Split headline & visual banner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🚀
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4430,10 +4430,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Main Feature")}
                           onClick={() => handleAddBlock("Main Feature")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="4-feature highlight grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🔥
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4446,10 +4446,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video Hero")}
                           onClick={() => handleAddBlock("Video Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Cinematic video hero with CTA"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎬
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4462,10 +4462,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Glow Badge")}
                           onClick={() => handleAddBlock("Glow Badge")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Animated glowing pill announcement"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ✨
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4478,10 +4478,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Feature Hero")}
                           onClick={() => handleAddBlock("Feature Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="3-pillar feature hero overview"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-teal-500/20 border border-white/[0.08] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-teal-500/20 border border-white/[0.07] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⚡
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4494,10 +4494,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Header")}
                           onClick={() => handleAddBlock("Header")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Section headline"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-xs text-emerald-400 shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-xs text-emerald-400 shrink-0 transition-transform group-hover:scale-105">
                             H1
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4510,10 +4510,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Banner")}
                           onClick={() => handleAddBlock("Banner")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Notice & alert banner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-sky-500/20 border border-white/[0.08] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-sky-500/20 border border-white/[0.07] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📢
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4530,10 +4530,10 @@ export default function BioPagesScreen({
                     <div className="key-editor-blocks-palette">
                       <div className="mb-2.5 flex items-center justify-between">
                         <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          💳 Pricing & Commerce
+                          💳 Sales & Commerce
                         </span>
                         <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
-                          High ROI
+                          Sales
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2.5">
@@ -4541,10 +4541,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Flash Offer")}
                           onClick={() => handleAddBlock("Flash Offer")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Flash offer discount sale"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⚡
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4557,10 +4557,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Toggle Pricing")}
                           onClick={() => handleAddBlock("Toggle Pricing")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Monthly vs Yearly toggle pricing table"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⚖️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4573,10 +4573,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Product Showcase")}
                           onClick={() => handleAddBlock("Product Showcase")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Featured product showcase"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📦
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4589,10 +4589,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Comparison Table")}
                           onClick={() => handleAddBlock("Comparison Table")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Plan feature comparison table"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📊
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4605,10 +4605,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Payment Button")}
                           onClick={() => handleAddBlock("Payment Button")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Instant payment checkout button"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💳
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4621,10 +4621,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Pricing")}
                           onClick={() => handleAddBlock("Pricing")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Pricing plans and tiers"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💰
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4637,10 +4637,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Shop")}
                           onClick={() => handleAddBlock("Shop")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Store product catalogue"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-teal-500/20 border border-white/[0.08] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-teal-500/20 border border-white/[0.07] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🛒
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4653,10 +4653,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Coupon")}
                           onClick={() => handleAddBlock("Coupon")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Coupon discount code"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎟️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4684,10 +4684,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Community Hub")}
                           onClick={() => handleAddBlock("Community Hub")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="VIP community hub with chat"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💬
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4700,10 +4700,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Brand Logos")}
                           onClick={() => handleAddBlock("Brand Logos")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Animated client and partner logo marquee"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🏢
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4716,10 +4716,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Star Ratings")}
                           onClick={() => handleAddBlock("Star Ratings")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Star review rating badge"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⭐
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4732,10 +4732,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Press Mentions")}
                           onClick={() => handleAddBlock("Press Mentions")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Press & media review quotes"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📰
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4748,10 +4748,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Testimonials")}
                           onClick={() => handleAddBlock("Testimonials")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Customer testimonial reviews"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💬
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4764,10 +4764,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Stats")}
                           onClick={() => handleAddBlock("Stats")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Key achievements and numbers"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📊
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4795,10 +4795,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Auto Slider")}
                           onClick={() => handleAddBlock("Auto Slider")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Autoplay image carousel slider"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎠
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4811,10 +4811,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "YouTube Channel")}
                           onClick={() => handleAddBlock("YouTube Channel")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="YouTube channel and player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🔴
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4827,10 +4827,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Instagram Feed")}
                           onClick={() => handleAddBlock("Instagram Feed")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Instagram photo grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📸
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4843,10 +4843,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Before/After Slider")}
                           onClick={() => handleAddBlock("Before/After Slider")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Interactive comparison slider"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-cyan-500/20 border border-white/[0.08] group-hover:border-cyan-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-cyan-500/20 border border-white/[0.07] group-hover:border-cyan-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ↔️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4859,10 +4859,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Portfolio Gallery")}
                           onClick={() => handleAddBlock("Portfolio Gallery")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Portfolio showcase"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💼
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4875,10 +4875,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video Showcase")}
                           onClick={() => handleAddBlock("Video Showcase")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Video player with playlist"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📺
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4891,10 +4891,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Audio Player")}
                           onClick={() => handleAddBlock("Audio Player")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Podcast & music audio player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎙️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4907,10 +4907,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Gallery")}
                           onClick={() => handleAddBlock("Gallery")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Image gallery grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-sky-500/20 border border-white/[0.08] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-sky-500/20 border border-white/[0.07] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🖼️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4923,10 +4923,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video")}
                           onClick={() => handleAddBlock("Video")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Stream video embed"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎥
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4939,10 +4939,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Music")}
                           onClick={() => handleAddBlock("Music")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Music track player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-violet-500/20 border border-white/[0.08] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-violet-500/20 border border-white/[0.07] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎵
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4955,10 +4955,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Image")}
                           onClick={() => handleAddBlock("Image")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Single image photo"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-fuchsia-500/20 border border-white/[0.08] group-hover:border-fuchsia-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-fuchsia-500/20 border border-white/[0.07] group-hover:border-fuchsia-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🖼️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -4986,10 +4986,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Google Form")}
                           onClick={() => handleAddBlock("Google Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Google Form embed or native survey"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📋
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5002,10 +5002,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Multi-Step Form")}
                           onClick={() => handleAddBlock("Multi-Step Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Interactive 3-step lead wizard"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🧙‍♂️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5018,10 +5018,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Lead Magnet")}
                           onClick={() => handleAddBlock("Lead Magnet")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Free PDF / eBook download card"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎁
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5034,10 +5034,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Meeting Booker")}
                           onClick={() => handleAddBlock("Meeting Booker")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Calendly meeting scheduler card"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🗓️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5050,10 +5050,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Newsletter Box")}
                           onClick={() => handleAddBlock("Newsletter Box")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Email capture newsletter subscription"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💌
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5066,10 +5066,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Countdown")}
                           onClick={() => handleAddBlock("Countdown")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Countdown timer"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⏱️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5082,10 +5082,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Link Spin")}
                           onClick={() => handleAddBlock("Link Spin")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Prize wheel spinner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🎡
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5098,10 +5098,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Smart Form")}
                           onClick={() => handleAddBlock("Smart Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Smart lead capture form"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📋
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5114,10 +5114,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Form")}
                           onClick={() => handleAddBlock("Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Custom form fields"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-violet-500/20 border border-white/[0.08] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-violet-500/20 border border-white/[0.07] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📝
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5130,10 +5130,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "FAQ")}
                           onClick={() => handleAddBlock("FAQ")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="FAQ accordion dropdown"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ❓
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5161,10 +5161,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Footer")}
                           onClick={() => handleAddBlock("Footer")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Modern clean footer"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🦶
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5177,10 +5177,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Button")}
                           onClick={() => handleAddBlock("Button")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Clickable button"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🔗
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5193,10 +5193,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Deep Link")}
                           onClick={() => handleAddBlock("Deep Link")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="App deep link redirect"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ⚡
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5209,10 +5209,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "WhatsApp")}
                           onClick={() => handleAddBlock("WhatsApp")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Direct WhatsApp chat"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-green-500/20 border border-white/[0.08] group-hover:border-green-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-green-500/20 border border-white/[0.07] group-hover:border-green-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             💬
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5225,10 +5225,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Socials")}
                           onClick={() => handleAddBlock("Socials")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Social media icon links"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🌐
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5241,10 +5241,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Call")}
                           onClick={() => handleAddBlock("Call")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Click to phone call"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📞
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5257,10 +5257,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Email")}
                           onClick={() => handleAddBlock("Email")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Click to email"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ✉️
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5273,10 +5273,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "vCard")}
                           onClick={() => handleAddBlock("vCard")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Save contact vCard file"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             🪪
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5289,10 +5289,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Events")}
                           onClick={() => handleAddBlock("Events")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Event RSVP and ticketing"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📅
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5305,10 +5305,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Map")}
                           onClick={() => handleAddBlock("Map")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Google Maps location pin"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📍
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5321,10 +5321,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Tip Jar")}
                           onClick={() => handleAddBlock("Tip Jar")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Donations & tip jar"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             ☕
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5337,10 +5337,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "PDF")}
                           onClick={() => handleAddBlock("PDF")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="PDF document download"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📄
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5353,10 +5353,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Text")}
                           onClick={() => handleAddBlock("Text")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Paragraph rich text"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             📝
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
@@ -5369,10 +5369,10 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Divider")}
                           onClick={() => handleAddBlock("Divider")}
-                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
                           title="Spacer & divider line"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
+                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
                             —
                           </span>
                           <div className="min-w-0 flex-1 overflow-hidden">
