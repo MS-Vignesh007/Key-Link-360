@@ -5,6 +5,7 @@ import {
   Tablet,
   Laptop,
   Monitor,
+  Tv,
   Globe,
   ArrowLeft,
   Move,
@@ -302,7 +303,7 @@ export default function PublicBioPageView({
     if (typeof window === "undefined") return "auto";
     const params = new URLSearchParams(window.location.search);
     const d = params.get("device") || params.get("view");
-    if (d === "mobile" || d === "tablet" || d === "laptop" || d === "desktop") {
+    if (d === "mobile" || d === "tablet" || d === "laptop" || d === "desktop" || d === "tv") {
       return d;
     }
     return "auto";
@@ -1146,12 +1147,16 @@ export default function PublicBioPageView({
 
     const containerMaxWidthClass =
       effectiveDevice === "mobile"
-        ? "max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-[2.5rem] border border-white/15 my-6"
+        ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
         : effectiveDevice === "tablet"
-          ? "max-w-[768px] key-public-bio-page--tablet shadow-2xl rounded-[2rem] border border-white/15 my-6"
+          ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
           : effectiveDevice === "laptop"
-            ? "max-w-[1150px] key-public-bio-page--laptop shadow-2xl rounded-[1.5rem] border border-white/15 my-6"
-            : "w-full max-w-[1440px] 2xl:max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-[5px] rounded-none sm:rounded-[2.5rem] shadow-2xl border-0 sm:border sm:border-white/15";
+            ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6"
+            : effectiveDevice === "desktop"
+              ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+              : effectiveDevice === "tv"
+                ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+                : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1189,7 +1194,11 @@ export default function PublicBioPageView({
           ? "grid-cols-1 sm:grid-cols-2 gap-4"
           : effectiveDevice === "laptop"
             ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
+            : effectiveDevice === "desktop"
+              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+              : effectiveDevice === "tv"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
 
     return (
       <div
@@ -1327,12 +1336,16 @@ export default function PublicBioPageView({
                         ? "col-span-1 sm:col-span-2"
                         : effectiveDevice === "laptop"
                           ? "col-span-1 md:col-span-2 lg:col-span-3"
-                          : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
+                          : effectiveDevice === "desktop"
+                            ? "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
+                            : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 2xl:col-span-5"
                       : block.colSpan === "half"
                         ? "col-span-1"
                         : effectiveDevice === "tablet"
                           ? "col-span-1 sm:col-span-2"
-                          : "col-span-1";
+                          : effectiveDevice === "laptop"
+                            ? "col-span-1 sm:col-span-2 md:col-span-2"
+                            : "col-span-1 sm:col-span-2";
 
                 const devStyles = computeBlockInlineStyles((block as any).styles);
                 const devMeta = getBlockCustomMeta((block as any).styles);
@@ -1525,28 +1538,30 @@ export default function PublicBioPageView({
               <div className="flex items-center gap-1">
                 {(
                   [
-                    { id: "mobile" as const, label: "Phone", icon: Smartphone },
-                    { id: "tablet" as const, label: "Tablet", icon: Tablet },
-                    { id: "laptop" as const, label: "Laptop", icon: Laptop },
-                    { id: "desktop" as const, label: "Desktop", icon: Monitor },
-                    { id: "auto" as const, label: "Auto", icon: Globe }
+                    { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
+                    { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
+                    { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "1280px" },
+                    { id: "desktop" as const, label: "Desktop", icon: Monitor, widthLabel: "1536px" },
+                    { id: "tv" as const, label: "TV", icon: Tv, widthLabel: "1920px" },
+                    { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "Responsive" }
                   ] as const
-                ).map(({ id, label, icon: Icon }) => {
+                ).map(({ id, label, icon: Icon, widthLabel }) => {
                   const isActive = activeDeviceMode === id;
                   return (
                     <button
                       key={id}
                       type="button"
                       onClick={() => setActiveDeviceMode(id)}
-                      title={`Switch View: ${label}`}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      title={`Real Live Device View: ${label} (${widthLabel})`}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                         isActive
-                          ? "bg-indigo-600 text-white shadow-sm font-bold"
+                          ? "bg-indigo-600 text-white shadow-md font-bold ring-1 ring-indigo-400/50"
                           : "text-slate-300 hover:text-white hover:bg-white/10"
                       }`}
                     >
-                      <Icon className="h-3 w-3" />
-                      <span className="hidden xs:inline">{label}</span>
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      <span>{label}</span>
+                      <span className="text-[9px] font-mono opacity-60 hidden md:inline">({widthLabel})</span>
                     </button>
                   );
                 })}

@@ -30,7 +30,7 @@ export interface UserProfile {
   mfaEnabled?: boolean;
 }
 
-export type DeviceViewportMode = "mobile" | "tablet" | "laptop" | "desktop";
+export type DeviceViewportMode = "mobile" | "tablet" | "laptop" | "desktop" | "tv";
 
 export type DeviceTargetScope =
   | "mobile_only"
