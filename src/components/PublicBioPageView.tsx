@@ -834,18 +834,25 @@ export default function PublicBioPageView({
     // If custom device scope is not enabled, default to "all_devices" (Ultra-wide auto-fluid)
     const deviceScope = isCustomDeviceScopeEnabled
       ? (customDetails?.deviceScope || currentPageMeta?.deviceScope || "all_devices")
-      : "all_devices";
+      : (customDetails?.deviceScope || currentPageMeta?.deviceScope || "all_devices");
 
+    const targetScopeDevice: DeviceViewportMode =
+      deviceScope === "mobile_only"
+        ? "mobile"
+        : deviceScope === "mobile_tablet"
+          ? "tablet"
+          : deviceScope === "mobile_tablet_laptop"
+            ? "laptop"
+            : "desktop";
+
+    // In live published mode, strictly honor the author's published device target.
+    // In preview mode, allow manual activeDeviceMode switcher if toggled.
     const effectiveDevice: DeviceViewportMode =
-      activeDeviceMode !== "auto"
-        ? activeDeviceMode
-        : deviceScope === "mobile_only"
-          ? "mobile"
-          : deviceScope === "mobile_tablet"
-            ? "tablet"
-            : deviceScope === "mobile_tablet_laptop"
-              ? "laptop"
-              : "desktop";
+      mode === "live"
+        ? targetScopeDevice
+        : activeDeviceMode !== "auto"
+          ? activeDeviceMode
+          : targetScopeDevice;
 
     const containerMaxWidthClass =
       effectiveDevice === "mobile"

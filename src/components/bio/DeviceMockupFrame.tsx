@@ -201,9 +201,20 @@ export default function DeviceMockupFrame({
 
   const finishStyle = get4KFrameStyle(activeFinish);
 
+  // Only Mobiles and Tablets are allowed to rotate horizontally.
+  // Laptops, Desktops, TV mockups and Curved monitors are strictly fixed in their natural horizontal orientation.
+  const isRotatable =
+    device.category === "apple" ||
+    device.category === "android" ||
+    device.category === "mobile" ||
+    device.category === "tablets" ||
+    device.category === "tablet";
+
+  const effectiveLandscape = Boolean(isLandscape && isRotatable);
+
   // Compute width and height based on device & orientation
-  const baseWidth = isLandscape ? device.height : device.width;
-  const baseHeight = isLandscape ? device.width : device.height;
+  const baseWidth = effectiveLandscape ? Math.max(device.width, device.height) : device.width;
+  const baseHeight = effectiveLandscape ? Math.min(device.width, device.height) : device.height;
 
   // On Mobile Viewports (< 768px), bypass heavy 4K frames/bezels and render 1:1 native canvas directly
   if (isMobileScreen) {
@@ -254,29 +265,45 @@ export default function DeviceMockupFrame({
   let frameHeight = baseHeight;
 
   if (isAnyLaptop) {
-    frameWidth = Math.min(960, Math.max(760, baseWidth));
+    // Laptops are never rotated
+    frameWidth = Math.min(960, Math.max(760, device.width));
     frameHeight = Math.round(frameWidth * 0.62);
   } else if (isRogCurved) {
-    frameWidth = Math.min(1080, Math.max(880, baseWidth));
+    frameWidth = Math.min(1080, Math.max(880, device.width));
     frameHeight = Math.round(frameWidth * 0.58);
   } else if (isXiaomiTv) {
-    frameWidth = Math.min(1100, Math.max(880, baseWidth));
+    frameWidth = Math.min(1100, Math.max(880, device.width));
     frameHeight = Math.round(frameWidth * 0.58);
   } else if (isDesktop) {
-    frameWidth = Math.min(1080, Math.max(820, baseWidth));
+    frameWidth = Math.min(1080, Math.max(820, device.width));
     frameHeight = Math.round(frameWidth * 0.62);
   } else if (isTablet || isTabletClassic) {
-    frameWidth = Math.min(680, baseWidth);
-    frameHeight = Math.min(880, baseHeight);
+    if (effectiveLandscape) {
+      frameWidth = Math.min(1040, Math.max(840, Math.max(device.width, device.height)));
+      frameHeight = Math.min(740, Math.max(540, Math.min(device.width, device.height)));
+    } else {
+      frameWidth = Math.min(680, Math.min(device.width, device.height));
+      frameHeight = Math.min(880, Math.max(device.width, device.height));
+    }
   } else if (isFoldHinge) {
-    frameWidth = Math.min(430, baseWidth);
-    const aspect = baseHeight / baseWidth;
-    frameHeight = Math.round(frameWidth * aspect);
+    if (effectiveLandscape) {
+      frameWidth = Math.min(780, Math.max(620, Math.max(device.width, device.height)));
+      frameHeight = Math.min(480, Math.max(380, Math.min(device.width, device.height)));
+    } else {
+      frameWidth = Math.min(430, baseWidth);
+      const aspect = baseHeight / baseWidth;
+      frameHeight = Math.round(frameWidth * aspect);
+    }
   } else {
     // Flagship smartphone standard
-    frameWidth = Math.min(390, baseWidth);
-    const aspect = Math.max(1.8, Math.min(2.18, baseHeight / baseWidth));
-    frameHeight = Math.round(frameWidth * aspect);
+    if (effectiveLandscape) {
+      frameWidth = Math.min(844, Math.max(680, Math.max(device.width, device.height)));
+      frameHeight = Math.min(430, Math.max(350, Math.min(device.width, device.height)));
+    } else {
+      frameWidth = Math.min(390, Math.min(device.width, device.height));
+      const aspect = Math.max(1.8, Math.min(2.18, Math.max(device.width, device.height) / Math.min(device.width, device.height)));
+      frameHeight = Math.round(frameWidth * aspect);
+    }
   }
 
   // Calculate dynamic scale factor so devices always fit the screen vertically and horizontally
@@ -892,31 +919,39 @@ export default function DeviceMockupFrame({
               boxShadow: finishStyle.boxShadow
             }}
           >
-            {/* Left Hardware Buttons: Action Button + Volume Up + Volume Down */}
-            <div
-              className="absolute -left-[5.5px] top-22 w-[3.5px] h-7 rounded-l-xs shadow-md"
-              style={{ background: finishStyle.buttonGradient }}
-            />
-            <div
-              className="absolute -left-[5.5px] top-34 w-[3.5px] h-12 rounded-l-xs shadow-md"
-              style={{ background: finishStyle.buttonGradient }}
-            />
-            <div
-              className="absolute -left-[5.5px] top-50 w-[3.5px] h-12 rounded-l-xs shadow-md"
-              style={{ background: finishStyle.buttonGradient }}
-            />
+            {/* Left Hardware Buttons: Action Button + Volume Up + Volume Down (hidden in landscape) */}
+            {!effectiveLandscape && (
+              <>
+                <div
+                  className="absolute -left-[5.5px] top-22 w-[3.5px] h-7 rounded-l-xs shadow-md"
+                  style={{ background: finishStyle.buttonGradient }}
+                />
+                <div
+                  className="absolute -left-[5.5px] top-34 w-[3.5px] h-12 rounded-l-xs shadow-md"
+                  style={{ background: finishStyle.buttonGradient }}
+                />
+                <div
+                  className="absolute -left-[5.5px] top-50 w-[3.5px] h-12 rounded-l-xs shadow-md"
+                  style={{ background: finishStyle.buttonGradient }}
+                />
+              </>
+            )}
 
-            {/* Right Hardware Buttons: Power / Siri + Flush Camera Control */}
-            <div
-              className="absolute -right-[5.5px] top-32 w-[3.5px] h-16 rounded-r-xs shadow-md"
-              style={{ background: finishStyle.buttonGradient }}
-            />
-            <div className="absolute -right-[4px] bottom-32 w-[2px] h-14 bg-slate-400/80 rounded-r-xs border border-white/20" />
+            {/* Right Hardware Buttons: Power / Siri + Flush Camera Control (hidden in landscape) */}
+            {!effectiveLandscape && (
+              <>
+                <div
+                  className="absolute -right-[5.5px] top-32 w-[3.5px] h-16 rounded-r-xs shadow-md"
+                  style={{ background: finishStyle.buttonGradient }}
+                />
+                <div className="absolute -right-[4px] bottom-32 w-[2px] h-14 bg-slate-400/80 rounded-r-xs border border-white/20" />
+              </>
+            )}
 
             {/* Inner Screen Chassis: 1.2mm razor bezel (rounded-[2.8rem]) */}
             <div
-              className="relative rounded-[2.8rem] overflow-hidden bg-slate-950 flex flex-col shadow-inner ring-1 ring-black border border-black/80"
-              style={{ height: `${frameHeight - 20}px` }}
+              className={`relative ${effectiveLandscape ? "rounded-[2rem]" : "rounded-[2.8rem]"} overflow-hidden bg-slate-950 flex flex-col shadow-inner ring-1 ring-black border border-black/80`}
+              style={{ height: `${frameHeight - (effectiveLandscape ? 12 : 20)}px` }}
             >
               {/* 4K Glass Sheen Top Reflection Overlay */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.12] z-25 rounded-[2.8rem]" />
@@ -925,22 +960,22 @@ export default function DeviceMockupFrame({
               {(device.frameType === "iphone-titanium" ||
                 device.frameType === "iphone-island" ||
                 device.os === "iOS") && (
-                <div className="relative z-30 h-11 bg-black flex items-center justify-between px-6 select-none shrink-0 border-b border-white/[0.04]">
-                  <span className="text-[12px] font-bold tracking-tight text-white/90 font-mono">
+                <div className={`relative z-30 ${effectiveLandscape ? "h-7 px-4" : "h-11 px-6"} bg-black flex items-center justify-between select-none shrink-0 border-b border-white/[0.04]`}>
+                  <span className={`${effectiveLandscape ? "text-[10px]" : "text-[12px]"} font-bold tracking-tight text-white/90 font-mono`}>
                     1:59 AM
                   </span>
                   {/* Dynamic Island Pill with 4K camera optics */}
-                  <div className="h-6 w-28 rounded-full bg-black ring-1 ring-white/15 flex items-center justify-between px-2.5 shadow-inner">
-                    <span className="h-2 w-2 rounded-full bg-slate-950 border border-white/20" />
+                  <div className={`${effectiveLandscape ? "h-4.5 w-20" : "h-6 w-28"} rounded-full bg-black ring-1 ring-white/15 flex items-center justify-between px-2 shadow-inner`}>
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-950 border border-white/20" />
                     <div className="flex items-center gap-1">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-white/90">
-                    <Signal className="h-3 w-3" />
-                    <Wifi className="h-3 w-3" />
-                    <Battery className="h-3.5 w-3.5 text-white" />
+                  <div className={`flex items-center gap-1.5 ${effectiveLandscape ? "text-[9px]" : "text-[11px]"} text-white/90`}>
+                    <Signal className="h-2.5 w-2.5" />
+                    <Wifi className="h-2.5 w-2.5" />
+                    <Battery className="h-3 w-3 text-white" />
                   </div>
                 </div>
               )}

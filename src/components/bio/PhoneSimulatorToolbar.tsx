@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import {
   X,
   Smartphone,
+  Tablet,
+  Laptop,
+  Monitor,
   Info,
   ZoomIn,
   Target,
@@ -138,13 +141,13 @@ export default function PhoneSimulatorToolbar({
         </button>
 
         {showScopePopover && (
-          <div className="absolute right-12 top-0 z-50 w-64 p-3 bg-slate-950/98 border border-slate-700/90 rounded-2xl shadow-2xl backdrop-blur-2xl text-xs text-slate-200 space-y-2 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute right-12 top-0 z-50 w-72 p-3.5 bg-slate-950/98 border border-slate-700/90 rounded-2xl shadow-2xl backdrop-blur-2xl text-xs text-slate-200 space-y-2 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
               <div className="flex items-center gap-1.5 font-bold text-white">
-                <Target className="h-4 w-4 text-emerald-400" />
+                <Target className="h-4 w-4 text-indigo-400" />
                 <span>Target Devices Scope</span>
               </div>
-              <span className="text-[9px] font-mono uppercase text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-500/20">
+              <span className="text-[9px] font-mono uppercase text-indigo-400 font-bold px-1.5 py-0.5 rounded bg-indigo-500/20">
                 Publish Scope
               </span>
             </div>
@@ -154,25 +157,40 @@ export default function PhoneSimulatorToolbar({
             <div className="space-y-1.5 pt-1">
               {[
                 {
+                  id: "all_devices" as DeviceTargetScope,
+                  title: "All Devices (Ultra-Wide)",
+                  desc: "Automated fluid responsiveness (4K, Desktop, Tablet, Phone)",
+                  badge: "Default",
+                  badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                  icon: Monitor
+                },
+                {
                   id: "mobile_only" as DeviceTargetScope,
                   title: "Mobile Only",
-                  desc: "Optimized exclusively for smartphones",
-                  icon: "📱"
+                  desc: "Strictly locked to phone screen (430px) on PC & Laptop",
+                  badge: "Phone Only",
+                  badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                  icon: Smartphone
                 },
                 {
                   id: "mobile_tablet" as DeviceTargetScope,
-                  title: "Mobile + Tablet Only",
-                  desc: "Responsive for handhelds & tablets",
-                  icon: "📱📟"
+                  title: "Tablet Only",
+                  desc: "Locked to tablet viewport (768px container)",
+                  badge: "Tablet View",
+                  badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+                  icon: Tablet
                 },
                 {
-                  id: "all_devices" as DeviceTargetScope,
-                  title: "All Screens (Desktop + TV + Tablet + Mobile)",
-                  desc: "Full responsive layout across all screens",
-                  icon: "🖥️📺"
+                  id: "mobile_tablet_laptop" as DeviceTargetScope,
+                  title: "Laptop & Desktop Only",
+                  desc: "Standard desktop/laptop layout (1150px container)",
+                  badge: "Laptop / PC",
+                  badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+                  icon: Laptop
                 }
               ].map((opt) => {
                 const isSelected = deviceScope === opt.id;
+                const IconComp = opt.icon;
                 return (
                   <button
                     key={opt.id}
@@ -181,24 +199,33 @@ export default function PhoneSimulatorToolbar({
                       onChangeDeviceScope?.(opt.id);
                       setShowScopePopover(false);
                     }}
-                    className={`w-full p-2 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+                    className={`w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
                       isSelected
-                        ? "bg-emerald-950/60 border-emerald-500/80 text-white shadow-sm ring-1 ring-emerald-500/40"
+                        ? "bg-indigo-600/25 border-indigo-500/80 text-white shadow-sm ring-1 ring-indigo-500/40"
                         : "bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-600 hover:text-white"
                     }`}
                   >
-                    <div className="flex items-start gap-2 min-w-0">
-                      <span className="text-base shrink-0">{opt.icon}</span>
-                      <div className="min-w-0">
-                        <div className="text-[11px] font-bold truncate leading-tight">
-                          {opt.title}
+                    <div className="flex items-start gap-2 min-w-0 flex-1">
+                      <div className={`p-1.5 rounded-lg border shrink-0 mt-0.5 ${
+                        isSelected ? "bg-indigo-500/30 border-indigo-400/50 text-indigo-300" : "bg-white/[0.04] border-white/10 text-slate-400"
+                      }`}>
+                        <IconComp className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-bold truncate leading-tight">
+                            {opt.title}
+                          </span>
+                          <span className={`text-[8px] font-bold px-1.5 py-0.2 rounded border shrink-0 ${opt.badgeColor}`}>
+                            {opt.badge}
+                          </span>
                         </div>
-                        <div className="text-[9px] text-slate-400 truncate leading-tight">
+                        <div className="text-[9px] text-slate-400 truncate leading-tight mt-0.5">
                           {opt.desc}
                         </div>
                       </div>
                     </div>
-                    {isSelected && <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 ml-1" />}
+                    {isSelected && <Check className="h-3.5 w-3.5 text-indigo-400 shrink-0 ml-1" />}
                   </button>
                 );
               })}
@@ -414,17 +441,42 @@ export default function PhoneSimulatorToolbar({
 
       <div className="w-5 h-[1px] bg-slate-800 my-0.5" />
 
-      {/* 10. Settings Gear (Orientation toggle) */}
-      <button
-        type="button"
-        onClick={onToggleOrientation}
-        className={`p-2 rounded-xl transition-all cursor-pointer ${
-          isLandscape ? "text-indigo-400 bg-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-slate-800"
-        }`}
-        title={isLandscape ? "Switch to Portrait" : "Rotate to Landscape"}
-      >
-        <RotateCw className="h-4 w-4" />
-      </button>
+      {/* 10. Orientation Toggle - Strictly for Mobiles and Tablets only */}
+      {(() => {
+        const isRotatable =
+          selectedDevice?.category === "apple" ||
+          selectedDevice?.category === "android" ||
+          selectedDevice?.category === "mobile" ||
+          selectedDevice?.category === "tablets" ||
+          selectedDevice?.category === "tablet";
+
+        return (
+          <button
+            type="button"
+            disabled={!isRotatable}
+            onClick={() => {
+              if (!isRotatable) return;
+              onToggleOrientation?.();
+            }}
+            className={`p-2 rounded-xl transition-all ${
+              !isRotatable
+                ? "opacity-30 cursor-not-allowed text-slate-600"
+                : isLandscape
+                  ? "text-indigo-400 bg-indigo-500/20 cursor-pointer hover:bg-indigo-500/30 ring-1 ring-indigo-500/40"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+            }`}
+            title={
+              !isRotatable
+                ? "Rotation is only available for Mobiles & Tablets (Laptops & Desktops fixed horizontal)"
+                : isLandscape
+                  ? "Switch to Portrait"
+                  : "Rotate to Landscape"
+            }
+          >
+            <RotateCw className="h-4 w-4" />
+          </button>
+        );
+      })()}
     </aside>
   );
 }

@@ -207,7 +207,8 @@ import {
   Maximize2,
   PanelLeft,
   CheckCircle,
-  BookmarkCheck
+  BookmarkCheck,
+  Target
 } from "lucide-react";
 import PageShell, { PageHeader, StatCard, StatCardGrid, Workspace } from "./layout/PageShell";
 import { AppTheme, ALL_THEMES, getStoredTheme, saveTheme } from "../lib/themeStorage";
@@ -820,6 +821,7 @@ export default function BioPagesScreen({
   const [mockupFrameFinish, setMockupFrameFinish] = useState<string>("auto");
   const [showSimulatorToolbar, setShowSimulatorToolbar] = useState<boolean>(false);
   const [isGlobalPreviewOpen, setIsGlobalPreviewOpen] = useState<boolean>(false);
+  const [isTargetScopePopoverOpen, setIsTargetScopePopoverOpen] = useState<boolean>(false);
 
   // Canvas Block Drag-to-Reorder and Drag-Outside-to-Delete States
   const [draggingCanvasBlockId, setDraggingCanvasBlockId] = useState<string | null>(null);
@@ -8961,9 +8963,138 @@ export default function BioPagesScreen({
                 </div>
               </div>
             )}
-            {/* Top Right Stage Action Buttons: Edit Preview (Eye) & Global Preview (Globe) */}
+            {/* Top Right Stage Action Buttons: Target Scope Shortcut, Edit Preview (Eye) & Global Preview (Globe) */}
             <div className="absolute top-4 right-4 z-40 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-              {/* 1. Edit Preview Toggle Button (Hidden when icons bar is open, visible when closed) */}
+              {/* 1. Target Devices Scope Shortcut Selector */}
+              <div className="relative group/targetscope">
+                <button
+                  type="button"
+                  onClick={() => setIsTargetScopePopoverOpen(!isTargetScopePopoverOpen)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border shadow-xl backdrop-blur-xl transition-all cursor-pointer hover:scale-105 active:scale-95 text-xs font-bold ${
+                    isTargetScopePopoverOpen
+                      ? "border-indigo-400 bg-indigo-950/60 text-indigo-300 ring-1 ring-indigo-500/50"
+                      : "border-slate-700/80 text-slate-300 hover:text-white ring-1 ring-white/10"
+                  }`}
+                  aria-label="Target Devices Scope"
+                >
+                  {editorDeviceScope === "mobile_only" ? (
+                    <Smartphone className="h-4 w-4 text-blue-400" />
+                  ) : editorDeviceScope === "mobile_tablet" ? (
+                    <Tablet className="h-4 w-4 text-indigo-400" />
+                  ) : editorDeviceScope === "mobile_tablet_laptop" ? (
+                    <Laptop className="h-4 w-4 text-purple-400" />
+                  ) : (
+                    <Monitor className="h-4 w-4 text-emerald-400" />
+                  )}
+                  <span className="hidden sm:inline text-[11px] font-semibold">
+                    {editorDeviceScope === "all_devices"
+                      ? "All Devices (Ultra-Wide)"
+                      : editorDeviceScope === "mobile_only"
+                        ? "Mobile Only"
+                        : editorDeviceScope === "mobile_tablet"
+                          ? "Tablet Only"
+                          : "Laptop/Desktop"}
+                  </span>
+                  <ChevronDown className="h-3 w-3 text-slate-400" />
+                </button>
+
+                {isTargetScopePopoverOpen && (
+                  <div
+                    className="absolute right-0 top-12 z-50 w-72 p-3 bg-slate-950/98 border border-slate-700/90 rounded-2xl shadow-2xl backdrop-blur-2xl text-xs text-slate-200 space-y-2 animate-in fade-in zoom-in-95 duration-150"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-white">
+                        <Target className="h-4 w-4 text-indigo-400" />
+                        <span>Target Devices Scope</span>
+                      </div>
+                      <span className="text-[9px] font-mono uppercase text-indigo-400 font-bold px-1.5 py-0.5 rounded bg-indigo-500/20">
+                        Quick Switch
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 pt-0.5">
+                      {[
+                        {
+                          id: "all_devices" as const,
+                          title: "All Devices (Ultra-Wide)",
+                          desc: "Fluid responsiveness (4K, Desktop, Tablet, Phone)",
+                          badge: "Default",
+                          badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                          icon: Monitor
+                        },
+                        {
+                          id: "mobile_only" as const,
+                          title: "Mobile Only",
+                          desc: "Strictly locked to phone screen (430px) on PC & Laptop",
+                          badge: "Phone",
+                          badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                          icon: Smartphone
+                        },
+                        {
+                          id: "mobile_tablet" as const,
+                          title: "Tablet Only",
+                          desc: "Locked to tablet viewport (768px)",
+                          badge: "Tablet",
+                          badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+                          icon: Tablet
+                        },
+                        {
+                          id: "mobile_tablet_laptop" as const,
+                          title: "Laptop & Desktop Only",
+                          desc: "Standard laptop / PC layout (1150px)",
+                          badge: "Laptop",
+                          badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+                          icon: Laptop
+                        }
+                      ].map((opt) => {
+                        const isSelected = editorDeviceScope === opt.id;
+                        const IconComp = opt.icon;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              setEditorDeviceScope(opt.id);
+                              setIsTargetScopePopoverOpen(false);
+                              triggerToast(`Target scope set to: ${opt.title}`);
+                            }}
+                            className={`w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+                              isSelected
+                                ? "bg-indigo-600/25 border-indigo-500/80 text-white shadow-sm ring-1 ring-indigo-500/40"
+                                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                            }`}
+                          >
+                            <div className="flex items-start gap-2 min-w-0 flex-1">
+                              <div className={`p-1.5 rounded-lg border shrink-0 mt-0.5 ${
+                                isSelected ? "bg-indigo-500/30 border-indigo-400/50 text-indigo-300" : "bg-white/[0.04] border-white/10 text-slate-400"
+                              }`}>
+                                <IconComp className="h-3.5 w-3.5" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[11px] font-bold truncate leading-tight">
+                                    {opt.title}
+                                  </span>
+                                  <span className={`text-[8px] font-bold px-1.5 py-0.2 rounded border shrink-0 ${opt.badgeColor}`}>
+                                    {opt.badge}
+                                  </span>
+                                </div>
+                                <div className="text-[9px] text-slate-400 truncate leading-tight mt-0.5">
+                                  {opt.desc}
+                                </div>
+                              </div>
+                            </div>
+                            {isSelected && <Check className="h-3.5 w-3.5 text-indigo-400 shrink-0 ml-1" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Edit Preview Toggle Button (Hidden when icons bar is open, visible when closed) */}
               {!showSimulatorToolbar && (
                 <div className="relative group/editprev">
                   <button
@@ -9599,7 +9730,21 @@ export default function BioPagesScreen({
                     setIsSidebarOpen(true);
                   }}
                   isLandscape={isLandscape}
-                  onToggleOrientation={() => setIsLandscape(!isLandscape)}
+                  onToggleOrientation={() => {
+                    const isRotatable =
+                      selectedDevice?.category === "apple" ||
+                      selectedDevice?.category === "android" ||
+                      selectedDevice?.category === "mobile" ||
+                      selectedDevice?.category === "tablets" ||
+                      selectedDevice?.category === "tablet";
+                    if (!isRotatable) {
+                      triggerToast("Rotation is only supported for Mobile and Tablet devices.");
+                      return;
+                    }
+                    const nextLandscape = !isLandscape;
+                    setIsLandscape(nextLandscape);
+                    triggerSimulatorToast(nextLandscape ? "Rotated to Landscape" : "Rotated to Portrait");
+                  }}
                   activeThemeSwatch={BIO_PAGE_THEME_PRESETS.find((p) => p.id === editorPageTheme)?.swatch}
                   activeFrameFinish={mockupFrameFinish}
                   onSelectFrameFinish={setMockupFrameFinish}
@@ -9633,9 +9778,11 @@ export default function BioPagesScreen({
                     dev.frameType === "laptop-asus-tuf" ||
                     dev.frameType === "laptop-msi"
                   ) {
+                    setIsLandscape(false);
                     setViewportMode("laptop");
                     setEditorDeviceScope("mobile_tablet_laptop");
                   } else {
+                    setIsLandscape(false);
                     setViewportMode("desktop");
                     setEditorDeviceScope("all_devices");
                   }
@@ -9684,9 +9831,7 @@ export default function BioPagesScreen({
                     <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
                       {selectedEditPageLink && (
                         <a
-                          href={`${selectedEditPageLink.openUrl}${
-                            selectedEditPageLink.openUrl.includes("?") ? "&" : "?"
-                          }device=${viewportMode}`}
+                          href={selectedEditPageLink.openUrl}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm"
