@@ -3700,22 +3700,22 @@ export default function BioPagesScreen({
           {/* UNIFIED SINGLE STUDIO LEFT SIDEBAR WITH SMOOTH SLIDING PANELS */}
           {isSidebarOpen && !isPreviewOnlyMode && (
             <aside
-              className="key-studio-sidebar flex flex-col h-full shrink-0 border-r border-slate-800/80 bg-slate-950/95 backdrop-blur-2xl z-30 transition-all duration-300 relative overflow-hidden text-slate-100 w-full min-w-full max-w-full md:w-[380px] md:min-w-[380px] md:max-w-[380px]"
+              className="key-studio-sidebar flex flex-col h-full shrink-0 border-r border-white/[0.08] bg-slate-950/90 backdrop-blur-2xl z-30 transition-all duration-300 relative overflow-hidden text-slate-100 w-full min-w-full max-w-full md:w-[380px] md:min-w-[380px] md:max-w-[380px] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
             {studioNavTab === "menu" ? (
               /* LEVEL 1: MAIN MENU SLIDING VIEW */
               <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-left-4 duration-200 overflow-hidden">
                 {/* Header: Back & Live badge */}
-                <div className="key-studio-sidebar__header p-3.5 border-b border-slate-800/80 shrink-0">
+                <div className="key-studio-sidebar__header p-3.5 border-b border-white/[0.08] bg-white/[0.01] shrink-0">
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <button
                       type="button"
                       onClick={closeEditor}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700/80 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-bold border border-white/[0.08] shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                       title="Back to Bio Pages"
                     >
-                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <ArrowLeft className="h-3.5 w-3.5 text-slate-400" />
                       <span>Back</span>
                     </button>
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-2xs">
@@ -3725,7 +3725,7 @@ export default function BioPagesScreen({
                   </div>
 
                   {/* Heading: keylink360 / [title] */}
-                  <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/90 border border-slate-700/80 rounded-xl focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all shadow-inner">
+                  <div className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl focus-within:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all shadow-inner backdrop-blur-md">
                     <span className="text-xs font-semibold text-slate-400 select-none font-mono">keylink360/</span>
                     <input
                       ref={editorTitleInputRef}
@@ -3740,7 +3740,7 @@ export default function BioPagesScreen({
                     <button
                       type="button"
                       onClick={() => editorTitleInputRef.current?.focus()}
-                      className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+                      className="p-1 hover:bg-white/[0.08] rounded-lg text-slate-400 hover:text-white transition-colors"
                       title="Edit title"
                     >
                       <Edit3 className="h-3 w-3" />
@@ -3753,7 +3753,7 @@ export default function BioPagesScreen({
                       type="button"
                       onClick={handlePublishEditor}
                       disabled={isPublishing}
-                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 cursor-pointer"
                     >
                       {isPublishing ? (
                         <Loader className="h-3.5 w-3.5 animate-spin" />
@@ -3768,7 +3768,7 @@ export default function BioPagesScreen({
                         type="button"
                         onClick={handleSaveDraft}
                         disabled={isSavingDraft}
-                        className="py-2 px-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm disabled:opacity-60 cursor-pointer"
+                        className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm disabled:opacity-60 cursor-pointer"
                       >
                         {isSavingDraft ? <Loader className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3 text-indigo-400" />}
                         <span>{isSavingDraft ? "Saving…" : "Save Draft"}</span>
@@ -3776,7 +3776,7 @@ export default function BioPagesScreen({
                       <button
                         type="button"
                         onClick={handleSaveAsTemplate}
-                        className="py-2 px-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer"
+                        className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-500/40 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer"
                       >
                         <LayoutTemplate className="h-3 w-3 text-amber-400" />
                         <span>Save Template</span>
@@ -3788,13 +3788,13 @@ export default function BioPagesScreen({
                 {/* Sidebar Navigation Section Tiles */}
                 <nav className="key-studio-sidebar__nav flex-1 overflow-y-auto p-2.5 space-y-1.5 no-scrollbar">
                   {[
-                    { id: "library" as const, label: "Add Blocks", desc: "Buttons, Forms, Media & 50+ Pro widgets", icon: LayoutGrid, count: "50+ Pro", badgeColor: "bg-indigo-500/20 text-indigo-300" },
-                    { id: "layers" as const, label: "Structure Tree", desc: "Reorder & manage placed page blocks", icon: Layers, count: `${canvasBlocks.length}`, badgeColor: "bg-indigo-500/20 text-indigo-300" },
-                    { id: "inspector" as const, label: "Block Inspector", desc: "Styles, typography, colors & spacing", icon: Edit3, count: selectedCanvasBlockId ? "Active" : null, badgeColor: "bg-emerald-500/20 text-emerald-300" },
-                    { id: "theme" as const, label: "Design & Themes", desc: "Palettes, fonts, shadows & glass covers", icon: Palette, count: null },
-                    { id: "thanks" as const, label: "Thank You Page", desc: "Post-submit confirmation screen", icon: CheckCircle, count: null },
-                    { id: "settings" as const, label: "Page Settings", desc: "SEO, Meta tags, Razorpay & analytics", icon: Settings, count: null },
-                    { id: "drafts" as const, label: "Saved Templates & Drafts", desc: "Restore snapshots & reusable layouts", icon: BookmarkCheck, count: savedDrafts.length > 0 ? `${savedDrafts.length}` : null }
+                    { id: "library" as const, label: "Add Blocks", desc: "50+ Pro widgets", icon: LayoutGrid, count: "50+ Pro", badgeColor: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" },
+                    { id: "layers" as const, label: "Structure Tree", desc: "Reorder & manage", icon: Layers, count: `${canvasBlocks.length}`, badgeColor: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" },
+                    { id: "inspector" as const, label: "Block Inspector", desc: "Styles & content", icon: Edit3, count: selectedCanvasBlockId ? "Active" : null, badgeColor: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" },
+                    { id: "theme" as const, label: "Design & Themes", desc: "Colors, fonts & glass", icon: Palette, count: null },
+                    { id: "thanks" as const, label: "Thank You Page", desc: "Post-submit screen", icon: CheckCircle, count: null },
+                    { id: "settings" as const, label: "Page Settings", desc: "SEO & integrations", icon: Settings, count: null },
+                    { id: "drafts" as const, label: "Saved Templates", desc: "Restore drafts", icon: BookmarkCheck, count: savedDrafts.length > 0 ? `${savedDrafts.length}` : null }
                   ].map((tab) => {
                     const Icon = tab.icon;
                     return (
@@ -3814,22 +3814,22 @@ export default function BioPagesScreen({
                             setShowThanksPage(false);
                           }
                         }}
-                        className="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/70 hover:border-indigo-500/40 text-left transition-all hover:scale-[1.01] active:scale-[0.99] group cursor-pointer shadow-xs"
+                        className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] backdrop-blur-xl border border-white/[0.07] hover:border-indigo-500/40 text-left transition-all hover:scale-[1.01] active:scale-[0.99] group cursor-pointer shadow-xs hover:shadow-indigo-500/5 shrink-0"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="p-2 rounded-xl bg-slate-800/90 group-hover:bg-indigo-600/20 border border-slate-700/60 group-hover:border-indigo-500/30 text-slate-300 group-hover:text-indigo-400 transition-colors shrink-0">
+                          <div className="p-2 rounded-xl bg-white/[0.05] group-hover:bg-indigo-600/25 border border-white/[0.08] group-hover:border-indigo-500/40 text-slate-300 group-hover:text-indigo-300 transition-colors shrink-0">
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-slate-200 group-hover:text-white truncate">{tab.label}</span>
                               {tab.count && (
-                                <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-md ${tab.badgeColor || "bg-slate-800 text-slate-400"}`}>
+                                <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-md ${tab.badgeColor || "bg-white/[0.06] text-slate-400"}`}>
                                   {tab.count}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-slate-400 truncate mt-0.5">{tab.desc}</p>
+                            <p className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate mt-0.5">{tab.desc}</p>
                           </div>
                         </div>
                         <ChevronRight className="h-4 w-4 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
@@ -3869,7 +3869,7 @@ export default function BioPagesScreen({
               /* LEVEL 2: ACTIVE TOOL SLIDING VIEW (Replaces 2nd Sidebar) */
               <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-right-4 duration-200 overflow-hidden">
                 {/* Sliding Header with [← Menu] back button and tool name */}
-                <div className="p-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/80 shrink-0 gap-2">
+                <div className="p-3 border-b border-white/[0.08] flex items-center justify-between bg-slate-950/70 backdrop-blur-xl shrink-0 gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <button
                       type="button"
@@ -3878,7 +3878,7 @@ export default function BioPagesScreen({
                         setShowThanksPage(false);
                         setEditorTab("Edit");
                       }}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-indigo-300 hover:text-white text-xs font-bold border border-slate-700/80 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-indigo-300 hover:text-white text-xs font-bold border border-white/[0.08] shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
                       title="Return to Main Menu"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
@@ -3903,7 +3903,7 @@ export default function BioPagesScreen({
                       setShowThanksPage(false);
                       setEditorTab("Edit");
                     }}
-                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0"
+                    className="p-1.5 text-slate-400 hover:text-white hover:bg-white/[0.08] rounded-lg transition-colors cursor-pointer shrink-0"
                     title="Close Panel and return to Menu"
                   >
                     <X className="w-4 h-4" />
@@ -3913,60 +3913,73 @@ export default function BioPagesScreen({
                 {/* Scrollable Tool Content */}
                 <div className="flex-1 overflow-y-auto p-3.5 space-y-4 no-scrollbar">
                 {studioNavTab === "settings" && (
-                <div className="max-w-xl mx-auto key-workspace key-workspace--stack w-full">
-                  <h3 className="font-display font-bold text-xl text-slate-900">Page Settings</h3>
-                  <div className="key-editor-panel key-workspace-panel key-workspace-panel--stack shadow-sm">
-                    <div>
-                      <label className="block text-xs text-slate-500 font-semibold mb-2">Meta Title</label>
-                      <input
-                        type="text"
-                        value={editorTitle}
-                        onChange={(e) => setEditorTitle(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2 px-3 text-sm text-slate-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-slate-500 font-semibold mb-2">Meta Description</label>
-                      <textarea
-                        defaultValue="Official Marvel-Inspired Toys & Collectibles. Safe, fun & exciting toys for young superheroes."
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2 px-3 text-sm text-slate-900 h-24"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-t border-slate-100">
+                <div className="max-w-xl mx-auto key-workspace key-workspace--stack w-full space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+                      <Settings className="w-4 h-4 text-indigo-400" />
+                      <span>Page Settings</span>
+                    </h3>
+                    <span className="text-[10px] font-semibold text-slate-400 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
+                      Global SEO & Scope
+                    </span>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-5 shadow-2xl">
+                    {/* SEO Meta */}
+                    <div className="space-y-3.5">
                       <div>
-                        <span className="text-xs font-bold block text-slate-800">Search Engine Indexing</span>
-                        <span className="text-[10px] text-slate-500 block">Allow search engines to find this page</span>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">Meta Title</label>
+                        <input
+                          type="text"
+                          value={editorTitle}
+                          onChange={(e) => setEditorTitle(e.target.value)}
+                          className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-white placeholder:text-slate-500 transition-all"
+                          placeholder="Page title for search engines..."
+                        />
                       </div>
-                      <input type="checkbox" defaultChecked className="rounded border-slate-200 bg-slate-50 accent-[#6366f1] h-4.5 w-4.5" />
+                      <div>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1.5">Meta Description</label>
+                        <textarea
+                          defaultValue="Official Marvel-Inspired Toys & Collectibles. Safe, fun & exciting toys for young superheroes."
+                          className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 h-20 resize-none transition-all"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between py-2 border-t border-white/[0.06]">
+                        <div>
+                          <span className="text-xs font-bold block text-slate-200">Search Engine Indexing</span>
+                          <span className="text-[10px] text-slate-400 block">Allow Google & Bing to index</span>
+                        </div>
+                        <input type="checkbox" defaultChecked className="rounded border-white/20 bg-slate-950 accent-indigo-500 h-4.5 w-4.5 cursor-pointer" />
+                      </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-100 space-y-3.5">
-                      <span className="text-[10px] font-bold text-[#ec4899] uppercase tracking-widest block">
-                        Form payment (Razorpay)
-                      </span>
-                      <p className="text-xs text-slate-500 leading-relaxed">
-                        When enabled, public Form / Smart Form submit opens Razorpay Checkout for this fixed page amount. Success / failed / cancelled states stay on the same form (no separate thank-you URL). Contact is saved only after the server verifies payment.
-                      </p>
-                      <div className="flex items-center justify-between py-1">
+                    {/* Razorpay Form Payment */}
+                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-xs font-bold block text-slate-800">Require payment on submit</span>
-                          <span className="text-[10px] text-slate-500 block">Fixed amount for this whole page</span>
+                          <span className="text-[10px] font-bold text-pink-400 uppercase tracking-widest block">
+                            Form Payment (Razorpay)
+                          </span>
+                          <span className="text-[10px] text-slate-400 block mt-0.5">
+                            Charge fixed fee upon form submission
+                          </span>
                         </div>
                         <input
                           type="checkbox"
                           checked={paymentEnabled}
                           onChange={(e) => setPaymentEnabled(e.target.checked)}
-                          className="rounded border-slate-200 bg-slate-50 accent-[#ec4899] h-4.5 w-4.5"
+                          className="rounded border-white/20 bg-slate-950 accent-pink-500 h-4.5 w-4.5 cursor-pointer"
                         />
                       </div>
-                      {paymentEnabled ? (
-                        <div className="space-y-3">
+
+                      {paymentEnabled && (
+                        <div className="space-y-3 bg-pink-500/[0.05] border border-pink-500/20 rounded-2xl p-3.5 animate-in fade-in duration-150">
                           <div>
-                            <label className="block text-xs text-slate-500 font-semibold mb-2">
+                            <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
                               Amount (INR)
                             </label>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-500">₹</span>
+                              <span className="text-xs font-bold text-pink-400">₹</span>
                               <input
                                 type="number"
                                 min={1}
@@ -3978,19 +3991,19 @@ export default function BioPagesScreen({
                                     Number.isFinite(n) && n > 0 ? Math.round(n) : 1
                                   );
                                 }}
-                                className="w-full bg-slate-50 border border-slate-200 focus:border-[#ec4899] focus:outline-none rounded-xl py-2 px-3 text-sm text-slate-900"
+                                className="w-full bg-slate-950/60 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
                               />
                             </div>
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 font-semibold mb-2">
-                              Checkout description
+                            <label className="block text-[11px] text-pink-300 font-semibold mb-1.5">
+                              Checkout Description
                             </label>
                             <input
                               type="text"
                               value={paymentDescription}
                               onChange={(e) => setPaymentDescription(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-[#ec4899] focus:outline-none rounded-xl py-2 px-3 text-sm text-slate-900"
+                              className="w-full bg-slate-950/60 border border-white/10 focus:border-pink-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
                               placeholder="Bio page form payment"
                             />
                           </div>
@@ -4003,115 +4016,115 @@ export default function BioPagesScreen({
                                 `Payment ON — Form / Smart Form now show Pay ₹${paymentAmountInr} in Live Preview`
                               );
                             }}
-                            className="w-full rounded-xl bg-[#ec4899] hover:bg-[#db2777] text-white text-xs font-bold py-2.5"
+                            className="w-full rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold py-2 shadow-lg shadow-pink-500/20 transition-all cursor-pointer"
                           >
-                            View Form with Pay ₹{paymentAmountInr} in Live Preview
+                            Preview Form Pay (₹{paymentAmountInr})
                           </button>
                         </div>
-                      ) : null}
+                      )}
                     </div>
 
                     {/* AI Sales & Support Assistant (Live Chatbot) */}
-                    <div className="pt-4 border-t border-slate-100 space-y-3.5">
+                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-widest flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-cyan-500" />
-                            AI Sales & Support Assistant (Live Chat)
+                          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
+                            AI Sales Assistant
                           </span>
-                          <span className="text-[10px] text-slate-500 block mt-0.5">
-                            24/7 AI Sales Agent on your public bio website (100% Free)
+                          <span className="text-[10px] text-slate-400 block mt-0.5">
+                            24/7 AI agent on your page
                           </span>
                           <button
                             type="button"
                             onClick={() => setIsGuideModalOpen(true)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-700 text-[10px] font-bold border border-cyan-500/20 transition-colors cursor-pointer mt-1"
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30 transition-colors cursor-pointer mt-1"
                           >
-                            <BookOpen className="w-3 h-3 text-cyan-600" />
-                            <span>📖 Setup Tutorial (English / தமிழ் / हिन्दी)</span>
+                            <BookOpen className="w-3 h-3 text-cyan-400" />
+                            <span>Setup Tutorial</span>
                           </button>
                         </div>
                         <input
                           type="checkbox"
                           checked={aiAssistantEnabled}
                           onChange={(e) => setAiAssistantEnabled(e.target.checked)}
-                          className="rounded border-slate-200 bg-slate-50 accent-cyan-600 h-5 w-5 cursor-pointer"
+                          className="rounded border-white/20 bg-slate-950 accent-cyan-500 h-5 w-5 cursor-pointer"
                         />
                       </div>
 
                       {aiAssistantEnabled && (
-                        <div className="space-y-3.5 bg-cyan-50/50 p-3.5 rounded-2xl border border-cyan-200/60 animate-in fade-in duration-150">
+                        <div className="space-y-3 bg-cyan-500/[0.04] p-3.5 rounded-2xl border border-cyan-500/20 animate-in fade-in duration-150">
                           <div>
-                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
-                              Bot Name / Persona
+                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                              Bot Name
                             </label>
                             <input
                               type="text"
                               value={aiBotName}
                               onChange={(e) => setAiBotName(e.target.value)}
-                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
-                              placeholder="e.g., Sales Assistant, Maya, Support Bot"
+                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
+                              placeholder="e.g. Maya, Sales Bot"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
-                              Welcome Greeting Message
+                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                              Welcome Greeting
                             </label>
                             <textarea
                               value={aiWelcomeMessage}
                               onChange={(e) => setAiWelcomeMessage(e.target.value)}
                               rows={2}
-                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900 resize-none"
-                              placeholder="👋 Hi! Welcome to our store. How can I assist you today?"
+                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white resize-none"
+                              placeholder="👋 Hi! How can I assist you today?"
                             />
                           </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-[11px] text-slate-700 font-bold mb-1">
-                                Business / Brand Name
+                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                Brand Name
                               </label>
                               <input
                                 type="text"
                                 value={aiBusinessName}
                                 onChange={(e) => setAiBusinessName(e.target.value)}
-                                className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
-                                placeholder={editorTitle || "Your Brand Name"}
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
+                                placeholder={editorTitle || "Brand Name"}
                               />
                             </div>
                             <div>
-                              <label className="block text-[11px] text-slate-700 font-bold mb-1">
-                                WhatsApp Contact (for Quick Links)
+                              <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                                WhatsApp Contact
                               </label>
                               <input
                                 type="tel"
                                 value={aiContactPhone}
                                 onChange={(e) => setAiContactPhone(e.target.value)}
-                                className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900"
-                                placeholder="e.g. +91 9876543210"
+                                className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white"
+                                placeholder="+91 9876543210"
                               />
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-[11px] text-slate-700 font-bold mb-1">
-                              Business Description & Offerings Knowledge
+                            <label className="block text-[11px] text-cyan-200 font-semibold mb-1">
+                              Offerings & Knowledge
                             </label>
                             <textarea
                               value={aiBusinessDescription}
                               onChange={(e) => setAiBusinessDescription(e.target.value)}
                               rows={3}
-                              className="w-full bg-white border border-slate-200 focus:border-cyan-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-900 resize-none"
-                              placeholder="Describe your products, pricing packages, store hours, return policy, and services so the AI gives accurate answers..."
+                              className="w-full bg-slate-950/70 border border-white/10 focus:border-cyan-500 focus:outline-none rounded-xl py-1.5 px-3 text-xs text-white resize-none"
+                              placeholder="Products, pricing, delivery times, store hours..."
                             />
                           </div>
 
                           {/* Custom FAQs */}
                           <div className="space-y-2 pt-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-bold text-slate-800">
-                                Custom FAQs & Instant Answers
+                              <span className="text-[11px] font-bold text-slate-200">
+                                Instant FAQs
                               </span>
                               <button
                                 type="button"
@@ -4121,7 +4134,7 @@ export default function BioPagesScreen({
                                     { question: "", answer: "" }
                                   ])
                                 }
-                                className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-600 hover:text-cyan-700"
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
                               >
                                 <Plus className="h-3 w-3" />
                                 <span>Add FAQ</span>
@@ -4131,7 +4144,7 @@ export default function BioPagesScreen({
                             {aiCustomFaqs.map((faq, idx) => (
                               <div
                                 key={idx}
-                                className="p-2.5 bg-white border border-slate-200 rounded-xl space-y-1.5 relative group"
+                                className="p-2.5 bg-slate-950/70 border border-white/10 rounded-xl space-y-1.5 relative group"
                               >
                                 <div className="flex items-center justify-between gap-2">
                                   <input
@@ -4142,8 +4155,8 @@ export default function BioPagesScreen({
                                       updated[idx].question = e.target.value;
                                       setAiCustomFaqs(updated);
                                     }}
-                                    placeholder="Question (e.g. What is the refund policy?)"
-                                    className="flex-1 text-xs font-semibold text-slate-900 border-b border-slate-100 focus:border-cyan-500 focus:outline-none py-1"
+                                    placeholder="Question..."
+                                    className="flex-1 text-xs font-semibold text-white border-b border-white/10 focus:border-cyan-500 focus:outline-none py-1 bg-transparent"
                                   />
                                   <button
                                     type="button"
@@ -4152,7 +4165,7 @@ export default function BioPagesScreen({
                                         prev.filter((_, i) => i !== idx)
                                       )
                                     }
-                                    className="text-slate-400 hover:text-rose-500 p-1"
+                                    className="text-slate-400 hover:text-rose-400 p-1 cursor-pointer"
                                   >
                                     <Trash2 className="h-3 w-3" />
                                   </button>
@@ -4166,26 +4179,26 @@ export default function BioPagesScreen({
                                   }}
                                   rows={2}
                                   placeholder="Answer..."
-                                  className="w-full text-xs text-slate-600 focus:outline-none resize-none pt-1"
+                                  className="w-full text-xs text-slate-300 bg-transparent focus:outline-none resize-none pt-1"
                                 />
                               </div>
                             ))}
                           </div>
 
-                          <div className="flex items-center justify-between py-1 border-t border-cyan-200/60 pt-2">
+                          <div className="flex items-center justify-between py-1 border-t border-cyan-500/20 pt-2">
                             <div>
-                              <span className="text-xs font-bold block text-slate-800">
-                                Auto Lead Capture to CRM
+                              <span className="text-xs font-bold block text-slate-200">
+                                Auto Lead Capture
                               </span>
-                              <span className="text-[10px] text-slate-500 block">
-                                Automatically save visitor phone numbers into Contacts
+                              <span className="text-[10px] text-slate-400 block">
+                                Save visitor numbers to CRM
                               </span>
                             </div>
                             <input
                               type="checkbox"
                               checked={aiAutoLeadCapture}
                               onChange={(e) => setAiAutoLeadCapture(e.target.checked)}
-                              className="rounded border-slate-200 bg-white accent-cyan-600 h-4.5 w-4.5"
+                              className="rounded border-white/20 bg-slate-950 accent-cyan-500 h-4.5 w-4.5 cursor-pointer"
                             />
                           </div>
                         </div>
@@ -4193,13 +4206,13 @@ export default function BioPagesScreen({
                     </div>
 
                     {/* Target Devices & Responsive Layout Scope */}
-                    <div className="pt-4 border-t border-slate-100 space-y-3">
+                    <div className="pt-4 border-t border-white/[0.08] space-y-3">
                       <div>
-                        <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-widest block">
-                          Target Devices & Responsive Layout
+                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block">
+                          Target Devices
                         </span>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          Choose which device viewports this site is optimized for when published.
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          Choose screen viewport optimization for your page.
                         </p>
                       </div>
 
@@ -4207,38 +4220,38 @@ export default function BioPagesScreen({
                         {[
                           {
                             id: "auto_adaptive" as const,
-                            title: "Smart Fluid (Recommended)",
-                            desc: "Automatically adapts fluidly across Mobile, Tablet, Laptop & Desktop screens.",
+                            title: "Smart Fluid",
+                            desc: "All screens auto-adaptive",
                             badge: "Universal",
-                            badgeColor: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                            badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                           },
                           {
                             id: "mobile_only" as const,
-                            title: "Mobile Only (Classic Bio-Link)",
-                            desc: "Locks content in a centered mobile phone column (max 480px) on all screens.",
-                            badge: "Mobile First",
-                            badgeColor: "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                            title: "Mobile Only",
+                            desc: "Classic bio-link column (480px)",
+                            badge: "Mobile",
+                            badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20"
                           },
                           {
                             id: "mobile_tablet" as const,
                             title: "Mobile + Tablets",
-                            desc: "Optimized for phones and iPads/tablets (up to 768px width).",
+                            desc: "Handheld screens (up to 768px)",
                             badge: "Handheld",
-                            badgeColor: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20"
+                            badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
                           },
                           {
                             id: "mobile_tablet_laptop" as const,
-                            title: "Mobile + Tablets + Laptops",
-                            desc: "Expands for laptops and MacBooks (up to 1024px width).",
-                            badge: "Laptop Ready",
-                            badgeColor: "bg-purple-500/10 text-purple-600 border-purple-500/20"
+                            title: "Mobile + Laptop",
+                            desc: "Standard laptops (up to 1024px)",
+                            badge: "Laptop",
+                            badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20"
                           },
                           {
                             id: "all_devices" as const,
-                            title: "All Devices (Desktop & Smart TV)",
-                            desc: "Full-width modern website view up to 1320px+ for large displays & Smart TVs.",
+                            title: "All Devices",
+                            desc: "Wide desktops & Smart TV (1320px+)",
                             badge: "Ultra-Wide",
-                            badgeColor: "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                            badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20"
                           }
                         ].map((option) => {
                           const isSelected = editorDeviceScope === option.id;
@@ -4250,27 +4263,27 @@ export default function BioPagesScreen({
                                 setEditorDeviceScope(option.id);
                                 triggerToast(`Target layout set to: ${option.title}`);
                               }}
-                              className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 ${
+                              className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 cursor-pointer min-w-0 ${
                                 isSelected
-                                  ? "bg-indigo-50/60 border-indigo-500 shadow-sm ring-1 ring-indigo-500/20"
-                                  : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                                  ? "bg-indigo-600/15 border-indigo-500/60 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/30"
+                                  : "bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06]"
                               }`}
                             >
-                              <div className="space-y-0.5 min-w-0">
+                              <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
                                 <div className="flex items-center gap-2">
-                                  <span className={`text-xs font-bold ${isSelected ? "text-indigo-950" : "text-slate-800"}`}>
+                                  <span className={`text-xs font-bold truncate ${isSelected ? "text-indigo-200" : "text-slate-200"}`}>
                                     {option.title}
                                   </span>
-                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${option.badgeColor}`}>
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${option.badgeColor}`}>
                                     {option.badge}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-slate-500 leading-snug">
+                                <p className="text-[11px] text-slate-400 leading-snug truncate">
                                   {option.desc}
                                 </p>
                               </div>
                               <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
-                                isSelected ? "border-indigo-600 bg-indigo-600" : "border-slate-300 bg-white"
+                                isSelected ? "border-indigo-400 bg-indigo-600" : "border-white/20 bg-slate-900"
                               }`}>
                                 {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
                               </div>
@@ -4285,21 +4298,28 @@ export default function BioPagesScreen({
 
               {/* DRAFTS & RECOVERY PANEL */}
               {studioNavTab === "drafts" && (
-                <div className="key-workspace key-workspace--stack w-full">
-                  <h3 className="font-display font-bold text-base text-slate-900">Saved Templates & Drafts</h3>
-                  <div className="key-editor-panel key-workspace-panel key-workspace-panel--stack shadow-sm">
-                    <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-widest block">
-                      Drafts & Recovery
+                <div className="key-workspace key-workspace--stack w-full space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+                      <Save className="w-4 h-4 text-indigo-400" />
+                      <span>Drafts & Recovery</span>
+                    </h3>
+                  </div>
+                  <div className="rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 space-y-4 shadow-2xl">
+                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block">
+                      Saved Session Snapshots
                     </span>
                     {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).length === 0 ? (
-                      <p className="text-xs text-slate-400 font-medium leading-relaxed">No saved drafts for this session yet. Click "Save Draft" in the left sidebar to create one.</p>
+                      <div className="text-center py-8 px-4 rounded-xl border border-dashed border-white/10 bg-white/[0.02]">
+                        <p className="text-xs text-slate-400 font-medium">No saved drafts yet. Click "Save Draft" in the left sidebar to snapshot your work.</p>
+                      </div>
                     ) : (
                       <div className="space-y-2">
                         {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).map((draft) => (
-                          <div key={draft.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
-                            <div className="min-w-0">
-                              <span className="text-xs font-bold block text-slate-800 truncate">{getDraftDisplayName(draft)}</span>
-                              <span className="text-[9px] text-slate-400 block font-mono">{getDraftBlockCount(draft)} block{getDraftBlockCount(draft) !== 1 ? "s" : ""} saved</span>
+                          <div key={draft.id} className="flex items-center justify-between p-3 bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/40 rounded-xl transition-all gap-3 min-w-0">
+                            <div className="min-w-0 flex-1 overflow-hidden">
+                              <span className="text-xs font-bold block text-slate-200 truncate">{getDraftDisplayName(draft)}</span>
+                              <span className="text-[9px] text-slate-400 block font-mono mt-0.5">{getDraftBlockCount(draft)} block{getDraftBlockCount(draft) !== 1 ? "s" : ""} saved</span>
                             </div>
                             <button
                               type="button"
@@ -4307,7 +4327,7 @@ export default function BioPagesScreen({
                                 hydrateEditorFromState(draft.data);
                                 triggerToast(`✨ Restored editor blocks to draft "${getDraftDisplayName(draft)}"!`);
                               }}
-                              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors shadow-sm"
+                              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold rounded-lg transition-colors shadow-sm shrink-0 cursor-pointer"
                             >
                               Restore
                             </button>
@@ -4330,8 +4350,8 @@ export default function BioPagesScreen({
                         type="text"
                         value={blockLibrarySearch}
                         onChange={(e) => setBlockLibrarySearch(e.target.value)}
-                        placeholder="Search 50+ pro developer blocks..."
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8.5 pr-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition-colors"
+                        placeholder="Search 50+ pro widgets..."
+                        className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-indigo-500/70 focus:bg-white/[0.07] rounded-xl pl-8.5 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-colors"
                       />
                     </div>
 
@@ -4349,10 +4369,10 @@ export default function BioPagesScreen({
                           key={cat.id}
                           type="button"
                           onClick={() => setBlockLibraryCategory(cat.id)}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all ${
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
                             blockLibraryCategory === cat.id
-                              ? "bg-indigo-600 text-white shadow-2xs"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30"
+                              : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.06]"
                           }`}
                         >
                           {cat.label}
@@ -4365,24 +4385,28 @@ export default function BioPagesScreen({
                     {/* 1. Hero & Headlines */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "hero") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>🚀 Modern Hero & Navigation</span>
-                        <span className="text-[9px] text-[#6366f1] font-bold bg-indigo-50 px-1.5 py-0.5 rounded">Pro Hero</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          🚀 Modern Hero & Navigation
+                        </span>
+                        <span className="text-[9px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
+                          Pro Hero
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Navbar")}
                           onClick={() => handleAddBlock("Navbar")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Floating glass navigation bar with logo, links, CTA"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Floating navigation bar"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🧭
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Navbar</span>
-                            <span className="text-[9px] text-slate-400 block">Glass floating bar</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Navbar</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Top menu bar</span>
                           </div>
                         </button>
 
@@ -4390,15 +4414,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Split Hero")}
                           onClick={() => handleAddBlock("Split Hero")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Split headline + visual hero banner"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Split headline & visual banner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🚀
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Split Hero</span>
-                            <span className="text-[9px] text-slate-400 block">SaaS split hero</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Split Hero</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Headline & media</span>
                           </div>
                         </button>
 
@@ -4406,15 +4430,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Main Feature")}
                           onClick={() => handleAddBlock("Main Feature")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="High-converting 4-feature highlight grid"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="4-feature highlight grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🔥
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Main Feature</span>
-                            <span className="text-[9px] text-slate-400 block">4-pillar grid</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Feature Grid</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">4 key benefits</span>
                           </div>
                         </button>
 
@@ -4422,15 +4446,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video Hero")}
                           onClick={() => handleAddBlock("Video Hero")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Full cinematic video hero with overlay CTA"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Cinematic video hero with CTA"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎬
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Video Hero</span>
-                            <span className="text-[9px] text-slate-400 block">Cinematic reel</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Hero</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Cinematic banner</span>
                           </div>
                         </button>
 
@@ -4438,15 +4462,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Glow Badge")}
                           onClick={() => handleAddBlock("Glow Badge")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Animated glowing pill announcement"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ✨
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Glow Badge</span>
-                            <span className="text-[9px] text-slate-400 block">Glowing news pill</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Glow Badge</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Notice pill</span>
                           </div>
                         </button>
 
@@ -4454,15 +4478,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Feature Hero")}
                           onClick={() => handleAddBlock("Feature Hero")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="3-pillar feature hero overview"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-teal-500/20 border border-white/[0.08] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⚡
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Feature Hero</span>
-                            <span className="text-[9px] text-slate-400 block">3-feature pillars</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Feature Pillars</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">3 core features</span>
                           </div>
                         </button>
 
@@ -4470,14 +4494,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Header")}
                           onClick={() => handleAddBlock("Header")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Section headline"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-xs text-emerald-400 shrink-0 transition-transform group-hover:scale-110">
                             H1
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Header</span>
-                            <span className="text-[9px] text-slate-400 block">Section title</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Headline</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Section title</span>
                           </div>
                         </button>
 
@@ -4485,14 +4510,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Banner")}
                           onClick={() => handleAddBlock("Banner")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Notice & alert banner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-sky-500/20 border border-white/[0.08] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📢
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Banner</span>
-                            <span className="text-[9px] text-slate-400 block">Notice & alert</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Alert Banner</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Notice & promo</span>
                           </div>
                         </button>
                       </div>
@@ -4502,24 +4528,28 @@ export default function BioPagesScreen({
                     {/* 2. Pricing & Commerce */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "commerce") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>💳 Pricing & Commerce</span>
-                        <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">High ROI</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          💳 Pricing & Commerce
+                        </span>
+                        <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                          High ROI
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Flash Offer")}
                           onClick={() => handleAddBlock("Flash Offer")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Flash offer with countdown timer and 1-click coupon copy"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Flash offer discount sale"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⚡
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Flash Offer</span>
-                            <span className="text-[9px] text-slate-400 block">50% promo sale</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Flash Deal</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Timed discount</span>
                           </div>
                         </button>
 
@@ -4527,15 +4557,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Toggle Pricing")}
                           onClick={() => handleAddBlock("Toggle Pricing")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Monthly vs Yearly toggle pricing table"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⚖️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Toggle Pricing</span>
-                            <span className="text-[9px] text-slate-400 block">Mo / Yr toggle</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Plan Toggle</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Monthly & annual</span>
                           </div>
                         </button>
 
@@ -4543,15 +4573,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Product Showcase")}
                           onClick={() => handleAddBlock("Product Showcase")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Featured product box with badge & urgency"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Featured product showcase"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📦
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Showcase</span>
-                            <span className="text-[9px] text-slate-400 block">Featured product</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Product Card</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Featured item</span>
                           </div>
                         </button>
 
@@ -4559,15 +4589,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Comparison Table")}
                           onClick={() => handleAddBlock("Comparison Table")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Plan feature comparison matrix"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Plan feature comparison table"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📊
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Compare Matrix</span>
-                            <span className="text-[9px] text-slate-400 block">Feature matrix</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Compare Table</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Feature matrix</span>
                           </div>
                         </button>
 
@@ -4575,15 +4605,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Payment Button")}
                           onClick={() => handleAddBlock("Payment Button")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Instant payment checkout button"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💳
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Pay Button</span>
-                            <span className="text-[9px] text-slate-400 block">Direct checkout</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Quick Pay</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Instant checkout</span>
                           </div>
                         </button>
 
@@ -4591,14 +4621,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Pricing")}
                           onClick={() => handleAddBlock("Pricing")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Pricing plans and tiers"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💰
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Pricing Cards</span>
-                            <span className="text-[9px] text-slate-400 block">Plan tiers</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Price Cards</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Plan tiers</span>
                           </div>
                         </button>
 
@@ -4606,14 +4637,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Shop")}
                           onClick={() => handleAddBlock("Shop")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Store product catalogue"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-teal-500/20 border border-white/[0.08] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🛒
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Shop</span>
-                            <span className="text-[9px] text-slate-400 block">Catalogue & cart</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Store Grid</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Product catalog</span>
                           </div>
                         </button>
 
@@ -4621,14 +4653,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Coupon")}
                           onClick={() => handleAddBlock("Coupon")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Coupon discount code"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎟️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Coupon</span>
-                            <span className="text-[9px] text-slate-400 block">Promo codes</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Coupon Code</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Tap to copy</span>
                           </div>
                         </button>
                       </div>
@@ -4638,24 +4671,28 @@ export default function BioPagesScreen({
                     {/* 3. Social Proof & Community */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "social") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>🌟 Social Proof & Community</span>
-                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded">Trust</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          🌟 Social Proof & Community
+                        </span>
+                        <span className="text-[9px] text-amber-400 font-bold bg-amber-500/15 border border-amber-500/25 px-2 py-0.5 rounded-full">
+                          Trust
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Community Hub")}
                           onClick={() => handleAddBlock("Community Hub")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="VIP WhatsApp/Discord community with online badge and perks"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="VIP community hub with chat"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💬
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Community</span>
-                            <span className="text-[9px] text-slate-400 block">WhatsApp / Discord</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Community Hub</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">WhatsApp & Discord</span>
                           </div>
                         </button>
 
@@ -4663,15 +4700,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Brand Logos")}
                           onClick={() => handleAddBlock("Brand Logos")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Animated client and partner logo marquee"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🏢
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Brand Logos</span>
-                            <span className="text-[9px] text-slate-400 block">Marquee logos</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Brand Logos</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Partner marquee</span>
                           </div>
                         </button>
 
@@ -4679,15 +4716,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Star Ratings")}
                           onClick={() => handleAddBlock("Star Ratings")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Star rating badge with user avatar pile"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Star review rating badge"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⭐
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Star Ratings</span>
-                            <span className="text-[9px] text-slate-400 block">5★ review badge</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Star Reviews</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">5★ user ratings</span>
                           </div>
                         </button>
 
@@ -4695,15 +4732,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Press Mentions")}
                           onClick={() => handleAddBlock("Press Mentions")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Press & media review quotes"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📰
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Press Mentions</span>
-                            <span className="text-[9px] text-slate-400 block">Media quotes</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Press Quotes</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Media highlights</span>
                           </div>
                         </button>
 
@@ -4711,14 +4748,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Testimonials")}
                           onClick={() => handleAddBlock("Testimonials")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Customer testimonial reviews"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💬
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Testimonials</span>
-                            <span className="text-[9px] text-slate-400 block">Client reviews</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Testimonials</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Client feedback</span>
                           </div>
                         </button>
 
@@ -4726,14 +4764,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Stats")}
                           onClick={() => handleAddBlock("Stats")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Key achievements and numbers"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📊
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Stats</span>
-                            <span className="text-[9px] text-slate-400 block">Key numbers</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Key Stats</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Milestones & proof</span>
                           </div>
                         </button>
                       </div>
@@ -4743,24 +4782,28 @@ export default function BioPagesScreen({
                     {/* 4. Interactive Media & Feeds */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "media") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>🎨 Interactive Media & Feeds</span>
-                        <span className="text-[9px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded">Visual</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          🎨 Interactive Media & Feeds
+                        </span>
+                        <span className="text-[9px] text-purple-400 font-bold bg-purple-500/15 border border-purple-500/25 px-2 py-0.5 rounded-full">
+                          Visual
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Auto Slider")}
                           onClick={() => handleAddBlock("Auto Slider")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Autoplay image carousel slider with arrows & dots"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Autoplay image carousel slider"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎠
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Auto Slider</span>
-                            <span className="text-[9px] text-slate-400 block">Carousel slides</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Photo Slider</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Auto carousel</span>
                           </div>
                         </button>
 
@@ -4768,15 +4811,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "YouTube Channel")}
                           onClick={() => handleAddBlock("YouTube Channel")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="YouTube channel header with video player & subscribe CTA"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="YouTube channel and player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🔴
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">YouTube</span>
-                            <span className="text-[9px] text-slate-400 block">Channel & video</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">YouTube Video</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Channel & player</span>
                           </div>
                         </button>
 
@@ -4784,15 +4827,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Instagram Feed")}
                           onClick={() => handleAddBlock("Instagram Feed")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="4-photo Instagram grid with follow button"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Instagram photo grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📸
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Instagram</span>
-                            <span className="text-[9px] text-slate-400 block">Photo grid feed</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Instagram Grid</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Photo gallery</span>
                           </div>
                         </button>
 
@@ -4800,15 +4843,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Before/After Slider")}
                           onClick={() => handleAddBlock("Before/After Slider")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Interactive touch & mouse comparison slider"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Interactive comparison slider"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-cyan-500/20 border border-white/[0.08] group-hover:border-cyan-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ↔️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Before/After</span>
-                            <span className="text-[9px] text-slate-400 block">Compare slider</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Compare Slider</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Before & after</span>
                           </div>
                         </button>
 
@@ -4816,15 +4859,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Portfolio Gallery")}
                           onClick={() => handleAddBlock("Portfolio Gallery")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Filterable category portfolio showcase"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Portfolio showcase"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💼
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Portfolio</span>
-                            <span className="text-[9px] text-slate-400 block">Filterable work</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Portfolio</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Filterable work</span>
                           </div>
                         </button>
 
@@ -4832,15 +4875,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video Showcase")}
                           onClick={() => handleAddBlock("Video Showcase")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Video player with chapter playlist"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Video player with playlist"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📺
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Video Playlist</span>
-                            <span className="text-[9px] text-slate-400 block">Course chapters</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Playlist</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Chapters & courses</span>
                           </div>
                         </button>
 
@@ -4848,15 +4891,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Audio Player")}
                           onClick={() => handleAddBlock("Audio Player")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Podcast & track player with Spotify/Apple links"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Podcast & music audio player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎙️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Podcast Player</span>
-                            <span className="text-[9px] text-slate-400 block">Audio player</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Podcast Player</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Audio tracks</span>
                           </div>
                         </button>
 
@@ -4864,14 +4907,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Gallery")}
                           onClick={() => handleAddBlock("Gallery")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Image gallery grid"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-sky-500/20 border border-white/[0.08] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🖼️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Gallery</span>
-                            <span className="text-[9px] text-slate-400 block">Image grid</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Photo Grid</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Image showcase</span>
                           </div>
                         </button>
 
@@ -4879,14 +4923,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Video")}
                           onClick={() => handleAddBlock("Video")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Stream video embed"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎥
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Video</span>
-                            <span className="text-[9px] text-slate-400 block">Stream video</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Embed</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Stream player</span>
                           </div>
                         </button>
 
@@ -4894,14 +4939,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Music")}
                           onClick={() => handleAddBlock("Music")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Music track player"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-violet-500/20 border border-white/[0.08] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎵
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Music</span>
-                            <span className="text-[9px] text-slate-400 block">Sound track</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Music Track</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Audio stream</span>
                           </div>
                         </button>
 
@@ -4909,14 +4955,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Image")}
                           onClick={() => handleAddBlock("Image")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Single image photo"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-fuchsia-500/20 border border-white/[0.08] group-hover:border-fuchsia-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🖼️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Image</span>
-                            <span className="text-[9px] text-slate-400 block">Single image</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Single Image</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">High-res photo</span>
                           </div>
                         </button>
                       </div>
@@ -4926,24 +4973,28 @@ export default function BioPagesScreen({
                     {/* 5. Conversion & Forms */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "forms") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>⚡ Conversion & Forms</span>
-                        <span className="text-[9px] text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded">Leads</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          ⚡ Conversion & Forms
+                        </span>
+                        <span className="text-[9px] text-rose-400 font-bold bg-rose-500/15 border border-rose-500/25 px-2 py-0.5 rounded-full">
+                          Leads
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Google Form")}
                           onClick={() => handleAddBlock("Google Form")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Google Form embed or native interactive feedback questionnaire"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Google Form embed or native survey"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📋
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Google Form</span>
-                            <span className="text-[9px] text-slate-400 block">Embed & questionnaire</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Google Form</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Embed survey</span>
                           </div>
                         </button>
 
@@ -4951,15 +5002,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Multi-Step Form")}
                           onClick={() => handleAddBlock("Multi-Step Form")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Interactive 3-step lead wizard with progress bar"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Interactive 3-step lead wizard"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🧙‍♂️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Multi-Step Form</span>
-                            <span className="text-[9px] text-slate-400 block">3-step wizard</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Lead Wizard</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Multi-step flow</span>
                           </div>
                         </button>
 
@@ -4967,15 +5018,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Lead Magnet")}
                           onClick={() => handleAddBlock("Lead Magnet")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Free PDF / eBook download card"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎁
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Lead Magnet</span>
-                            <span className="text-[9px] text-slate-400 block">Free download</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Free Download</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">PDF & opt-in</span>
                           </div>
                         </button>
 
@@ -4983,15 +5034,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Meeting Booker")}
                           onClick={() => handleAddBlock("Meeting Booker")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Calendly meeting scheduler card"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🗓️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Meeting Booker</span>
-                            <span className="text-[9px] text-slate-400 block">Calendly 1-on-1</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Meeting Booker</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Calendly sync</span>
                           </div>
                         </button>
 
@@ -4999,15 +5050,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Newsletter Box")}
                           onClick={() => handleAddBlock("Newsletter Box")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
                           title="Email capture newsletter subscription"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💌
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Newsletter</span>
-                            <span className="text-[9px] text-slate-400 block">Email opt-in</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Newsletter</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Email capture</span>
                           </div>
                         </button>
 
@@ -5015,14 +5066,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Countdown")}
                           onClick={() => handleAddBlock("Countdown")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Countdown timer"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-red-500/20 border border-white/[0.08] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⏱️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Countdown</span>
-                            <span className="text-[9px] text-slate-400 block">Urgency timers</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Timer Clock</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Urgency counter</span>
                           </div>
                         </button>
 
@@ -5030,14 +5082,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Link Spin")}
                           onClick={() => handleAddBlock("Link Spin")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Prize wheel spinner"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🎡
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Link Spin</span>
-                            <span className="text-[9px] text-slate-400 block">Lucky spinner</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Lucky Wheel</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Reward spinner</span>
                           </div>
                         </button>
 
@@ -5045,14 +5098,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Smart Form")}
                           onClick={() => handleAddBlock("Smart Form")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Smart lead capture form"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-[#EEF2FF] text-blue-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-blue-500/20 border border-white/[0.08] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📋
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Smart Form</span>
-                            <span className="text-[9px] text-slate-400 block">Email leads</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Smart Form</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Lead capture</span>
                           </div>
                         </button>
 
@@ -5060,14 +5114,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Form")}
                           onClick={() => handleAddBlock("Form")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Custom form fields"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-violet-500/20 border border-white/[0.08] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📝
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Custom Form</span>
-                            <span className="text-[9px] text-slate-400 block">Contact fields</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Custom Form</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Contact builder</span>
                           </div>
                         </button>
 
@@ -5075,14 +5130,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "FAQ")}
                           onClick={() => handleAddBlock("FAQ")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="FAQ accordion dropdown"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ❓
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">FAQ</span>
-                            <span className="text-[9px] text-slate-400 block">Q&A accordion</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">FAQ Accordion</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Q&A dropdown</span>
                           </div>
                         </button>
                       </div>
@@ -5092,24 +5148,28 @@ export default function BioPagesScreen({
                     {/* 6. Core, Connect & Footer */}
                     {(blockLibraryCategory === "all" || blockLibraryCategory === "core") && (
                     <div className="key-editor-blocks-palette">
-                      <span className="key-editor-section-label mb-3 flex items-center justify-between">
-                        <span>🔗 Core, Connect & Footer</span>
-                        <span className="text-[9px] text-slate-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded">Essential</span>
-                      </span>
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                          🔗 Core, Connect & Footer
+                        </span>
+                        <span className="text-[9px] text-slate-400 font-bold bg-white/[0.06] border border-white/[0.08] px-2 py-0.5 rounded-full">
+                          Essential
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Footer")}
                           onClick={() => handleAddBlock("Footer")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
-                          title="Modern clean footer with brand, copyright and links"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Modern clean footer"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-slate-900 text-slate-200 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🦶
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Footer</span>
-                            <span className="text-[9px] text-slate-400 block">Multi-link footer</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Page Footer</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Links & copyright</span>
                           </div>
                         </button>
 
@@ -5117,14 +5177,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Button")}
                           onClick={() => handleAddBlock("Button")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Clickable button"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🔗
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Button</span>
-                            <span className="text-[9px] text-slate-400 block">Action link</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Action Button</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Clickable CTA</span>
                           </div>
                         </button>
 
@@ -5132,14 +5193,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Deep Link")}
                           onClick={() => handleAddBlock("Deep Link")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="App deep link redirect"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-purple-500/20 border border-white/[0.08] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ⚡
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Deep Link</span>
-                            <span className="text-[9px] text-slate-400 block">App redirect</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Deep Link</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">App launcher</span>
                           </div>
                         </button>
 
@@ -5147,14 +5209,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "WhatsApp")}
                           onClick={() => handleAddBlock("WhatsApp")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Direct WhatsApp chat"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-green-500/20 border border-white/[0.08] group-hover:border-green-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             💬
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">WhatsApp</span>
-                            <span className="text-[9px] text-slate-400 block">Direct chat</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">WhatsApp Chat</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Direct message</span>
                           </div>
                         </button>
 
@@ -5162,14 +5225,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Socials")}
                           onClick={() => handleAddBlock("Socials")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Social media icon links"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-pink-500/20 border border-white/[0.08] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🌐
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Socials</span>
-                            <span className="text-[9px] text-slate-400 block">Social handles</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Social Bar</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Social handles</span>
                           </div>
                         </button>
 
@@ -5177,14 +5241,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Call")}
                           onClick={() => handleAddBlock("Call")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Click to phone call"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📞
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Call</span>
-                            <span className="text-[9px] text-slate-400 block">Tap to call</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Call Button</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Tap to call</span>
                           </div>
                         </button>
 
@@ -5192,14 +5257,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Email")}
                           onClick={() => handleAddBlock("Email")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Click to email"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ✉️
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Email</span>
-                            <span className="text-[9px] text-slate-400 block">Mailto button</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Email Link</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Mailto button</span>
                           </div>
                         </button>
 
@@ -5207,14 +5273,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "vCard")}
                           onClick={() => handleAddBlock("vCard")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Save contact vCard file"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-amber-500/20 border border-white/[0.08] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             🪪
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">vCard</span>
-                            <span className="text-[9px] text-slate-400 block">Save contact</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Save Contact</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Digital vCard</span>
                           </div>
                         </button>
 
@@ -5222,14 +5289,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Events")}
                           onClick={() => handleAddBlock("Events")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Event RSVP and ticketing"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📅
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Events</span>
-                            <span className="text-[9px] text-slate-400 block">Meetup RSVP</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">RSVP Event</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Date & booking</span>
                           </div>
                         </button>
 
@@ -5237,14 +5305,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Map")}
                           onClick={() => handleAddBlock("Map")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Google Maps location pin"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📍
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Map</span>
-                            <span className="text-[9px] text-slate-400 block">Google Maps</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Google Map</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Location pin</span>
                           </div>
                         </button>
 
@@ -5252,14 +5321,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Tip Jar")}
                           onClick={() => handleAddBlock("Tip Jar")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Donations & tip jar"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-rose-500/20 border border-white/[0.08] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             ☕
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Tip Jar</span>
-                            <span className="text-[9px] text-slate-400 block">Donations & tips</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Tip / Donate</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Coffee & tips</span>
                           </div>
                         </button>
 
@@ -5267,14 +5337,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "PDF")}
                           onClick={() => handleAddBlock("PDF")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="PDF document download"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/20 border border-white/[0.08] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📄
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">PDF</span>
-                            <span className="text-[9px] text-slate-400 block">Document file</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">PDF Document</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">File download</span>
                           </div>
                         </button>
 
@@ -5282,14 +5353,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Text")}
                           onClick={() => handleAddBlock("Text")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Paragraph rich text"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-indigo-500/20 border border-white/[0.08] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             📝
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Text</span>
-                            <span className="text-[9px] text-slate-400 block">Paragraph</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Rich Text</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Paragraph note</span>
                           </div>
                         </button>
 
@@ -5297,14 +5369,15 @@ export default function BioPagesScreen({
                           draggable={true}
                           onDragStart={(e) => handleDragStartBlockType(e, "Divider")}
                           onClick={() => handleAddBlock("Divider")}
-                          className="flex items-center gap-2.5 bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-2xl text-left transition-all group relative shadow-sm hover:border-slate-300 cursor-grab active:cursor-grabbing hover:scale-[1.02]"
+                          className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/40 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.02] backdrop-blur-md min-w-0 overflow-hidden"
+                          title="Spacer & divider line"
                         >
-                          <span className="h-8 w-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
+                          <span className="h-8 w-8 rounded-xl bg-white/[0.06] group-hover:bg-slate-500/20 border border-white/[0.08] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-110">
                             —
                           </span>
-                          <div>
-                            <span className="text-xs font-bold block text-slate-800">Divider</span>
-                            <span className="text-[9px] text-slate-400 block">Separator line</span>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Divider Line</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Spacer divider</span>
                           </div>
                         </button>
                       </div>
@@ -5313,8 +5386,8 @@ export default function BioPagesScreen({
 
                     {/* Saved Templates & Session Drafts in Editor Sidebar */}
                     {(savedTemplates.length > 0 || savedDrafts.length > 0) && (
-                      <div className="pt-4 border-t border-slate-200/80 space-y-6">
-                        <span className="text-[10px] font-extrabold text-[#6366f1] uppercase tracking-widest block">
+                      <div className="pt-4 border-t border-white/[0.08] space-y-4">
+                        <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest block">
                           SAVED TEMPLATES & DRAFTS
                         </span>
                         
@@ -5323,9 +5396,9 @@ export default function BioPagesScreen({
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Templates</span>
                             <div className="grid grid-cols-1 gap-2">
                               {savedTemplates.map((tpl) => (
-                                <div key={tpl.id} className="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition-all">
+                                <div key={tpl.id} className="flex items-center justify-between p-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-indigo-500/30 rounded-xl transition-all shadow-xs">
                                   <div className="min-w-0">
-                                    <span className="text-xs font-bold text-slate-800 block truncate">💎 {getTemplateDisplayName(tpl)}</span>
+                                    <span className="text-xs font-bold text-slate-200 block truncate">💎 {getTemplateDisplayName(tpl)}</span>
                                     <span className="text-[9px] text-slate-400 font-medium block">{getTemplateBlockCount(tpl)} blocks</span>
                                   </div>
                                   <button
@@ -5335,7 +5408,7 @@ export default function BioPagesScreen({
                                       setLinkedTemplateId(tpl.id);
                                       triggerToast(`✨ Applied Template "${getTemplateDisplayName(tpl)}" to editor!`);
                                     }}
-                                    className="px-2.5 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-[#6366f1] text-[9px] font-bold rounded-lg transition-colors border border-indigo-500/20"
+                                    className="px-2.5 py-1 bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 text-[9px] font-bold rounded-lg transition-colors border border-indigo-500/30 cursor-pointer"
                                   >
                                     Apply
                                   </button>
@@ -5350,9 +5423,9 @@ export default function BioPagesScreen({
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Session Drafts</span>
                             <div className="grid grid-cols-1 gap-2">
                               {savedDrafts.filter((draft) => draft.pageId === selectedEditPage.id).map((draft) => (
-                                <div key={draft.id} className="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition-all">
+                                <div key={draft.id} className="flex items-center justify-between p-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-indigo-500/30 rounded-xl transition-all shadow-xs">
                                   <div className="min-w-0">
-                                    <span className="text-xs font-bold text-slate-800 block truncate">📝 {getDraftDisplayName(draft)}</span>
+                                    <span className="text-xs font-bold text-slate-200 block truncate">📝 {getDraftDisplayName(draft)}</span>
                                     <span className="text-[9px] text-slate-400 font-medium block">{getDraftBlockCount(draft)} blocks</span>
                                   </div>
                                   <button
@@ -5361,7 +5434,7 @@ export default function BioPagesScreen({
                                       hydrateEditorFromState(draft.data);
                                       triggerToast(`✨ Restored Draft for "${getDraftDisplayName(draft)}"!`);
                                     }}
-                                    className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded-lg transition-colors"
+                                    className="px-2.5 py-1 bg-white/[0.08] hover:bg-white/[0.14] text-white text-[9px] font-bold rounded-lg transition-colors border border-white/[0.1] cursor-pointer"
                                   >
                                     Restore
                                   </button>
@@ -5380,7 +5453,7 @@ export default function BioPagesScreen({
                 {studioNavTab === "theme" && (
                   <div className="space-y-4 w-full">
                     {/* Visual Studio Theme Mode Selector (7 Circular Modes) */}
-                    <div className="key-editor-panel p-3 rounded-2xl border shadow-sm space-y-2">
+                    <div className="p-3.5 rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl shadow-xl space-y-2.5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Palette className="h-3.5 w-3.5 text-indigo-400" />
@@ -5430,9 +5503,9 @@ export default function BioPagesScreen({
                       </div>
                     </div>
 
-                    <div className="key-editor-panel key-editor-cover-panel p-5 shadow-sm space-y-6">
+                    <div className="p-4 sm:p-5 rounded-2xl border border-white/[0.08] bg-slate-900/60 backdrop-blur-xl shadow-2xl space-y-5">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="key-editor-section-label">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
                           Cover Image & Header
                         </span>
                         <div className="flex items-center gap-2 shrink-0">
@@ -5458,7 +5531,7 @@ export default function BioPagesScreen({
                       </div>
 
                       {/* Dropzone/Preview Frame */}
-                      <div className="relative key-editor-cover-panel__frame-wrap group">
+                      <div className="relative key-editor-cover-panel__frame-wrap group rounded-2xl overflow-hidden border border-white/10">
                         <CoverPhotoView
                           src={
                             editorCoverPhoto ||
@@ -5482,38 +5555,38 @@ export default function BioPagesScreen({
                         {/* Overlay trigger for Drag & Drop / Browse */}
                         <label
                           htmlFor="cover-photo-file-upload-center"
-                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-xs font-bold gap-1.5 p-4 text-center"
+                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-xs font-bold gap-1.5 p-4 text-center"
                         >
                           <span className="text-xl">📷</span>
                           <span>Drop cover photo or browse</span>
-                          <span className="text-[9px] font-normal opacity-75">Supports PNG, JPG, GIF up to 5MB</span>
+                          <span className="text-[9px] font-normal opacity-75">PNG, JPG, GIF up to 5MB</span>
                         </label>
                       </div>
 
                       {/* Title, handle & bio */}
-                      <div className="grid grid-cols-1 gap-3.5 key-editor-cover-panel__fields">
+                      <div className="grid grid-cols-1 gap-3.5">
                         <div>
-                          <label className="key-editor-form-label">Biolink Title</label>
+                          <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">Biolink Title</label>
                           <input
                             type="text"
                             value={editorTitle}
                             onChange={(e) => setEditorTitle(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-sm font-bold text-slate-800"
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
                             placeholder="My BioLink"
                           />
                         </div>
 
                         <div>
-                          <label className="key-editor-form-label">Page Handle (@watermark)</label>
-                          <div className="key-editor-handle-field flex items-center gap-2 bg-slate-50 border border-slate-200 focus-within:border-[#6366f1] rounded-xl px-3.5">
-                            <span className="text-sm font-bold text-slate-400 shrink-0 select-none" aria-hidden>
+                          <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">Page Handle (@watermark)</label>
+                          <div className="flex items-center gap-2 bg-white/[0.04] border border-white/10 focus-within:border-indigo-500 focus-within:bg-white/[0.06] rounded-xl px-3 transition-all">
+                            <span className="text-xs font-bold text-slate-400 shrink-0 select-none" aria-hidden>
                               @
                             </span>
                             <input
                               type="text"
                               value={editorHandle}
                               onChange={(e) => setEditorHandle(normalizeHandleInput(e.target.value))}
-                              className="key-editor-handle-field__input flex-1 min-w-0 bg-transparent border-0 focus:outline-none focus:ring-0 py-2.5 text-sm font-semibold text-slate-800 font-mono placeholder:text-slate-400"
+                              className="flex-1 min-w-0 bg-transparent border-0 focus:outline-none focus:ring-0 py-2 text-xs font-semibold text-white font-mono placeholder:text-slate-500"
                               placeholder={handlePlaceholder}
                               aria-label="Page handle"
                             />
@@ -5521,18 +5594,18 @@ export default function BioPagesScreen({
                         </div>
 
                         <div>
-                          <label className="key-editor-form-label">Short Bio</label>
+                          <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">Short Bio</label>
                           <textarea
                             value={editorBio}
                             onChange={(e) => setEditorBio(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#6366f1] focus:outline-none rounded-xl py-2.5 px-3.5 text-xs text-slate-600 resize-none"
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-indigo-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
                             placeholder="Write a short bio..."
                             rows={2}
                           />
                         </div>
 
                         <div>
-                          <label className="key-editor-form-label">Theme Style</label>
+                          <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">Theme Palette</label>
                           <BioPageThemePicker value={editorPageTheme} onChange={handlePreviewThemeChange} />
                         </div>
                       </div>
@@ -5543,42 +5616,42 @@ export default function BioPagesScreen({
                 {/* THANK YOU PAGE HERO */}
                 {studioNavTab === "thanks" && (
                   <div className="space-y-4 w-full">
-                    <div className="key-editor-panel key-editor-cover-panel p-5 shadow-sm space-y-4 border border-pink-100">
+                    <div className="rounded-2xl border border-pink-500/25 bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4">
                       <div>
-                        <span className="key-editor-section-label text-[#ec4899]">Thank You page</span>
-                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                          Shown as a 2nd full page after Form / Smart Form submit. Use the Block Library — same blocks as Edit.
+                        <span className="text-xs font-bold uppercase tracking-wider text-pink-400">Thank You Page</span>
+                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                          Shown after Form or Smart Form submit. Add blocks using Block Library.
                         </p>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div>
-                          <label className="key-editor-form-label">Nav title</label>
+                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Nav Title</label>
                           <input
                             type="text"
                             value={thankYouTitle}
                             onChange={(e) => setThankYouTitle(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#ec4899] focus:outline-none rounded-xl py-2.5 px-3.5 text-sm font-bold text-slate-800"
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
                             placeholder="Thank You"
                           />
                         </div>
                         <div>
-                          <label className="key-editor-form-label">Hero emoji / mark</label>
+                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Hero Mark</label>
                           <input
                             type="text"
                             value={thankYouEmoji}
                             onChange={(e) => setThankYouEmoji(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 focus:border-[#ec4899] focus:outline-none rounded-xl py-2.5 px-3.5 text-sm font-bold text-slate-800"
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
                             placeholder="✓"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="key-editor-form-label">Supporting message</label>
+                        <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Supporting Message</label>
                         <textarea
                           value={thankYouMessage}
                           onChange={(e) => setThankYouMessage(e.target.value)}
                           rows={3}
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#ec4899] focus:outline-none rounded-xl py-2.5 px-3.5 text-xs text-slate-600 resize-none"
+                          className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
                           placeholder="Thanks for connecting with us on KEYLINK360..."
                         />
                       </div>
@@ -5620,27 +5693,27 @@ export default function BioPagesScreen({
                     {expandedBlockId ? (
                       <>
                         {/* Inspector Quick Info Banner */}
-                        <div className="p-3 bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800 rounded-2xl mb-1 flex items-center justify-between">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                            <div className="min-w-0">
-                              <span className="text-xs font-bold text-indigo-950 dark:text-indigo-100 block truncate">
+                        <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl mb-1 flex items-center justify-between backdrop-blur-md">
+                          <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-xs shadow-emerald-400/50" />
+                            <div className="min-w-0 flex-1 overflow-hidden">
+                              <span className="text-xs font-bold text-slate-100 block truncate">
                                 {canvasBlocks.find((b) => b.id === expandedBlockId)?.label || "Active Block"}
                               </span>
-                              <span className="text-[9px] text-indigo-500 font-mono uppercase block">
+                              <span className="text-[9px] text-indigo-400 font-mono uppercase block truncate">
                                 {canvasBlocks.find((b) => b.id === expandedBlockId)?.type || "Inspector"}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 shrink-0">
+                          <div className="flex items-center gap-1 shrink-0 ml-2">
                             <button
                               type="button"
                               onClick={() => handleToggleBlockLock(expandedBlockId)}
-                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
-                              title="Lock / Unlock component (Blocks Edit)"
+                              className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+                              title="Lock / Unlock component"
                             >
                               {Boolean(canvasBlocks.find((b) => b.id === expandedBlockId)?.isLocked || (canvasBlocks.find((b) => b.id === expandedBlockId)?.styles as any)?.isLocked) ? (
-                                <Lock className="h-3.5 w-3.5 text-amber-500" />
+                                <Lock className="h-3.5 w-3.5 text-amber-400" />
                               ) : (
                                 <Unlock className="h-3.5 w-3.5" />
                               )}
@@ -5648,11 +5721,11 @@ export default function BioPagesScreen({
                             <button
                               type="button"
                               onClick={() => handleToggleBlockHidden(expandedBlockId)}
-                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
+                              className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
                               title="Hide / Show component"
                             >
                               {Boolean(canvasBlocks.find((b) => b.id === expandedBlockId)?.isHidden || (canvasBlocks.find((b) => b.id === expandedBlockId)?.styles as any)?.isHidden) ? (
-                                <EyeOff className="h-3.5 w-3.5 text-amber-500" />
+                                <EyeOff className="h-3.5 w-3.5 text-amber-400" />
                               ) : (
                                 <Eye className="h-3.5 w-3.5" />
                               )}
@@ -5660,7 +5733,7 @@ export default function BioPagesScreen({
                             <button
                               type="button"
                               onClick={() => handleDuplicateBlock(expandedBlockId)}
-                              className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-indigo-600 transition-colors shadow-2xs"
+                              className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
                               title="Duplicate block"
                             >
                               <Copy className="h-3.5 w-3.5" />
@@ -5668,7 +5741,7 @@ export default function BioPagesScreen({
                             <button
                               type="button"
                               onClick={() => handleDeleteBlock(expandedBlockId)}
-                              className="p-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-slate-500 hover:text-rose-600 transition-colors shadow-2xs"
+                              className="p-1.5 hover:bg-rose-500/20 rounded-lg text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
                               title="Delete block"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -5677,14 +5750,14 @@ export default function BioPagesScreen({
                         </div>
 
                         {/* Dual Tab Switcher: Content vs Style */}
-                        <div className="grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                        <div className="grid grid-cols-2 gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
                           <button
                             type="button"
                             onClick={() => setInspectorTab("content")}
-                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                               inspectorTab === "content"
-                                ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm"
-                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
                             }`}
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -5693,20 +5766,20 @@ export default function BioPagesScreen({
                           <button
                             type="button"
                             onClick={() => setInspectorTab("style")}
-                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                               inspectorTab === "style"
-                                ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm"
-                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
                             }`}
                           >
                             <Sliders className="w-3.5 h-3.5" />
-                            <span>Style (Bricks CSS)</span>
+                            <span>Style (CSS)</span>
                           </button>
                         </div>
 
                         {/* If Style Tab is Active: Render BlockStyleInspector */}
                         {inspectorTab === "style" && (
-                          <div className="p-3 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                          <div className="p-3.5 bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-2xl">
                             <BlockStyleInspector
                               styles={(canvasBlocks.find((b) => b.id === expandedBlockId) as any)?.styles as BlockDeveloperStyles}
                               onChange={(newStyles) => handleUpdateBlockStyles(expandedBlockId, newStyles)}
@@ -5717,20 +5790,20 @@ export default function BioPagesScreen({
                         )}
                       </>
                     ) : (
-                      <div className="text-center py-12 px-4 space-y-3 bg-white rounded-2xl border border-dashed border-slate-200">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto text-xl shadow-2xs">
+                      <div className="text-center py-12 px-4 space-y-3 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-dashed border-white/10">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto text-xl shadow-lg shadow-indigo-500/10">
                           🎯
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-slate-800">Canvas Click-to-Inspect</h4>
-                          <p className="text-[11px] text-slate-500 mt-1 leading-relaxed max-w-xs mx-auto">
-                            Click on any block directly on the center preview canvas to edit its properties, or choose one from the Structure Tree.
+                          <h4 className="text-xs font-bold text-slate-200">Canvas Click-to-Inspect</h4>
+                          <p className="text-[11px] text-slate-400 mt-1 leading-relaxed max-w-xs mx-auto">
+                            Click any block on the canvas or Structure Tree to customize.
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => setStudioNavTab("layers")}
-                          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
+                          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 transition-all cursor-pointer"
                         >
                           Open Structure Tree
                         </button>
