@@ -9662,7 +9662,16 @@ export default function BioPagesScreen({
 
           {/* FULLSCREEN IMMERSIVE GLOBAL PREVIEW OVERLAY */}
           {isGlobalPreviewOpen && (
-            <div className="fixed inset-0 z-[200] bg-slate-950 overflow-y-auto no-scrollbar animate-in fade-in duration-150 flex flex-col items-center justify-start min-h-screen w-full">
+            <div
+              className="fixed inset-0 z-[200] bg-[#090d16] overflow-y-auto no-scrollbar animate-in fade-in duration-150 flex flex-col items-center justify-start min-h-screen w-full"
+              style={{
+                backgroundColor: "#090d16",
+                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+                backgroundAttachment: "fixed",
+                backgroundRepeat: "repeat"
+              }}
+            >
               <PublicBioPageView
                 pageId={selectedEditPage?.id || "preview-global"}
                 pageTitle={editorTitle || "BioLink"}
