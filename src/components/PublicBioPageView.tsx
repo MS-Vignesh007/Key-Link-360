@@ -1,5 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { X, Smartphone, Tablet, Laptop, Monitor, Globe, ArrowLeft } from "lucide-react";
+import {
+  X,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Monitor,
+  Globe,
+  ArrowLeft,
+  Move,
+  ChevronUp,
+  ChevronDown,
+  Copy,
+  Trash2,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  RotateCcw
+} from "lucide-react";
+import InlineEditableText from "./bio/InlineEditableText";
 import { normalizePageTheme, getBioPageThemeClass, getBioPageThemeStyle } from "../lib/bioPageThemes";
 import type { DeviceViewportMode } from "../types";
 import {
@@ -24,13 +43,19 @@ import BioAiChatWidget from "./bio/BioAiChatWidget";
 import { normalizeCoverSettings } from "../lib/bioCoverPhoto";
 import { formatDisplayHandle, readLocalPageUpdatedAt } from "../storage/bioBuilderStorage";
 import { computeBlockInlineStyles, getBlockCustomMeta } from "../lib/blockStyleHelper";
-import type { BioPage, BioPagePreviewDetails, BioPagePreviewTheme } from "../types";
+import type { BioPage, BioPagePreviewDetails, BioPagePreviewTheme, BlockDeveloperStyles } from "../types";
 
 interface Block {
   id: string;
   type: string;
   label: string;
   value: string;
+  deviceVisibility?: string;
+  colSpan?: string;
+  styles?: BlockDeveloperStyles;
+  isLocked?: boolean;
+  isHidden?: boolean;
+  [key: string]: any;
 }
 
 interface PublicBioPageViewProps {
@@ -283,6 +308,271 @@ export default function PublicBioPageView({
     return "auto";
   });
   const [showDeviceDock, setShowDeviceDock] = useState(true);
+
+  // Super Smart Edit State for Global Preview
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
+  const [dragOverBlockId, setDragOverBlockId] = useState<string | null>(null);
+
+  const [resizingBlock, setResizingBlock] = useState<{
+    blockId: string;
+    handle: "top" | "bottom" | "left" | "right" | "nw" | "ne" | "se" | "sw";
+    startX: number;
+    startY: number;
+    initialScale: number;
+    initialPaddingY: number;
+    initialPaddingX: number;
+    currentScale?: number;
+    currentPaddingY?: number;
+    currentPaddingX?: number;
+  } | null>(null);
+
+  const startResizing = (
+    blockId: string,
+    handle: "top" | "bottom" | "left" | "right" | "nw" | "ne" | "se" | "sw",
+    e: React.MouseEvent | React.TouchEvent
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const block = blocks.find((b) => b.id === blockId);
+    const styles = (block?.styles || {}) as BlockDeveloperStyles;
+    const initialScale = typeof styles.scale === "number" ? styles.scale : (typeof styles.customScale === "number" ? styles.customScale : 1);
+    const initialPaddingY = typeof styles.paddingTop === "number" ? styles.paddingTop : 8;
+    const initialPaddingX = typeof styles.paddingLeft === "number" ? styles.paddingLeft : 8;
+
+    setResizingBlock({
+      blockId,
+      handle,
+      startX: clientX,
+      startY: clientY,
+      initialScale,
+      initialPaddingY,
+      initialPaddingX,
+      currentScale: initialScale,
+      currentPaddingY: initialPaddingY,
+      currentPaddingX: initialPaddingX
+    });
+  };
+
+  useEffect(() => {
+    if (!resizingBlock) return;
+
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+      const deltaX = clientX - resizingBlock.startX;
+      const deltaY = clientY - resizingBlock.startY;
+
+      if (
+        resizingBlock.handle === "se" ||
+        resizingBlock.handle === "sw" ||
+        resizingBlock.handle === "ne" ||
+        resizingBlock.handle === "nw"
+      ) {
+        const dirX = resizingBlock.handle === "se" || resizingBlock.handle === "ne" ? 1 : -1;
+        const dirY = resizingBlock.handle === "se" || resizingBlock.handle === "sw" ? 1 : -1;
+        const effectiveDelta = (deltaX * dirX + deltaY * dirY) / 2;
+        const newScale = Math.min(1.4, Math.max(0.7, Number((resizingBlock.initialScale + effectiveDelta * 0.003).toFixed(2))));
+
+        setResizingBlock((prev) => (prev ? { ...prev, currentScale: newScale } : null));
+
+        setBlocks((prevBlocks) =>
+          prevBlocks.map((b) =>
+            b.id === resizingBlock.blockId
+              ? {
+                  ...b,
+                  styles: {
+                    ...((b as any).styles || {}),
+                    scale: newScale,
+                    customScale: newScale
+                  }
+                }
+              : b
+          )
+        );
+      } else if (resizingBlock.handle === "top" || resizingBlock.handle === "bottom") {
+        const dir = resizingBlock.handle === "bottom" ? 1 : -1;
+        const newPad = Math.max(2, Math.min(50, Math.round(resizingBlock.initialPaddingY + deltaY * dir * 0.4)));
+        setResizingBlock((prev) => (prev ? { ...prev, currentPaddingY: newPad } : null));
+
+        setBlocks((prevBlocks) =>
+          prevBlocks.map((b) =>
+            b.id === resizingBlock.blockId
+              ? {
+                  ...b,
+                  styles: {
+                    ...((b as any).styles || {}),
+                    paddingTop: newPad,
+                    paddingBottom: newPad
+                  }
+                }
+              : b
+          )
+        );
+      } else if (resizingBlock.handle === "left" || resizingBlock.handle === "right") {
+        const dir = resizingBlock.handle === "right" ? 1 : -1;
+        const newPad = Math.max(2, Math.min(44, Math.round(resizingBlock.initialPaddingX + deltaX * dir * 0.4)));
+        setResizingBlock((prev) => (prev ? { ...prev, currentPaddingX: newPad } : null));
+
+        setBlocks((prevBlocks) =>
+          prevBlocks.map((b) =>
+            b.id === resizingBlock.blockId
+              ? {
+                  ...b,
+                  styles: {
+                    ...((b as any).styles || {}),
+                    paddingLeft: newPad,
+                    paddingRight: newPad
+                  }
+                }
+              : b
+          )
+        );
+      }
+    };
+
+    const handlePointerUp = () => {
+      if (resizingBlock) {
+        setBlocks((prevBlocks) => {
+          writeCachedPage(displayPageId, prevBlocks, customDetails, effectiveSlug);
+          onUpdateBlocks?.(prevBlocks);
+          return prevBlocks;
+        });
+        setResizingBlock(null);
+      }
+    };
+
+    window.addEventListener("mousemove", handlePointerMove);
+    window.addEventListener("mouseup", handlePointerUp);
+    window.addEventListener("touchmove", handlePointerMove);
+    window.addEventListener("touchend", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("mouseup", handlePointerUp);
+      window.removeEventListener("touchmove", handlePointerMove);
+      window.removeEventListener("touchend", handlePointerUp);
+    };
+  }, [resizingBlock, displayPageId, customDetails, effectiveSlug, onUpdateBlocks]);
+
+  const handleMoveBlock = (blockId: string, direction: "up" | "down") => {
+    setBlocks((prev) => {
+      const idx = prev.findIndex((b) => b.id === blockId);
+      if (idx === -1) return prev;
+      const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= prev.length) return prev;
+      const copy = [...prev];
+      const [removed] = copy.splice(idx, 1);
+      copy.splice(targetIdx, 0, removed);
+      writeCachedPage(displayPageId, copy, customDetails, effectiveSlug);
+      onUpdateBlocks?.(copy);
+      return copy;
+    });
+  };
+
+  const handleReorderBlocks = (sourceId: string, targetId: string, position: "before" | "after") => {
+    if (sourceId === targetId) return;
+    setBlocks((prev) => {
+      const srcIdx = prev.findIndex((b) => b.id === sourceId);
+      const tgtIdx = prev.findIndex((b) => b.id === targetId);
+      if (srcIdx === -1 || tgtIdx === -1) return prev;
+      const copy = [...prev];
+      const [removed] = copy.splice(srcIdx, 1);
+      let insertIdx = position === "before" ? tgtIdx : tgtIdx + 1;
+      if (srcIdx < insertIdx) insertIdx -= 1;
+      copy.splice(insertIdx, 0, removed);
+      writeCachedPage(displayPageId, copy, customDetails, effectiveSlug);
+      onUpdateBlocks?.(copy);
+      return copy;
+    });
+  };
+
+  const handleSetBlockScale = (blockId: string, scale: number) => {
+    setBlocks((prev) => {
+      const updated = prev.map((b) =>
+        b.id === blockId
+          ? {
+              ...b,
+              styles: {
+                ...((b as any).styles || {}),
+                scale,
+                customScale: scale
+              }
+            }
+          : b
+      );
+      writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
+      onUpdateBlocks?.(updated);
+      return updated;
+    });
+  };
+
+  const handleDuplicateBlock = (blockId: string) => {
+    setBlocks((prev) => {
+      const idx = prev.findIndex((b) => b.id === blockId);
+      if (idx === -1) return prev;
+      const original = prev[idx];
+      const copyBlock: Block = {
+        ...original,
+        id: "block_" + Date.now(),
+        label: `${original.label || original.type} (Copy)`
+      };
+      const copy = [...prev];
+      copy.splice(idx + 1, 0, copyBlock);
+      writeCachedPage(displayPageId, copy, customDetails, effectiveSlug);
+      onUpdateBlocks?.(copy);
+      setSelectedBlockId(copyBlock.id);
+      return copy;
+    });
+    triggerToast("✨ Duplicated component!");
+  };
+
+  const handleDeleteBlock = (blockId: string) => {
+    setBlocks((prev) => {
+      const updated = prev.filter((b) => b.id !== blockId);
+      writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
+      onUpdateBlocks?.(updated);
+      return updated;
+    });
+    if (selectedBlockId === blockId) setSelectedBlockId(null);
+    triggerToast("🗑️ Deleted component!");
+  };
+
+  const handleToggleBlockLock = (blockId: string) => {
+    setBlocks((prev) => {
+      const updated = prev.map((b) => {
+        if (b.id !== blockId) return b;
+        const nextLock = !Boolean(b.isLocked || (b as any).styles?.isLocked);
+        return {
+          ...b,
+          isLocked: nextLock,
+          styles: { ...((b as any).styles || {}), isLocked: nextLock }
+        };
+      });
+      writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
+      onUpdateBlocks?.(updated);
+      return updated;
+    });
+  };
+
+  const handleToggleBlockHidden = (blockId: string) => {
+    setBlocks((prev) => {
+      const updated = prev.map((b) => {
+        if (b.id !== blockId) return b;
+        const nextHidden = !Boolean(b.isHidden || (b as any).styles?.isHidden);
+        return {
+          ...b,
+          isHidden: nextHidden,
+          styles: { ...((b as any).styles || {}), isHidden: nextHidden }
+        };
+      });
+      writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
+      onUpdateBlocks?.(updated);
+      return updated;
+    });
+  };
   const pageEtagRef = useRef<string | null>(null);
   const fetchAbortRef = useRef<AbortController | null>(null);
 
@@ -952,13 +1242,51 @@ export default function PublicBioPageView({
 
           <div className="key-phone-preview__body key-public-bio-page__body">
             <div className="key-public-bio-page__profile">
-              <h1 className="key-public-bio-page__title font-display">{displayTitle}</h1>
+              <h1 className="key-public-bio-page__title font-display">
+                {mode === "preview" ? (
+                  <InlineEditableText
+                    value={displayTitle || "BioLink"}
+                    onChange={(newT) => {
+                      setCustomDetails((prev) => {
+                        const next = { ...(prev || {}), title: newT };
+                        writeCachedPage(displayPageId, blocks, next, effectiveSlug);
+                        return next;
+                      });
+                      triggerToast("✨ Updated title!");
+                    }}
+                    isEditingAllowed={true}
+                    tagName="span"
+                  />
+                ) : (
+                  displayTitle
+                )}
+              </h1>
               {displayHandle && (
                 <p className="key-public-bio-page__handle">{displayHandle}</p>
               )}
             </div>
 
-            {displayBio && <p className="key-phone-preview__bio-text">{displayBio}</p>}
+            {mode === "preview" ? (
+              <div className="key-phone-preview__bio-text">
+                <InlineEditableText
+                  value={displayBio || ""}
+                  placeholder="Click to add bio..."
+                  onChange={(newB) => {
+                    setCustomDetails((prev) => {
+                      const next = { ...(prev || {}), bio: newB };
+                      writeCachedPage(displayPageId, blocks, next, effectiveSlug);
+                      return next;
+                    });
+                    triggerToast("✨ Updated bio!");
+                  }}
+                  isEditingAllowed={true}
+                  multiline
+                  tagName="p"
+                />
+              </div>
+            ) : (
+              displayBio && <p className="key-phone-preview__bio-text">{displayBio}</p>
+            )}
 
             <div className={`key-phone-preview__blocks grid ${gridLayoutClass}`}>
             {pageLoadStatus === "loading" && visibleBlocks.length === 0 && (
