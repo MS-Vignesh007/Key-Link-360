@@ -1142,23 +1142,27 @@ export default function PublicBioPageView({
             ? "laptop"
             : "desktop";
 
-    // In live published mode, if mobile_only is set, show mobile container; otherwise show true full-screen responsive website
+    // Real device viewport logic:
+    // Only mobile_only locks to a mobile phone container.
+    // All other scopes (all_devices, mobile_tablet_laptop / Laptop & Desktop Only) take 100% full auto-width (margin 0px, no gaps).
     const isMobileLocked = deviceScope === "mobile_only";
+    const isTabletLocked = deviceScope === "mobile_tablet";
+
     const effectiveDevice: DeviceViewportMode =
       mode === "live"
-        ? (isMobileLocked ? "mobile" : "desktop")
+        ? (isMobileLocked ? "mobile" : isTabletLocked ? "tablet" : "desktop")
         : activeDeviceMode !== "auto"
-          ? activeDeviceMode
-          : (isMobileLocked ? "mobile" : "desktop");
+          ? (activeDeviceMode === "tv" ? "desktop" : activeDeviceMode)
+          : (isMobileLocked ? "mobile" : isTabletLocked ? "tablet" : "desktop");
 
     const isMobileView = (mode === "live" && isMobileLocked) || (mode === "preview" && effectiveDevice === "mobile");
-    const isTabletView = mode === "preview" && effectiveDevice === "tablet";
+    const isTabletView = (mode === "live" && isTabletLocked) || (mode === "preview" && effectiveDevice === "tablet");
 
-    // 100% full width, edge-to-edge, NO GAPS, NO MARGINS for laptop, desktop, tv, auto
+    // 100% full width, edge-to-edge, 0px margin, NO GAPS for laptop, desktop, and auto
     const containerMaxWidthClass = isMobileView
-      ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+      ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden mx-auto"
       : isTabletView
-        ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+        ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden mx-auto"
         : "w-full min-h-screen m-0 p-0 border-0 rounded-none shadow-none";
 
     const isWideBlock = (type: string) => {
@@ -1232,7 +1236,9 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} mx-auto transition-all duration-300 relative min-h-screen`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} ${
+            isMobileView || isTabletView ? "mx-auto" : "m-0"
+          } transition-all duration-300 relative min-h-screen`}
           style={{
             ...getBioPageThemeStyle(pageTheme),
             minHeight: "100vh"
@@ -1244,7 +1250,7 @@ export default function PublicBioPageView({
               ? "max-w-[430px] mx-auto px-3 sm:px-4"
               : isTabletView
                 ? "max-w-[820px] mx-auto px-4 sm:px-6"
-                : "w-full max-w-[1780px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-4 sm:py-6"
+                : "w-full m-0 p-0 px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6"
           }`}
           hidden={showThanksPage}
           aria-hidden={showThanksPage}
@@ -1254,7 +1260,7 @@ export default function PublicBioPageView({
             alt="Hero Cover"
             settings={coverSettings}
             variant="preview"
-            className="key-phone-preview__cover key-public-bio-page__cover"
+            className={`key-phone-preview__cover key-public-bio-page__cover w-full ${!isMobileView && !isTabletView ? "rounded-none !max-w-full" : ""}`}
           />
 
           <div className="key-phone-preview__body key-public-bio-page__body">
@@ -1546,22 +1552,11 @@ export default function PublicBioPageView({
               <div className="flex items-center gap-1">
                 {(
                   [
-                    { id: "auto" as const, label: "Auto Full", icon: Globe, widthLabel: "100% Live" },
-                    { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "15.6\" Full" },
-                    { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
                     { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
-                    {
-                      id: "desktop" as const,
-                      label: "Desktop",
-                      icon: Monitor,
-                      widthLabel: previewScale < 1 && activeDeviceMode === "desktop" ? `1920px · ${Math.round(previewScale * 100)}% Fit` : "1920px"
-                    },
-                    {
-                      id: "tv" as const,
-                      label: "TV",
-                      icon: Tv,
-                      widthLabel: previewScale < 1 && activeDeviceMode === "tv" ? `2560px · ${Math.round(previewScale * 100)}% Fit` : "2560px"
-                    }
+                    { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
+                    { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "100% Full" },
+                    { id: "desktop" as const, label: "Desktop", icon: Monitor, widthLabel: "100% Full" },
+                    { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "100% Responsive" }
                   ] as const
                 ).map(({ id, label, icon: Icon, widthLabel }) => {
                   const isActive = activeDeviceMode === id;

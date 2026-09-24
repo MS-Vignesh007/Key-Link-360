@@ -4262,26 +4262,20 @@ html.key-public-scroll #root {
 }
 
 .key-public-bio-page__card.key-public-bio-page--laptop,
-.key-public-bio-page--laptop .key-public-bio-page__card {
-  max-width: 64rem !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
+.key-public-bio-page--laptop .key-public-bio-page__card,
 .key-public-bio-page__card.key-public-bio-page--desktop,
-.key-public-bio-page--desktop .key-public-bio-page__card {
-  max-width: 82rem !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
+.key-public-bio-page--desktop .key-public-bio-page__card,
 .key-public-bio-page__card.key-public-bio-page--all-devices,
 .key-public-bio-page__card.key-public-bio-page--auto-adaptive,
 .key-public-bio-page--all-devices .key-public-bio-page__card,
 .key-public-bio-page--auto-adaptive .key-public-bio-page__card {
-  max-width: 82rem !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page__screen {
@@ -4346,6 +4340,17 @@ html.key-public-scroll #root {
   object-fit: cover;
   border-top-left-radius: 1.5rem;
   border-top-right-radius: 1.5rem;
+}
+
+.key-public-bio-page--desktop .key-public-bio-page__cover,
+.key-public-bio-page--desktop .key-public-bio-page__cover img,
+.key-public-bio-page--laptop .key-public-bio-page__cover,
+.key-public-bio-page--laptop .key-public-bio-page__cover img,
+.key-public-bio-page--all-devices .key-public-bio-page__cover,
+.key-public-bio-page--all-devices .key-public-bio-page__cover img,
+.key-public-bio-page--auto-adaptive .key-public-bio-page__cover,
+.key-public-bio-page--auto-adaptive .key-public-bio-page__cover img {
+  border-radius: 0 !important;
 }
 
 .key-public-bio-page__body {
