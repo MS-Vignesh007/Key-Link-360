@@ -9696,6 +9696,12 @@ export default function BioPagesScreen({
                 }}
                 mode="preview"
                 onExitPreview={() => setIsGlobalPreviewOpen(false)}
+                onUpdateBlocks={(newBlocks) => {
+                  setEditorBlocks(newBlocks as any);
+                  if (selectedEditPage) {
+                    updatePageBlocks(selectedEditPage.id, newBlocks as any);
+                  }
+                }}
               />
             </div>
           )}

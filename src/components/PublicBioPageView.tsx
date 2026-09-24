@@ -46,6 +46,7 @@ interface PublicBioPageViewProps {
   initialBlocks?: Block[];
   initialDetails?: BioPagePreviewDetails;
   onExitPreview?: () => void;
+  onUpdateBlocks?: (newBlocks: Block[]) => void;
 }
 
 const marvelFallbackBlocks = [
@@ -196,7 +197,8 @@ export default function PublicBioPageView({
   mode = "preview",
   initialBlocks,
   initialDetails,
-  onExitPreview
+  onExitPreview,
+  onUpdateBlocks
 }: PublicBioPageViewProps) {
   const initialPage =
     initialBlocks && initialBlocks.length > 0
@@ -648,6 +650,16 @@ export default function PublicBioPageView({
       openExternalLink(url);
     },
     onWhatsApp: openWhatsAppLink,
+    onInlineTextChange: (blockId, field, val) => {
+      setBlocks((prevBlocks) => {
+        const updated = prevBlocks.map((b) => (b.id === blockId ? { ...b, [field]: val } : b));
+        writeCachedPage(displayPageId, updated, customDetails);
+        onUpdateBlocks?.(updated);
+        return updated;
+      });
+      triggerToast("✨ SMART EDIT Saved!");
+    },
+    isInlineEditingAllowed: mode === "preview",
     onSpinOpen: (blockId) => {
       setActiveSpinBlockId(blockId);
                       setSpinResult(null);

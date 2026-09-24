@@ -87,6 +87,7 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   const [isItalic, setIsItalic] = useState(false);
   const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
   const [customColor, setCustomColor] = useState<string>("");
+  const [toolbarPlacement, setToolbarPlacement] = useState<"top" | "bottom">("top");
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -97,6 +98,12 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
+      const rect = inputRef.current.getBoundingClientRect();
+      if (rect.top < 110) {
+        setToolbarPlacement("bottom");
+      } else {
+        setToolbarPlacement("top");
+      }
     }
   }, [isEditing]);
 
@@ -144,17 +151,22 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
   };
 
   if (isEditing && isEditingAllowed) {
+    const toolbarPosClass =
+      toolbarPlacement === "bottom"
+        ? "top-full mt-2 left-1/2 -translate-x-1/2"
+        : "-top-12 left-1/2 -translate-x-1/2";
+
     return (
       <div
-        className="relative inline-block w-full max-w-full z-50 animate-in fade-in zoom-in-95 duration-150"
+        className="relative inline-block w-full max-w-full z-[999] animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {/* Floating Canva Pro Quick Action Toolbar */}
-        <div className="absolute -top-11 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1 bg-slate-900/95 text-white rounded-xl shadow-2xl border border-indigo-500/50 backdrop-blur-xl pointer-events-auto">
-          <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg bg-indigo-950/80 border border-indigo-500/30 text-[9px] font-extrabold text-cyan-300 font-mono select-none mr-0.5">
+        {/* Floating Smart Edit Pro Quick Action Toolbar */}
+        <div className={`absolute ${toolbarPosClass} z-[9999] flex items-center gap-1 p-1 bg-slate-900/98 text-white rounded-xl shadow-2xl border border-indigo-500/60 backdrop-blur-xl pointer-events-auto ring-1 ring-cyan-500/30 whitespace-nowrap`}>
+          <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg bg-indigo-950/90 border border-indigo-500/40 text-[9px] font-extrabold text-cyan-300 font-mono select-none mr-0.5">
             <Sparkles className="w-2.5 h-2.5 text-cyan-400" />
-            <span>CANVA EDIT</span>
+            <span>SMART EDIT</span>
           </div>
 
           {allowFormatting && (
@@ -284,8 +296,17 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
           {/* Save Button */}
           <button
             type="button"
-            onClick={handleCommit}
-            className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors flex items-center gap-0.5 px-1.5 text-[10px] font-bold"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCommit();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCommit();
+            }}
+            className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors flex items-center gap-0.5 px-1.5 text-[10px] font-bold cursor-pointer"
             title="Save changes (Enter)"
           >
             <Check className="w-3 h-3" />
@@ -295,8 +316,17 @@ export const CanvaInlineText: React.FC<CanvaInlineTextProps> = ({
           {/* Cancel Button */}
           <button
             type="button"
-            onClick={handleCancel}
-            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-md transition-colors"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCancel();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCancel();
+            }}
+            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer"
             title="Cancel (Esc)"
           >
             <X className="w-3 h-3" />
