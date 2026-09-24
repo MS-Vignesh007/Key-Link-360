@@ -1170,7 +1170,6 @@ export default function BioPagesScreen({
     if (nextDev.category === "specials") {
       setIsLandscape(false);
     }
-    triggerToast(`Mockup: ${nextDev.name} (${newIndex + 1}/${scopedDeviceCatalog.length})`);
   }, [scopedDeviceCatalog, currentModelIndex]);
 
   const handleNextModel = useCallback(() => {
@@ -1181,7 +1180,6 @@ export default function BioPagesScreen({
     if (nextDev.category === "specials") {
       setIsLandscape(false);
     }
-    triggerToast(`Mockup: ${nextDev.name} (${newIndex + 1}/${scopedDeviceCatalog.length})`);
   }, [scopedDeviceCatalog, currentModelIndex]);
 
   // Keyboard navigation for mockup slider (Left/Right arrows when not typing in form inputs)
