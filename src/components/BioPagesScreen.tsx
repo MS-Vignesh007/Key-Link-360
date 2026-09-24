@@ -3801,8 +3801,7 @@ export default function BioPagesScreen({
                     { id: "layers" as const, label: "Structure Tree", desc: "Reorder & manage", icon: Layers, count: `${canvasBlocks.length}`, badgeColor: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" },
                     { id: "inspector" as const, label: "Block Inspector", desc: "Styles & content", icon: Edit3, count: selectedCanvasBlockId ? "Active" : null, badgeColor: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" },
                     { id: "theme" as const, label: "Design & Themes", desc: "Colors, fonts & glass", icon: Palette, count: null },
-                    { id: "thanks" as const, label: "Thank You Page", desc: "Post-submit screen", icon: CheckCircle, count: null },
-                    { id: "settings" as const, label: "Page Settings", desc: "SEO & integrations", icon: Settings, count: null },
+                    { id: "settings" as const, label: "Page Settings", desc: "SEO, screens & thank you", icon: Settings, count: null },
                     { id: "drafts" as const, label: "Saved Templates", desc: "Restore drafts", icon: BookmarkCheck, count: savedDrafts.length > 0 ? `${savedDrafts.length}` : null }
                   ].map((tab) => {
                     const Icon = tab.icon;
@@ -3812,10 +3811,7 @@ export default function BioPagesScreen({
                         type="button"
                         onClick={() => {
                           setStudioNavTab(tab.id);
-                          if (tab.id === "thanks") {
-                            setEditorTab("Thank You");
-                            setShowThanksPage(true);
-                          } else if (tab.id === "settings") {
+                          if (tab.id === "settings") {
                             setEditorTab("Settings");
                             setShowThanksPage(false);
                           } else {
@@ -3899,7 +3895,6 @@ export default function BioPagesScreen({
                       {studioNavTab === "layers" && `📑 Structure (${canvasBlocks.length})`}
                       {studioNavTab === "inspector" && "✏️ Block Inspector"}
                       {studioNavTab === "theme" && "🎨 Themes & Styling"}
-                      {studioNavTab === "thanks" && "🎉 Thank You Page"}
                       {studioNavTab === "settings" && "⚙️ Page Settings"}
                       {studioNavTab === "drafts" && "💾 Saved Templates"}
                     </h3>
@@ -4387,6 +4382,97 @@ export default function BioPagesScreen({
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    {/* Thank You Page Division */}
+                    <div className="pt-4 border-t border-white/[0.08] space-y-3.5">
+                      <div className="flex items-center justify-between gap-3 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.07]">
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-pink-400 shrink-0" />
+                            <span className="text-xs font-bold text-white tracking-wide">
+                              THANK YOU PAGE
+                            </span>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                              Post-Submit
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 leading-tight">
+                            Shown to visitors after Form or Smart Form submit, lead capture & payments.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextState = !showThanksPage;
+                            setShowThanksPage(nextState);
+                            setEditorTab(nextState ? "Thank You" : "Settings");
+                            triggerToast(nextState ? "Previewing Thank You Page Screen" : "Back to Page Settings View");
+                          }}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                            showThanksPage
+                              ? "bg-pink-600 text-white border-pink-400 shadow-md shadow-pink-500/30 ring-1 ring-pink-400"
+                              : "bg-white/[0.05] hover:bg-white/[0.1] text-pink-300 border-pink-500/30 hover:border-pink-500/60"
+                          }`}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>{showThanksPage ? "Preview Active" : "Preview Screen"}</span>
+                        </button>
+                      </div>
+
+                      <div className="p-4 rounded-2xl border border-pink-500/20 bg-pink-500/[0.02] backdrop-blur-xl space-y-3.5">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Nav Title</label>
+                            <input
+                              type="text"
+                              value={thankYouTitle}
+                              onChange={(e) => setThankYouTitle(e.target.value)}
+                              className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
+                              placeholder="Thank You"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Hero Mark</label>
+                            <input
+                              type="text"
+                              value={thankYouEmoji}
+                              onChange={(e) => setThankYouEmoji(e.target.value)}
+                              className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
+                              placeholder="✓"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Supporting Message</label>
+                          <textarea
+                            value={thankYouMessage}
+                            onChange={(e) => setThankYouMessage(e.target.value)}
+                            rows={3}
+                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
+                            placeholder="Thanks for connecting with us on KEYLINK360..."
+                          />
+                        </div>
+
+                        {showThanksPage && (
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 text-xs">
+                            <span className="text-pink-200 font-medium text-[11px]">
+                              🎉 Live Preview is showing the Thank You page in the phone simulator!
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowThanksPage(false);
+                                setEditorTab("Settings");
+                              }}
+                              className="text-[10px] font-bold text-white bg-pink-600/80 hover:bg-pink-600 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                            >
+                              Back to Main View
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5704,52 +5790,6 @@ export default function BioPagesScreen({
                           <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">Theme Palette</label>
                           <BioPageThemePicker value={editorPageTheme} onChange={handlePreviewThemeChange} />
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* THANK YOU PAGE HERO */}
-                {studioNavTab === "thanks" && (
-                  <div className="space-y-4 w-full">
-                    <div className="rounded-2xl border border-pink-500/25 bg-slate-900/60 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4">
-                      <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-pink-400">Thank You Page</span>
-                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                          Shown after Form or Smart Form submit. Add blocks using Block Library.
-                        </p>
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Nav Title</label>
-                          <input
-                            type="text"
-                            value={thankYouTitle}
-                            onChange={(e) => setThankYouTitle(e.target.value)}
-                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
-                            placeholder="Thank You"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Hero Mark</label>
-                          <input
-                            type="text"
-                            value={thankYouEmoji}
-                            onChange={(e) => setThankYouEmoji(e.target.value)}
-                            className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white placeholder:text-slate-500 transition-all"
-                            placeholder="✓"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-semibold text-pink-300 mb-1.5">Supporting Message</label>
-                        <textarea
-                          value={thankYouMessage}
-                          onChange={(e) => setThankYouMessage(e.target.value)}
-                          rows={3}
-                          className="w-full bg-white/[0.04] border border-white/10 focus:border-pink-500 focus:bg-white/[0.06] focus:outline-none rounded-xl py-2 px-3 text-xs text-slate-200 placeholder:text-slate-500 resize-none transition-all"
-                          placeholder="Thanks for connecting with us on KEYLINK360..."
-                        />
                       </div>
                     </div>
                   </div>
