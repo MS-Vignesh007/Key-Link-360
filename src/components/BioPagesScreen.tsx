@@ -11106,14 +11106,8 @@ export default function BioPagesScreen({
           {/* FULLSCREEN IMMERSIVE GLOBAL PREVIEW OVERLAY */}
           {isGlobalPreviewOpen && (
             <div
-              className="fixed inset-0 z-[200] bg-[#090d16] overflow-y-auto no-scrollbar animate-in fade-in duration-150 flex flex-col items-center justify-start min-h-screen w-full"
-              style={{
-                backgroundColor: "#090d16",
-                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
-                backgroundSize: "24px 24px",
-                backgroundAttachment: "fixed",
-                backgroundRepeat: "repeat"
-              }}
+              className="fixed inset-0 z-[200] overflow-y-auto no-scrollbar animate-in fade-in duration-150 flex flex-col items-center justify-start min-h-screen w-full m-0 p-0"
+              style={{ minHeight: "100vh" }}
             >
               <PublicBioPageView
                 pageId={selectedEditPage?.id || "preview-global"}

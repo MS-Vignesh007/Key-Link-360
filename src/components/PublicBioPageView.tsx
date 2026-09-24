@@ -1149,37 +1149,17 @@ export default function PublicBioPageView({
         ? (isMobileLocked ? "mobile" : "desktop")
         : activeDeviceMode !== "auto"
           ? activeDeviceMode
-          : targetScopeDevice;
+          : (isMobileLocked ? "mobile" : "desktop");
 
-    // Smart Fit Zoom scaling for Desktop (1920px) and TV (2560px) when viewed on laptop displays
-    let previewScale = 1;
-    let desktopTargetWidth = 1920;
-    let tvTargetWidth = 2560;
+    const isMobileView = (mode === "live" && isMobileLocked) || (mode === "preview" && effectiveDevice === "mobile");
+    const isTabletView = mode === "preview" && effectiveDevice === "tablet";
 
-    if (mode === "preview") {
-      if (activeDeviceMode === "desktop" && windowWidth < 1920) {
-        previewScale = Math.min(1, Math.max(0.35, (windowWidth - 32) / desktopTargetWidth));
-      } else if (activeDeviceMode === "tv" && windowWidth < 2560) {
-        previewScale = Math.min(1, Math.max(0.25, (windowWidth - 32) / tvTargetWidth));
-      }
-    }
-
-    const containerMaxWidthClass =
-      mode === "live"
-        ? (isMobileLocked
-            ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2.5rem] border border-white/10 my-0 sm:my-6 overflow-hidden"
-            : "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8")
-        : activeDeviceMode === "mobile"
-          ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/15 my-6 overflow-hidden"
-          : activeDeviceMode === "tablet"
-            ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/15 my-6 overflow-hidden"
-            : activeDeviceMode === "laptop"
-              ? "w-full max-w-[1440px] key-public-bio-page--laptop my-0 sm:my-2 px-4 sm:px-8"
-              : activeDeviceMode === "desktop"
-                ? "w-[1920px] max-w-[1920px] key-public-bio-page--desktop shadow-2xl rounded-2xl border border-white/15 my-4 px-12 py-10"
-                : activeDeviceMode === "tv"
-                  ? "w-[2560px] max-w-[2560px] key-public-bio-page--tv shadow-2xl rounded-2xl border border-white/15 my-4 px-16 py-12"
-                  : "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 my-0 sm:my-2";
+    // 100% full width, edge-to-edge, NO GAPS, NO MARGINS for laptop, desktop, tv, auto
+    const containerMaxWidthClass = isMobileView
+      ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+      : isTabletView
+        ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+        : "w-full min-h-screen m-0 p-0 border-0 rounded-none shadow-none";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1216,35 +1196,22 @@ export default function PublicBioPageView({
         : effectiveDevice === "tablet"
           ? "grid-cols-1 sm:grid-cols-2 gap-4"
           : effectiveDevice === "laptop"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
             : effectiveDevice === "desktop"
-              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
               : effectiveDevice === "tv"
                 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5";
 
     return (
       <div
-        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto text-slate-100 transition-colors duration-300 relative ${
-          mode === "live"
-            ? `${getBioPageThemeClass(pageTheme)} p-0 m-0`
-            : "bg-[#090d16] py-0 px-0 sm:px-4"
-        }${showThanksPage ? " key-public-bio-page--thanks-open" : ""}`}
-        style={
-          mode === "live"
-            ? {
-                ...getBioPageThemeStyle(pageTheme),
-                minHeight: "100vh"
-              }
-            : {
-                backgroundColor: "#090d16",
-                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
-                backgroundSize: "24px 24px",
-                backgroundAttachment: "fixed",
-                backgroundRepeat: "repeat",
-                minHeight: "100vh"
-              }
-        }
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen m-0 p-0 text-slate-100 transition-colors duration-300 relative ${getBioPageThemeClass(pageTheme)}${
+          showThanksPage ? " key-public-bio-page--thanks-open" : ""
+        }`}
+        style={{
+          ...getBioPageThemeStyle(pageTheme),
+          minHeight: "100vh"
+        }}
       >
         {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
         {onExitPreview && (
@@ -1265,20 +1232,20 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen relative`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} mx-auto transition-all duration-300 relative min-h-screen`}
           style={{
             ...getBioPageThemeStyle(pageTheme),
-            ...(previewScale < 1 && (activeDeviceMode === "desktop" || activeDeviceMode === "tv")
-              ? {
-                  transform: `scale(${previewScale})`,
-                  transformOrigin: "top center",
-                  marginBottom: `-${Math.round((1 - previewScale) * 100)}%`
-                }
-              : {})
+            minHeight: "100vh"
           }}
         >
         <div
-          className="key-phone-preview__bio-layer"
+          className={`key-phone-preview__bio-layer w-full transition-all duration-300 ${
+            isMobileView
+              ? "max-w-[430px] mx-auto px-3 sm:px-4"
+              : isTabletView
+                ? "max-w-[820px] mx-auto px-4 sm:px-6"
+                : "w-full max-w-[1780px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-4 sm:py-6"
+          }`}
           hidden={showThanksPage}
           aria-hidden={showThanksPage}
         >
