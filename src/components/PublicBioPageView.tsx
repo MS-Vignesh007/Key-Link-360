@@ -310,38 +310,6 @@ export default function PublicBioPageView({
   });
   const [showDeviceDock, setShowDeviceDock] = useState(true);
 
-  // Proportional Target Viewport Scaling for Global Preview
-  const [viewportWidth, setViewportWidth] = useState<number>(() =>
-    typeof window !== "undefined" ? window.innerWidth : 1440
-  );
-  const [contentHeight, setContentHeight] = useState<number>(0);
-  const previewScaleRef = useRef<number>(1);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setViewportWidth(window.innerWidth);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!publicScreenRef.current || mode !== "preview") return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContentHeight(entry.contentRect.height);
-      }
-    });
-    observer.observe(publicScreenRef.current);
-    return () => observer.disconnect();
-  }, [mode]);
-  const [windowWidth, setWindowWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1440));
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   // Super Smart Edit State for Global Preview
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
@@ -395,9 +363,8 @@ export default function PublicBioPageView({
     const handlePointerMove = (e: MouseEvent | TouchEvent) => {
       const clientX = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
       const clientY = "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
-      const effScale = previewScaleRef.current || 1;
-      const deltaX = (clientX - resizingBlock.startX) / effScale;
-      const deltaY = (clientY - resizingBlock.startY) / effScale;
+      const deltaX = clientX - resizingBlock.startX;
+      const deltaY = clientY - resizingBlock.startY;
 
       if (
         resizingBlock.handle === "se" ||
@@ -1169,51 +1136,27 @@ export default function PublicBioPageView({
             ? "laptop"
             : "desktop";
 
-    // Target Viewport Width mapping
-    const getTargetWidth = (dMode: DeviceViewportMode | "auto"): number | null => {
-      switch (dMode) {
-        case "mobile":
-          return 430;
-        case "tablet":
-          return 820;
-        case "laptop":
-          return 1280;
-        case "desktop":
-          return 1536;
-        case "tv":
-          return 1920;
-        case "auto":
-        default:
-          return null; // 100% natural fluid responsive
-      }
-    };
-
-    const isMobileLocked = deviceScope === "mobile_only";
-    const isTabletLocked = deviceScope === "mobile_tablet";
-
+    // In live published mode, strictly honor the author's published device target.
+    // In preview mode, allow manual activeDeviceMode switcher if toggled.
     const effectiveDevice: DeviceViewportMode =
       mode === "live"
-        ? (isMobileLocked ? "mobile" : isTabletLocked ? "tablet" : "desktop")
+        ? targetScopeDevice
         : activeDeviceMode !== "auto"
           ? activeDeviceMode
-          : (isMobileLocked ? "mobile" : isTabletLocked ? "tablet" : "desktop");
+          : targetScopeDevice;
 
-    // Target Viewport Dimensions & Proportional Fit-to-Preview Scaling
-    const targetWidth = mode === "preview" ? getTargetWidth(activeDeviceMode) : null;
-    const availablePreviewWidth = Math.max(320, viewportWidth - 32);
-    const previewScale =
-      mode === "preview" && targetWidth && targetWidth > availablePreviewWidth
-        ? Number((availablePreviewWidth / targetWidth).toFixed(4))
-        : 1;
-    previewScaleRef.current = previewScale;
-
-    const scaledHeight =
-      contentHeight > 0 && previewScale !== 1
-        ? Math.ceil(contentHeight * previewScale)
-        : undefined;
-
-    const isMobileView = (mode === "live" && isMobileLocked) || (mode === "preview" && effectiveDevice === "mobile");
-    const isTabletView = (mode === "live" && isTabletLocked) || (mode === "preview" && effectiveDevice === "tablet");
+    const containerMaxWidthClass =
+      effectiveDevice === "mobile"
+        ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
+        : effectiveDevice === "tablet"
+          ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
+          : effectiveDevice === "laptop"
+            ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6"
+            : effectiveDevice === "desktop"
+              ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+              : effectiveDevice === "tv"
+                ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+                : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1250,104 +1193,51 @@ export default function PublicBioPageView({
         : effectiveDevice === "tablet"
           ? "grid-cols-1 sm:grid-cols-2 gap-4"
           : effectiveDevice === "laptop"
-            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
             : effectiveDevice === "desktop"
-              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
               : effectiveDevice === "tv"
                 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5";
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
 
     return (
       <div
-        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen m-0 p-0 text-slate-100 transition-colors duration-300 relative ${getBioPageThemeClass(pageTheme)}${
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4${
           showThanksPage ? " key-public-bio-page--thanks-open" : ""
         }`}
         style={{
-          ...getBioPageThemeStyle(pageTheme),
+          backgroundColor: "#090d16",
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "repeat",
           minHeight: "100vh"
         }}
       >
-        {/* Global Preview Floating Exit Button & Viewport Status Pill */}
+        {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
         {onExitPreview && (
-          <div className="fixed top-4 left-4 z-50 animate-in fade-in slide-in-from-top-2 flex items-center gap-3">
-            <div className="relative group/exitbtn">
-              <button
-                type="button"
-                onClick={onExitPreview}
-                className="flex items-center justify-center h-10 w-10 bg-slate-900/95 hover:bg-slate-800 text-white rounded-full shadow-2xl border border-slate-700/80 backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer ring-1 ring-cyan-500/40"
-                aria-label="Exit Preview (Esc)"
-              >
-                <ArrowLeft className="w-5 h-5 text-cyan-400 group-hover/exitbtn:-translate-x-0.5 transition-transform" />
-              </button>
-              <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitbtn:flex px-2 py-0.5 rounded-md bg-slate-950/90 text-[9px] font-normal text-slate-300 border border-slate-800/80 whitespace-nowrap shadow-lg z-50">
-                Exit Preview (Esc)
-              </span>
-            </div>
-
-            {/* Target Viewport & Fit-to-Preview Scaling Indicator */}
-            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/90 border border-indigo-500/40 backdrop-blur-md shadow-xl text-xs font-medium text-slate-200 select-none">
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="font-bold text-white capitalize">
-                {activeDeviceMode === "auto" ? "Auto Fluid (100%)" : `${activeDeviceMode} (${targetWidth}px)`}
-              </span>
-              {previewScale !== 1 && (
-                <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/40">
-                  Fit: {Math.round(previewScale * 100)}%
-                </span>
-              )}
-            </div>
+          <div className="fixed top-4 left-4 z-50 animate-in fade-in slide-in-from-top-2 group/exitbtn">
+            <button
+              type="button"
+              onClick={onExitPreview}
+              className="flex items-center justify-center h-10 w-10 bg-slate-900/95 hover:bg-slate-800 text-white rounded-full shadow-2xl border border-slate-700/80 backdrop-blur-xl hover:scale-110 active:scale-95 transition-all cursor-pointer ring-1 ring-cyan-500/40"
+              aria-label="Exit Preview (Esc)"
+            >
+              <ArrowLeft className="w-5 h-5 text-cyan-400 group-hover/exitbtn:-translate-x-0.5 transition-transform" />
+            </button>
+            <span className="pointer-events-none absolute -bottom-7 left-0 hidden group-hover/exitbtn:flex px-2 py-0.5 rounded-md bg-slate-950/90 text-[9px] font-normal text-slate-300 border border-slate-800/80 whitespace-nowrap shadow-lg z-50">
+              Exit Preview (Esc)
+            </span>
           </div>
         )}
 
-        {/* Proportional Viewport Fit-to-Preview Scaler Wrapper */}
         <div
-          className="key-preview-scaler-stage w-full flex justify-center items-start overflow-x-hidden"
-          style={
-            mode === "preview" && targetWidth
-              ? {
-                  width: `${targetWidth * previewScale}px`,
-                  height: scaledHeight ? `${scaledHeight + 48}px` : "auto",
-                  maxWidth: "100%",
-                  minHeight: "100vh",
-                  position: "relative",
-                  margin: "0 auto",
-                  paddingBottom: "80px"
-                }
-              : {
-                  width: "100%",
-                  minHeight: "100vh",
-                  paddingBottom: mode === "preview" ? "80px" : "0px"
-                }
-          }
+          ref={publicScreenRef}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
+          style={getBioPageThemeStyle(pageTheme)}
         >
-          <div
-            ref={publicScreenRef}
-            className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} relative min-h-screen transition-all duration-200 ${
-              mode === "preview" && targetWidth
-                ? "shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10"
-                : "w-full m-0 p-0 border-0 rounded-none shadow-none"
-            }`}
-            style={{
-              ...getBioPageThemeStyle(pageTheme),
-              width: mode === "preview" && targetWidth ? `${targetWidth}px` : "100%",
-              minWidth: mode === "preview" && targetWidth ? `${targetWidth}px` : undefined,
-              maxWidth: mode === "preview" && targetWidth ? `${targetWidth}px` : "100%",
-              transform: mode === "preview" && previewScale !== 1 ? `scale(${previewScale})` : undefined,
-              transformOrigin: "top center",
-              minHeight: "100vh"
-            }}
-          >
         <div
-          className={`key-phone-preview__bio-layer w-full transition-all duration-300 ${
-            isMobileView
-              ? "max-w-[430px] mx-auto px-3 sm:px-4"
-              : isTabletView
-                ? "max-w-[820px] mx-auto px-4 sm:px-6"
-                : "w-full m-0 p-0 px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6"
-          }`}
+          className="key-phone-preview__bio-layer"
           hidden={showThanksPage}
           aria-hidden={showThanksPage}
         >
@@ -1356,7 +1246,7 @@ export default function PublicBioPageView({
             alt="Hero Cover"
             settings={coverSettings}
             variant="preview"
-            className={`key-phone-preview__cover key-public-bio-page__cover w-full ${!isMobileView && !isTabletView ? "rounded-none !max-w-full" : ""}`}
+            className="key-phone-preview__cover key-public-bio-page__cover"
           />
 
           <div className="key-phone-preview__body key-public-bio-page__body">
@@ -1488,7 +1378,6 @@ export default function PublicBioPageView({
             </div>
             </div>
           </div>
-        </div>
 
         <ThankYouPageView
           open={showThanksPage}
@@ -1652,18 +1541,8 @@ export default function PublicBioPageView({
                     { id: "mobile" as const, label: "Mobile", icon: Smartphone, widthLabel: "430px" },
                     { id: "tablet" as const, label: "Tablet", icon: Tablet, widthLabel: "820px" },
                     { id: "laptop" as const, label: "Laptop", icon: Laptop, widthLabel: "1280px" },
-                    {
-                      id: "desktop" as const,
-                      label: "Desktop",
-                      icon: Monitor,
-                      widthLabel: previewScale < 1 && activeDeviceMode === "desktop" ? `1536px · ${Math.round(previewScale * 100)}% Fit` : "1536px"
-                    },
-                    {
-                      id: "tv" as const,
-                      label: "TV",
-                      icon: Tv,
-                      widthLabel: previewScale < 1 && activeDeviceMode === "tv" ? `1920px · ${Math.round(previewScale * 100)}% Fit` : "1920px"
-                    },
+                    { id: "desktop" as const, label: "Desktop", icon: Monitor, widthLabel: "1536px" },
+                    { id: "tv" as const, label: "TV", icon: Tv, widthLabel: "1920px" },
                     { id: "auto" as const, label: "Auto Fluid", icon: Globe, widthLabel: "Responsive" }
                   ] as const
                 ).map(({ id, label, icon: Icon, widthLabel }) => {
@@ -1673,7 +1552,7 @@ export default function PublicBioPageView({
                       key={id}
                       type="button"
                       onClick={() => setActiveDeviceMode(id)}
-                      title={`Real Live Device Output: ${label} (${widthLabel})`}
+                      title={`Real Live Device View: ${label} (${widthLabel})`}
                       className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                         isActive
                           ? "bg-indigo-600 text-white shadow-md font-bold ring-1 ring-indigo-400/50"
@@ -1682,7 +1561,7 @@ export default function PublicBioPageView({
                     >
                       <Icon className="h-3.5 w-3.5 shrink-0" />
                       <span>{label}</span>
-                      <span className="text-[9px] font-mono opacity-70 hidden sm:inline">({widthLabel})</span>
+                      <span className="text-[9px] font-mono opacity-60 hidden md:inline">({widthLabel})</span>
                     </button>
                   );
                 })}

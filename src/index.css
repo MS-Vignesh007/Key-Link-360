@@ -4249,39 +4249,39 @@ html.key-public-scroll #root {
 /* Device Scoped Widths for Live Output - Centered on All Screen Devices */
 .key-public-bio-page__card.key-public-bio-page--mobile,
 .key-public-bio-page--mobile .key-public-bio-page__card {
-  max-width: 28rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 28rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page--tablet,
 .key-public-bio-page--tablet .key-public-bio-page__card {
-  max-width: 48rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 48rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page--laptop,
 .key-public-bio-page--laptop .key-public-bio-page__card {
-  max-width: 64rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 64rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page--desktop,
 .key-public-bio-page--desktop .key-public-bio-page__card {
-  max-width: 82rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 82rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page--all-devices,
 .key-public-bio-page__card.key-public-bio-page--auto-adaptive,
 .key-public-bio-page--all-devices .key-public-bio-page__card,
 .key-public-bio-page--auto-adaptive .key-public-bio-page__card {
-  max-width: 82rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 82rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .key-public-bio-page__card.key-public-bio-page__screen {
