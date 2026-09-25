@@ -1167,8 +1167,18 @@ export default function PublicBioPageView({
           ? activeDeviceMode
           : targetScopeDevice;
 
+    const isFramelessWidescreen =
+      mode === "live" ||
+      effectiveDevice === "desktop" ||
+      effectiveDevice === "tv" ||
+      activeDeviceMode === "auto" ||
+      activeDeviceMode === "desktop" ||
+      activeDeviceMode === "tv";
+
+    const isDottedBackground = mode === "preview" && !isFramelessWidescreen;
+
     const containerMaxWidthClass =
-      mode === "live"
+      mode === "live" || isFramelessWidescreen
         ? effectiveDevice === "mobile"
           ? "w-full max-w-[430px] key-public-bio-page--mobile mx-auto min-h-screen"
           : effectiveDevice === "tablet"
@@ -1176,42 +1186,30 @@ export default function PublicBioPageView({
             : effectiveDevice === "laptop"
               ? "w-full max-w-[1280px] key-public-bio-page--laptop mx-auto min-h-screen"
               : effectiveDevice === "desktop"
-                ? "w-full max-w-[1536px] key-public-bio-page--desktop mx-auto min-h-screen"
+                ? "w-full max-w-[1536px] key-public-bio-page--desktop mx-auto min-h-screen rounded-none border-0 shadow-none"
                 : effectiveDevice === "tv"
-                  ? "w-full max-w-[1920px] key-public-bio-page--tv mx-auto min-h-screen"
-                  : "w-full max-w-[1920px] key-public-bio-page--desktop key-public-bio-page--ultrawide mx-auto min-h-screen"
+                  ? "w-full max-w-[1920px] key-public-bio-page--tv mx-auto min-h-screen rounded-none border-0 shadow-none"
+                  : "w-full max-w-full key-public-bio-page--auto mx-auto min-h-screen rounded-none border-0 shadow-none"
         : effectiveDevice === "mobile"
           ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2.25rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
           : effectiveDevice === "tablet"
             ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
-            : effectiveDevice === "laptop"
-              ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
-              : effectiveDevice === "desktop"
-                ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6 overflow-hidden"
-                : effectiveDevice === "tv"
-                  ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6 overflow-hidden"
-                  : "w-full max-w-full key-public-bio-page--auto my-0 rounded-none shadow-none border-0";
+            : "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6 overflow-hidden";
 
     const gridLayoutClass =
       effectiveDevice === "mobile"
         ? "grid-cols-1 gap-3.5"
-        : effectiveDevice === "tablet"
-          ? "grid-cols-1 sm:grid-cols-2 gap-4"
-          : effectiveDevice === "laptop"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-            : effectiveDevice === "desktop"
-              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-              : effectiveDevice === "tv"
-                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
+        : "grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5";
 
     return (
       <div
         className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto ${
-          mode === "preview" ? "bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4" : "p-0"
+          isDottedBackground
+            ? "bg-[#090d16] text-slate-100 py-6 px-3 sm:px-4"
+            : "p-0 m-0"
         }${showThanksPage ? " key-public-bio-page--thanks-open" : ""}`}
         style={
-          mode === "preview"
+          isDottedBackground
             ? {
                 backgroundColor: "#090d16",
                 backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
@@ -1243,7 +1241,7 @@ export default function PublicBioPageView({
         <div
           ref={publicScreenRef}
           className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen ${
-            mode === "preview" ? "sm:min-h-[750px]" : ""
+            isDottedBackground ? "sm:min-h-[750px]" : ""
           } relative`}
           style={getBioPageThemeStyle(pageTheme)}
         >
@@ -1344,21 +1342,9 @@ export default function PublicBioPageView({
                 const colSpanClass =
                   effectiveDevice === "mobile"
                     ? "col-span-1 w-full"
-                    : isWide
-                      ? effectiveDevice === "tablet"
-                        ? "col-span-1 sm:col-span-2 w-full"
-                        : effectiveDevice === "laptop"
-                          ? "col-span-1 md:col-span-2 lg:col-span-3 w-full"
-                          : effectiveDevice === "desktop"
-                            ? "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 w-full"
-                            : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 2xl:col-span-5 w-full"
-                      : block.colSpan === "half"
-                        ? "col-span-1 w-full"
-                        : effectiveDevice === "tablet"
-                          ? "col-span-1 sm:col-span-2 w-full"
-                          : effectiveDevice === "laptop"
-                            ? "col-span-1 sm:col-span-2 md:col-span-2 w-full"
-                            : "col-span-1 sm:col-span-2 w-full";
+                    : block.colSpan === "half" && !isWide
+                      ? "col-span-1 w-full"
+                      : "col-span-1 md:col-span-2 col-span-full w-full";
 
                 const isSelected = mode === "preview" && selectedBlockId === block.id;
                 const isBeingDragged = mode === "preview" && draggingBlockId === block.id;

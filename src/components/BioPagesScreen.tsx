@@ -10220,11 +10220,9 @@ export default function BioPagesScreen({
                                   const isWide = isWideBlock(block.type);
                                   const colSpanClass = isMobileMockup
                                     ? "col-span-1 w-full"
-                                    : isWide
-                                      ? "col-span-1 sm:col-span-2 md:col-span-2 col-span-full w-full"
-                                      : block.colSpan === "half"
-                                        ? "col-span-1 w-full"
-                                        : "col-span-1 sm:col-span-2 md:col-span-2 w-full";
+                                    : block.colSpan === "half" && !isWide
+                                      ? "col-span-1 w-full"
+                                      : "col-span-1 sm:col-span-2 md:col-span-2 col-span-full w-full";
                                   const isSelected = selectedCanvasBlockId === block.id;
 
                                   const devStyles = computeBlockInlineStyles((block as any).styles);

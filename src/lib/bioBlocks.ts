@@ -1460,22 +1460,17 @@ export function createDefaultInstagramFeedFields() {
 }
 
 export function isWideBlock(type?: string): boolean {
-  if (!type) return false;
+  if (!type) return true;
   const t = type.toLowerCase();
-  return (
-    t.includes("hero") ||
-    t.includes("split hero") ||
-    t.includes("video hero") ||
-    t.includes("banner") ||
-    t.includes("carousel") ||
-    t.includes("gallery") ||
-    t.includes("map") ||
-    t.includes("divider") ||
-    t.includes("faq") ||
-    t.includes("pricing") ||
-    t.includes("testimonials") ||
-    t.includes("grid")
-  );
+  // Only small single-item buttons, links, or contact icons can be half-width if colSpan is set to half
+  const isCompactWidget =
+    t === "button" ||
+    t === "link" ||
+    t === "whatsapp" ||
+    t === "call" ||
+    t === "email" ||
+    t === "socials";
+  return !isCompactWidget;
 }
 
 
