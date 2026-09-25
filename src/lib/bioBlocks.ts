@@ -1460,13 +1460,14 @@ export function createDefaultInstagramFeedFields() {
 }
 
 /**
- * Returns true if a block type should span full width in multi-column responsive grid layouts.
- * Supports all 50+ bio block types across desktop, laptop, tablet, and mobile views.
+ * Check if a block type should span full width in multi-column responsive grid views (tablet, laptop, desktop, 4K TV).
  */
-export function isWideBlock(type?: string): boolean {
+export function isWideBlock(type: string): boolean {
   if (!type) return false;
   const t = type.toLowerCase();
   return (
+    t.includes("navbar") ||
+    t.includes("footer") ||
     t.includes("hero") ||
     t.includes("pricing") ||
     t.includes("table") ||
@@ -1485,24 +1486,20 @@ export function isWideBlock(type?: string): boolean {
     t.includes("testimonial") ||
     t.includes("rating") ||
     t.includes("brand") ||
-    t.includes("press") ||
-    t.includes("before") ||
-    t.includes("portfolio") ||
-    t.includes("podcast") ||
+    t.includes("map") ||
+    t.includes("countdown") ||
     t.includes("lead magnet") ||
     t.includes("meeting") ||
-    t.includes("newsletter") ||
-    t.includes("navbar") ||
-    t.includes("footer") ||
-    t.includes("main feature") ||
-    t.includes("flash offer") ||
-    t.includes("promotion") ||
+    t.includes("audio") ||
+    t.includes("feature") ||
+    t.includes("flash") ||
     t.includes("community") ||
     t.includes("youtube") ||
     t.includes("instagram") ||
-    t.includes("divider") ||
-    t.includes("map") ||
-    t.includes("events") ||
-    t.includes("pdf")
+    t.includes("press") ||
+    t.includes("newsletter")
   );
 }
+
+
+

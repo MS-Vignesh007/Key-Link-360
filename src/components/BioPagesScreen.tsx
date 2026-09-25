@@ -9100,15 +9100,130 @@ export default function BioPagesScreen({
                                              />
                                            </div>
                                          </div>
-                                         <div className="flex items-center justify-between py-1">
-                                           <span className="text-xs text-slate-700 font-semibold">Glassmorphic Blur Effect</span>
-                                           <input
-                                             type="checkbox"
-                                             checked={(block as any).isGlassmorphic !== false}
-                                             onChange={(e) => handleUpdateBlockField(block.id, "isGlassmorphic", e.target.checked)}
-                                             className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
-                                           />
-                                         </div>
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Brand Logo URL</label>
+                                              <input
+                                                type="url"
+                                                value={(block as any).brandLogo || ""}
+                                                onChange={(e) => handleUpdateBlockField(block.id, "brandLogo", e.target.value)}
+                                                className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono"
+                                                placeholder="https://..."
+                                              />
+                                            </div>
+                                            <div>
+                                              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Logo Size</label>
+                                              <select
+                                                value={(block as any).logoSize || "md"}
+                                                onChange={(e) => handleUpdateBlockField(block.id, "logoSize", e.target.value)}
+                                                className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                              >
+                                                <option value="sm">Small (24px)</option>
+                                                <option value="md">Medium (32px)</option>
+                                                <option value="lg">Large (40px)</option>
+                                              </select>
+                                            </div>
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nav Layout</label>
+                                              <select
+                                                value={(block as any).navLayout || "default"}
+                                                onChange={(e) => handleUpdateBlockField(block.id, "navLayout", e.target.value)}
+                                                className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                              >
+                                                <option value="default">Default (Logo Left, Links Right)</option>
+                                                <option value="split">Split (Logo Left, Links Center, CTA Right)</option>
+                                                <option value="centered">Centered (Logo & Links Centered)</option>
+                                              </select>
+                                            </div>
+                                            <div>
+                                              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mobile Menu</label>
+                                              <select
+                                                value={(block as any).mobileMenuType || "dropdown"}
+                                                onChange={(e) => handleUpdateBlockField(block.id, "mobileMenuType", e.target.value)}
+                                                className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3 text-xs"
+                                              >
+                                                <option value="dropdown">Dropdown Sheet</option>
+                                                <option value="accordion">Expandable Accordion</option>
+                                              </select>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center justify-between py-1">
+                                            <span className="text-xs text-slate-700 font-semibold">Glassmorphic Blur Effect</span>
+                                            <input
+                                              type="checkbox"
+                                              checked={(block as any).isGlassmorphic !== false}
+                                              onChange={(e) => handleUpdateBlockField(block.id, "isGlassmorphic", e.target.checked)}
+                                              className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
+                                            />
+                                          </div>
+                                          <div className="flex items-center justify-between py-1">
+                                            <span className="text-xs text-slate-700 font-semibold">Show CTA on Mobile</span>
+                                            <input
+                                              type="checkbox"
+                                              checked={(block as any).showCtaOnMobile !== false}
+                                              onChange={(e) => handleUpdateBlockField(block.id, "showCtaOnMobile", e.target.checked)}
+                                              className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
+                                            />
+                                          </div>
+                                          <div className="space-y-2 pt-2 border-t border-slate-100">
+                                            <div className="flex items-center justify-between">
+                                              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nav Links</label>
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  const currentLinks = Array.isArray((block as any).navLinks) ? (block as any).navLinks : [];
+                                                  const newLink = { id: `nl_${Date.now()}`, label: `Link ${currentLinks.length + 1}`, url: "#" };
+                                                  handleUpdateBlockField(block.id, "navLinks", [...currentLinks, newLink]);
+                                                }}
+                                                className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700"
+                                              >
+                                                + Add Link
+                                              </button>
+                                            </div>
+                                            {((block as any).navLinks || [
+                                              { id: "nl_1", label: "Features", url: "#features" },
+                                              { id: "nl_2", label: "Pricing", url: "#pricing" },
+                                              { id: "nl_3", label: "Reviews", url: "#reviews" }
+                                            ]).map((link: any, lIdx: number, arr: any[]) => (
+                                              <div key={link.id || lIdx} className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+                                                <input
+                                                  type="text"
+                                                  value={link.label || ""}
+                                                  onChange={(e) => {
+                                                    const updated = [...arr];
+                                                    updated[lIdx] = { ...updated[lIdx], label: e.target.value };
+                                                    handleUpdateBlockField(block.id, "navLinks", updated);
+                                                  }}
+                                                  placeholder="Label"
+                                                  className="w-1/2 bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs"
+                                                />
+                                                <input
+                                                  type="text"
+                                                  value={link.url || ""}
+                                                  onChange={(e) => {
+                                                    const updated = [...arr];
+                                                    updated[lIdx] = { ...updated[lIdx], url: e.target.value };
+                                                    handleUpdateBlockField(block.id, "navLinks", updated);
+                                                  }}
+                                                  placeholder="URL"
+                                                  className="w-1/2 bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-mono"
+                                                />
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const updated = arr.filter((_, idx) => idx !== lIdx);
+                                                    handleUpdateBlockField(block.id, "navLinks", updated);
+                                                  }}
+                                                  className="text-slate-400 hover:text-rose-500 px-1 text-xs font-bold"
+                                                  title="Remove Link"
+                                                >
+                                                  ×
+                                                </button>
+                                              </div>
+                                            ))}
+                                          </div>
                                        </div>
                                      )}
 

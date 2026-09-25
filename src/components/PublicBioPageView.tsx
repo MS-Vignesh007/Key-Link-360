@@ -1159,35 +1159,7 @@ export default function PublicBioPageView({
                 ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
                 : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
 
-    const isWideBlock = (type: string) => {
-      const t = (type || "").toLowerCase();
-      return (
-        t.includes("hero") ||
-        t.includes("pricing") ||
-        t.includes("table") ||
-        t.includes("product") ||
-        t.includes("slider") ||
-        t.includes("gallery") ||
-        t.includes("video showcase") ||
-        t.includes("videoshowcase") ||
-        t.includes("multi-step") ||
-        t.includes("multistep") ||
-        t.includes("form") ||
-        t.includes("shop") ||
-        t.includes("header") ||
-        t.includes("banner") ||
-        t.includes("faq") ||
-        t.includes("testimonial") ||
-        t.includes("rating") ||
-        t.includes("brand") ||
-        t.includes("map") ||
-        t.includes("countdown") ||
-        t.includes("lead magnet") ||
-        t.includes("meeting") ||
-        t.includes("audio")
-      );
-    };
-
+    
     const gridLayoutClass =
       effectiveDevice === "mobile"
         ? "grid-cols-1 gap-3.5"
