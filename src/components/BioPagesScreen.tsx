@@ -11218,6 +11218,26 @@ export default function BioPagesScreen({
                     }
                   }
                 }}
+                onUpdateDetails={(newDetails) => {
+                  if (newDetails.title !== undefined) setEditorTitle(newDetails.title);
+                  if (newDetails.bio !== undefined) setEditorBio(newDetails.bio);
+                  if (newDetails.coverPhoto !== undefined) setEditorCoverPhoto(newDetails.coverPhoto);
+                  if (selectedEditPage) {
+                    try {
+                      localStorage.setItem(`biolink_details_${selectedEditPage.id}`, JSON.stringify(newDetails));
+                      if (selectedEditPage.slug) {
+                        localStorage.setItem(`biolink_details_${selectedEditPage.slug}`, JSON.stringify(newDetails));
+                      }
+                      window.dispatchEvent(
+                        new CustomEvent("key-page-preview-updated", {
+                          detail: { pageId: selectedEditPage.id, pageSlug: selectedEditPage.slug, details: newDetails }
+                        })
+                      );
+                    } catch {
+                      /* ignore */
+                    }
+                  }
+                }}
               />
             </div>
           )}

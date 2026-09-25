@@ -74,6 +74,7 @@ interface PublicBioPageViewProps {
   initialDetails?: BioPagePreviewDetails;
   onExitPreview?: () => void;
   onUpdateBlocks?: (newBlocks: Block[]) => void;
+  onUpdateDetails?: (newDetails: BioPagePreviewDetails) => void;
 }
 
 const marvelFallbackBlocks = [
@@ -124,6 +125,12 @@ function writeCachedPage(pageId: string, blocks: Block[], details: BioPagePrevie
     localStorage.setItem(`biolink_blocks_${pageId}`, JSON.stringify(blocks));
     if (pageSlug) {
       localStorage.setItem(`biolink_blocks_${pageSlug}`, JSON.stringify(blocks));
+    }
+    if (details) {
+      localStorage.setItem(`biolink_details_${pageId}`, JSON.stringify(details));
+      if (pageSlug) {
+        localStorage.setItem(`biolink_details_${pageSlug}`, JSON.stringify(details));
+      }
     }
     window.dispatchEvent(
       new CustomEvent("key-page-preview-updated", {
@@ -1161,19 +1168,30 @@ export default function PublicBioPageView({
           : targetScopeDevice;
 
     const containerMaxWidthClass =
-      effectiveDevice === "mobile"
-        ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
-        : effectiveDevice === "tablet"
-          ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
-          : effectiveDevice === "laptop"
-            ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6"
-            : effectiveDevice === "desktop"
-              ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
-              : effectiveDevice === "tv"
-                ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
-                : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
+      mode === "live"
+        ? effectiveDevice === "mobile"
+          ? "w-full max-w-[430px] key-public-bio-page--mobile mx-auto min-h-screen"
+          : effectiveDevice === "tablet"
+            ? "w-full max-w-[820px] key-public-bio-page--tablet mx-auto min-h-screen"
+            : effectiveDevice === "laptop"
+              ? "w-full max-w-[1280px] key-public-bio-page--laptop mx-auto min-h-screen"
+              : effectiveDevice === "desktop"
+                ? "w-full max-w-[1536px] key-public-bio-page--desktop mx-auto min-h-screen"
+                : effectiveDevice === "tv"
+                  ? "w-full max-w-[1920px] key-public-bio-page--tv mx-auto min-h-screen"
+                  : "w-full max-w-[1920px] key-public-bio-page--desktop key-public-bio-page--ultrawide mx-auto min-h-screen"
+        : effectiveDevice === "mobile"
+          ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2.25rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+          : effectiveDevice === "tablet"
+            ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+            : effectiveDevice === "laptop"
+              ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6 overflow-hidden"
+              : effectiveDevice === "desktop"
+                ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6 overflow-hidden"
+                : effectiveDevice === "tv"
+                  ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6 overflow-hidden"
+                  : "w-full max-w-full key-public-bio-page--auto my-0 rounded-none shadow-none border-0";
 
-    
     const gridLayoutClass =
       effectiveDevice === "mobile"
         ? "grid-cols-1 gap-3.5"
@@ -1189,17 +1207,21 @@ export default function PublicBioPageView({
 
     return (
       <div
-        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4${
-          showThanksPage ? " key-public-bio-page--thanks-open" : ""
-        }`}
-        style={{
-          backgroundColor: "#090d16",
-          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "repeat",
-          minHeight: "100vh"
-        }}
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto ${
+          mode === "preview" ? "bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4" : "p-0"
+        }${showThanksPage ? " key-public-bio-page--thanks-open" : ""}`}
+        style={
+          mode === "preview"
+            ? {
+                backgroundColor: "#090d16",
+                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+                backgroundAttachment: "fixed",
+                backgroundRepeat: "repeat",
+                minHeight: "100vh"
+              }
+            : getBioPageThemeStyle(pageTheme)
+        }
       >
         {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
         {onExitPreview && (
@@ -1220,7 +1242,9 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen ${
+            mode === "preview" ? "sm:min-h-[750px]" : ""
+          } relative`}
           style={getBioPageThemeStyle(pageTheme)}
         >
         <div
@@ -1246,6 +1270,7 @@ export default function PublicBioPageView({
                       setCustomDetails((prev) => {
                         const next = { ...(prev || {}), title: newT };
                         writeCachedPage(displayPageId, blocks, next, effectiveSlug);
+                        onUpdateDetails?.(next);
                         return next;
                       });
                       triggerToast("✨ Updated title!");
@@ -1271,6 +1296,7 @@ export default function PublicBioPageView({
                     setCustomDetails((prev) => {
                       const next = { ...(prev || {}), bio: newB };
                       writeCachedPage(displayPageId, blocks, next, effectiveSlug);
+                      onUpdateDetails?.(next);
                       return next;
                     });
                     triggerToast("✨ Updated bio!");
