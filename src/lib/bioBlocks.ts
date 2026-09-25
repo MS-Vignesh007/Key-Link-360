@@ -1473,4 +1473,118 @@ export function isWideBlock(type?: string): boolean {
   return !isCompactWidget;
 }
 
+export interface SectionDivisionDef {
+  id: string;
+  name: string;
+  badge: string;
+  icon: string;
+  description: string;
+}
+
+export const SECTION_DIVISIONS: SectionDivisionDef[] = [
+  { id: "all", name: "All Blocks (60)", badge: "60 Pro", icon: "💎", description: "Complete library of 60 modern section-based blocks" },
+  { id: "navbar", name: "Navigation & Headers", badge: "6 Blocks", icon: "🧭", description: "Top navigation bars, sticky headers & announcement bars" },
+  { id: "hero", name: "Hero & Banners", badge: "6 Blocks", icon: "🚀", description: "High-impact headlines, video streams & launch hero banners" },
+  { id: "main", name: "Main & Features", badge: "6 Blocks", icon: "🧩", description: "Bento grids, core pillars, interactive tabs & stat metrics" },
+  { id: "sliders", name: "Sliders & Media", badge: "6 Blocks", icon: "🎬", description: "Autoplay carousels, before/after sliders & video players" },
+  { id: "side", name: "Side & Panels", badge: "6 Blocks", icon: "📑", description: "Sticky sidebars, quick contacts, bottom docks & info drawers" },
+  { id: "commerce", name: "Store & Pricing", badge: "6 Blocks", icon: "💎", description: "Toggle pricing matrices, product highlights & 1-click checkout" },
+  { id: "forms", name: "Leads & Forms", badge: "6 Blocks", icon: "📝", description: "Multi-step wizards, lead magnets, calendars & spin wheel" },
+  { id: "socialproof", name: "Social Proof & Trust", badge: "6 Blocks", icon: "🌟", description: "Client logo marquees, star reviews, press quotes & review walls" },
+  { id: "community", name: "Community & Social", badge: "6 Blocks", icon: "💬", description: "VIP groups, YouTube streamers, Instagram feeds & vCards" },
+  { id: "footers", name: "Footers & Closing", badge: "6 Blocks", icon: "🔻", description: "Multi-column footers, closing CTA banners & copyright lines" }
+];
+
+export interface SectionBlockItem {
+  id: string;
+  type: string;
+  divisionId: string;
+  title: string;
+  description: string;
+  icon: string;
+  badge: string;
+}
+
+export const SECTION_BASED_60_BLOCKS: SectionBlockItem[] = [
+  // 1. Navigation & Headers (6)
+  { id: "sec_nav_1", type: "Navbar", divisionId: "navbar", title: "Floating Glass Navbar", description: "Glassmorphic bar with logo, links drawer & CTA", icon: "🧭", badge: "Glass" },
+  { id: "sec_nav_2", type: "Navbar", divisionId: "navbar", title: "Minimalist Brand Header", description: "Centered clean brand identity with sleek menu", icon: "✨", badge: "Minimal" },
+  { id: "sec_nav_3", type: "Navbar", divisionId: "navbar", title: "MegaMenu Dropdown Bar", description: "Multi-column links header with categorized tags", icon: "📂", badge: "Mega" },
+  { id: "sec_nav_4", type: "Banner", divisionId: "navbar", title: "Sticky Top Announcement", description: "Urgency banner with countdown & coupon pill", icon: "📢", badge: "Alert" },
+  { id: "sec_nav_5", type: "Navbar", divisionId: "navbar", title: "Dual Action Header", description: "Branded header with login & action buttons", icon: "⚡", badge: "Action" },
+  { id: "sec_nav_6", type: "Navbar", divisionId: "navbar", title: "Responsive Mobile Drawer", description: "Full-screen mobile drawer menu with socials", icon: "📱", badge: "Mobile" },
+
+  // 2. Hero & Banners (6)
+  { id: "sec_hero_1", type: "Split Hero", divisionId: "hero", title: "Split Headline & Mockup", description: "Side-by-side copy, dual CTA & 3D device preview", icon: "🚀", badge: "Split" },
+  { id: "sec_hero_2", type: "Video Hero", divisionId: "hero", title: "Cinematic Video Stream", description: "Full-width background video reel with glow text", icon: "🎬", badge: "Video" },
+  { id: "sec_hero_3", type: "Glow Badge", divisionId: "hero", title: "Glow Announcement Hero", description: "Pulsing neon pill badge with subheadline", icon: "🌟", badge: "Glow" },
+  { id: "sec_hero_4", type: "Split Hero", divisionId: "hero", title: "Mobile App Download Hero", description: "Headline with App Store / Google Play buttons", icon: "📲", badge: "App" },
+  { id: "sec_hero_5", type: "Split Hero", divisionId: "hero", title: "SaaS Platform Hero", description: "Software headline with live dashboard metrics", icon: "💻", badge: "SaaS" },
+  { id: "sec_hero_6", type: "Header", divisionId: "hero", title: "Creator Avatar Hero", description: "Centered avatar with live ring, bio & stats", icon: "👑", badge: "Creator" },
+
+  // 3. Main & Features (6)
+  { id: "sec_main_1", type: "Main Feature", divisionId: "main", title: "Bento Feature Box", description: "4-cell modern bento layout with glowing borders", icon: "🔥", badge: "Bento" },
+  { id: "sec_main_2", type: "Feature Hero", divisionId: "main", title: "3-Pillar Benefit Grid", description: "Core product value pillars with learn more links", icon: "⚡", badge: "Pillars" },
+  { id: "sec_main_3", type: "Main Feature", divisionId: "main", title: "Dynamic Feature Tabs", description: "Switchable tabs: Features, Speed, Security", icon: "📑", badge: "Tabs" },
+  { id: "sec_main_4", type: "Stats", divisionId: "main", title: "1-2-3 Process Timeline", description: "Numbered customer onboarding workflow steps", icon: "🔢", badge: "Steps" },
+  { id: "sec_main_5", type: "Stats", divisionId: "main", title: "4-Metric KPI Counters", description: "Statistics grid with metrics, growth & labels", icon: "📈", badge: "Metrics" },
+  { id: "sec_main_6", type: "Comparison Table", divisionId: "main", title: "With vs Without Us", description: "Side-by-side visual comparison breakdown", icon: "⚖️", badge: "Compare" },
+
+  // 4. Sliders & Media (6)
+  { id: "sec_slide_1", type: "Auto Slider", divisionId: "sliders", title: "Auto Card Carousel", description: "Touch-swipeable slider with pagination dots", icon: "🎠", badge: "Carousel" },
+  { id: "sec_slide_2", type: "Before/After Slider", divisionId: "sliders", title: "Interactive Before/After", description: "Draggable image transformation split-slider", icon: "⇄", badge: "Slider" },
+  { id: "sec_slide_3", type: "Video Showcase", divisionId: "sliders", title: "Video Reel Player", description: "Responsive video player with chapter markers", icon: "🎥", badge: "Player" },
+  { id: "sec_slide_4", type: "Portfolio Gallery", divisionId: "sliders", title: "Filterable Portfolio", description: "Categorized portfolio showcase with zoom", icon: "🖼️", badge: "Portfolio" },
+  { id: "sec_slide_5", type: "Audio Player", divisionId: "sliders", title: "Podcast Track Player", description: "Audio player with waveform and episode notes", icon: "🎧", badge: "Podcast" },
+  { id: "sec_slide_6", type: "Gallery", divisionId: "sliders", title: "Responsive Photo Grid", description: "Aesthetic 6-photo masonry grid with captions", icon: "📸", badge: "Gallery" },
+
+  // 5. Side & Panels (6)
+  { id: "sec_side_1", type: "FAQ", divisionId: "side", title: "Quick-Jump TOC Menu", description: "Vertical quick-jump anchor links to sections", icon: "📌", badge: "Sticky" },
+  { id: "sec_side_2", type: "Coupon", divisionId: "side", title: "Floating Corner Promo", description: "Floating corner card with 1-click claim button", icon: "🎁", badge: "Promo" },
+  { id: "sec_side_3", type: "WhatsApp", divisionId: "side", title: "Speed-Dial Contact Pill", description: "Quick-connect floating WhatsApp, Call & Email", icon: "📞", badge: "Speed Dial" },
+  { id: "sec_side_4", type: "FAQ", divisionId: "side", title: "Slide-Out Spec Sheet", description: "Side drawer panel with full product specs", icon: "📋", badge: "Drawer" },
+  { id: "sec_side_5", type: "Button", divisionId: "side", title: "Mobile Bottom Dock", description: "Always-visible fixed bottom dock with primary CTA", icon: "⚓", badge: "Dock" },
+  { id: "sec_side_6", type: "Banner", divisionId: "side", title: "Social Activity Popup", description: "Live recent purchaser activity popup badge", icon: "🔔", badge: "Toast" },
+
+  // 6. Store & Pricing (6)
+  { id: "sec_comm_1", type: "Toggle Pricing", divisionId: "commerce", title: "Toggle Pricing Matrix", description: "Toggle billing switch with savings badge", icon: "💳", badge: "Toggle" },
+  { id: "sec_comm_2", type: "Product Showcase", divisionId: "commerce", title: "Hero Product Card", description: "Product card with discount, urgency & Buy Now", icon: "📦", badge: "Product" },
+  { id: "sec_comm_3", type: "Comparison Table", divisionId: "commerce", title: "SaaS Feature Matrix", description: "Detailed checkmark vs cross plan breakdown", icon: "📊", badge: "Matrix" },
+  { id: "sec_comm_4", type: "Payment Button", divisionId: "commerce", title: "1-Click Instant Checkout", description: "Instant secure checkout button with badges", icon: "🛡️", badge: "Pay" },
+  { id: "sec_comm_5", type: "Shop", divisionId: "commerce", title: "Store Product Catalog", description: "Responsive e-commerce grid with currency selector", icon: "🛒", badge: "Store" },
+  { id: "sec_comm_6", type: "Flash Offer", divisionId: "commerce", title: "Flash Sale Countdown", description: "Urgency timer with 1-tap coupon copy code", icon: "⚡", badge: "Sale" },
+
+  // 7. Leads & Forms (6)
+  { id: "sec_lead_1", type: "Multi-Step Form", divisionId: "forms", title: "3-Step Lead Funnel", description: "Interactive qualification wizard with progress", icon: "📝", badge: "Wizard" },
+  { id: "sec_lead_2", type: "Lead Magnet", divisionId: "forms", title: "E-Book / PDF Opt-in", description: "Free download opt-in with instant file capture", icon: "📥", badge: "Download" },
+  { id: "sec_lead_3", type: "Meeting Booker", divisionId: "forms", title: "1-on-1 Meeting Booker", description: "Appointment calendar with booking time slots", icon: "📅", badge: "Booker" },
+  { id: "sec_lead_4", type: "Google Form", divisionId: "forms", title: "Google Form Embed", description: "Responsive questionnaire with fallback form", icon: "📋", badge: "Form" },
+  { id: "sec_lead_5", type: "Newsletter Box", divisionId: "forms", title: "Email Newsletter Box", description: "Single-line newsletter signup with spam notice", icon: "✉️", badge: "Newsletter" },
+  { id: "sec_lead_6", type: "Link Spin", divisionId: "forms", title: "Prize Lucky Wheel", description: "Interactive gamified wheel with discount rewards", icon: "🎡", badge: "Spinner" },
+
+  // 8. Social Proof & Trust (6)
+  { id: "sec_sp_1", type: "Brand Logos", divisionId: "socialproof", title: "Partner Logo Marquee", description: "Infinite scrolling client brand logos strip", icon: "🏢", badge: "Brands" },
+  { id: "sec_sp_2", type: "Star Ratings", divisionId: "socialproof", title: "5-Star Review Trust Card", description: "Trust card with customer avatars & 5 stars", icon: "⭐", badge: "Ratings" },
+  { id: "sec_sp_3", type: "Testimonials", divisionId: "socialproof", title: "Customer Quotes Slider", description: "Client quote cards with avatar and company", icon: "💬", badge: "Quotes" },
+  { id: "sec_sp_4", type: "Press Mentions", divisionId: "socialproof", title: "Featured In Media Quotes", description: "Media publication quotes: Forbes & TechCrunch", icon: "📰", badge: "Press" },
+  { id: "sec_sp_5", type: "Testimonials", divisionId: "socialproof", title: "Verified Review Wall", description: "Trustpilot-style review cards with verified badges", icon: "✅", badge: "Reviews" },
+  { id: "sec_sp_6", type: "Pricing", divisionId: "socialproof", title: "Trust & Guarantee Badges", description: "SSL, Money-back & ISO certification shield row", icon: "🔒", badge: "Guarantees" },
+
+  // 9. Community & Social (6)
+  { id: "sec_com_1", type: "Community Hub", divisionId: "community", title: "VIP Community Group", description: "Discord / WhatsApp / Telegram live member badge", icon: "👥", badge: "Community" },
+  { id: "sec_com_2", type: "YouTube Channel", divisionId: "community", title: "YouTube Channel Stream", description: "Subscriber counter, video player & subscribe CTA", icon: "🔴", badge: "YouTube" },
+  { id: "sec_com_3", type: "Instagram Feed", divisionId: "community", title: "Aesthetic Instagram Grid", description: "4-photo grid with hover likes/comments overlay", icon: "📷", badge: "Instagram" },
+  { id: "sec_com_4", type: "Socials", divisionId: "community", title: "Social Links Dock", description: "Brand icon bar with all major social links", icon: "🌐", badge: "Socials" },
+  { id: "sec_com_5", type: "Music", divisionId: "community", title: "Audio Soundtrack Stream", description: "Music track player with album art & play button", icon: "🎵", badge: "Music" },
+  { id: "sec_com_6", type: "vCard", divisionId: "community", title: "Digital vCard Download", description: "1-click phone address book .vcf download card", icon: "👤", badge: "vCard" },
+
+  // 10. Footers & Closing (6)
+  { id: "sec_foot_1", type: "Footer", divisionId: "footers", title: "Multi-Column SaaS Footer", description: "Brand, 3 link columns, newsletter & copyright", icon: "🔻", badge: "SaaS Footer" },
+  { id: "sec_foot_2", type: "Footer", divisionId: "footers", title: "Minimal Brand Footer", description: "Clean brand logo, copyright & privacy links", icon: "🌿", badge: "Minimal" },
+  { id: "sec_foot_3", type: "Split Hero", divisionId: "footers", title: "Closing CTA Banner", description: "High-impact closing banner with action button", icon: "🎯", badge: "CTA Banner" },
+  { id: "sec_foot_4", type: "Footer", divisionId: "footers", title: "Legal & Policies Footer", description: "Terms, Privacy, Refund policy & safe badge", icon: "⚖️", badge: "Legal" },
+  { id: "sec_foot_5", type: "Footer", divisionId: "footers", title: "Newsletter Subscribe Footer", description: "Full-width dark footer with email capture", icon: "📬", badge: "Subscribe" },
+  { id: "sec_foot_6", type: "Footer", divisionId: "footers", title: "Mobile Bottom App Dock", description: "Fixed mobile footer with Home, Order & Chat", icon: "📱", badge: "App Dock" }
+];
+
 

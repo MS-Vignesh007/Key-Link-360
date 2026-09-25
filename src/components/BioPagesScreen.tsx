@@ -114,6 +114,8 @@ import {
   createDefaultCommunityHubFields,
   createDefaultYouTubeChannelFields,
   createDefaultInstagramFeedFields,
+  SECTION_DIVISIONS,
+  SECTION_BASED_60_BLOCKS,
   type BlockRecord
 } from "../lib/bioBlocks";
 import BlockRenderer, { type BlockRendererHandlers } from "./bio/BlockRenderer";
@@ -197,15 +199,11 @@ import {
   Mail,
   Megaphone,
   DollarSign,
-  Eye,
   Search,
   MoreVertical,
-  Lock,
-  Unlock,
   Tablet,
   Laptop,
   Monitor,
-  Maximize2,
   PanelLeft,
   CheckCircle,
   BookmarkCheck,
@@ -214,6 +212,7 @@ import {
   Move,
   RotateCcw
 } from "lucide-react";
+import { BIO_LINK } from "../lib/bioLinkColors";
 import PageShell, { PageHeader, StatCard, StatCardGrid, Workspace } from "./layout/PageShell";
 import { AppTheme, ALL_THEMES, getStoredTheme, saveTheme } from "../lib/themeStorage";
 import PersonalizationModal from "./PersonalizationModal";
@@ -1467,6 +1466,7 @@ export default function BioPagesScreen({
 
   // Fallback drag block type for robust sandbox iframe drag-and-drop support
   const [activeDraggedBlockType, setActiveDraggedBlockType] = useState<string | null>(null);
+  const [activeDraggedBlockTitle, setActiveDraggedBlockTitle] = useState<string | null>(null);
 
   // Drag-and-drop state & counter variables
   const [isDraggingOverManager, setIsDraggingOverManager] = useState(false);
@@ -1475,10 +1475,11 @@ export default function BioPagesScreen({
   const dragCounterManager = useRef(0);
   const dragCounterPreview = useRef(0);
 
-  const handleDragStartBlockType = (e: React.DragEvent, type: string) => {
+  const handleDragStartBlockType = (e: React.DragEvent, type: string, customTitle?: string) => {
     e.dataTransfer.setData("text/plain", type);
     e.dataTransfer.effectAllowed = "copy";
     setActiveDraggedBlockType(type);
+    setActiveDraggedBlockTitle(customTitle || null);
     setIsAccordionReorderDrag(false);
     setDropTarget(null);
   };
@@ -1536,10 +1537,11 @@ export default function BioPagesScreen({
 
     const type = e.dataTransfer.getData("text/plain") || activeDraggedBlockType;
     if (type) {
-      handleAddBlock(type);
-      triggerToast(`✨ Block Drag & Drop: Added new ${type} Block to manager!`);
+      handleAddBlock(type, undefined, activeDraggedBlockTitle || undefined);
+      triggerToast(`✨ Block Drag & Drop: Added new ${activeDraggedBlockTitle || type} Block to manager!`);
     }
     setActiveDraggedBlockType(null);
+    setActiveDraggedBlockTitle(null);
     resetAccordionDragState();
   };
 
@@ -1564,10 +1566,11 @@ export default function BioPagesScreen({
     setIsDraggingOverPreview(false);
     const type = e.dataTransfer.getData("text/plain") || activeDraggedBlockType;
     if (type) {
-      handleAddBlock(type);
-      triggerSimulatorToast(`🚀 Live Drag & Drop: Added new ${type} block to layout!`);
+      handleAddBlock(type, undefined, activeDraggedBlockTitle || undefined);
+      triggerSimulatorToast(`🚀 Live Drag & Drop: Added new ${activeDraggedBlockTitle || type} block to layout!`);
     }
     setActiveDraggedBlockType(null);
+    setActiveDraggedBlockTitle(null);
   };
 
   const handleSaveAsTemplate = () => {
@@ -2308,9 +2311,9 @@ export default function BioPagesScreen({
     triggerToast("✨ Component reordered in preview!");
   };
 
-  const handleAddBlock = (type: string, atIndex?: number) => {
+  const handleAddBlock = (type: string, atIndex?: number, customTitle?: string) => {
     const id = "block_" + Date.now();
-    let label = "";
+    let label = customTitle || "";
     let value = "";
     let extraFields: any = {};
     switch (type) {
@@ -2619,6 +2622,9 @@ export default function BioPagesScreen({
       default:
         label = `New ${type} Block`;
         value = `Value of ${type}`;
+    }
+    if (customTitle) {
+      label = customTitle;
     }
     const newBlock = { id, type, label, value, ...extraFields };
     setCanvasBlocks((prev) => {
@@ -5303,7 +5309,7 @@ export default function BioPagesScreen({
               {/* BLOCK LIBRARY PANEL */}
               {studioNavTab === "library" && (
                 <div className="space-y-3.5 key-editor-zone key-editor-zone--blocks w-full">
-                  {/* Search and Category Filter Pills */}
+                  {/* Search and Category Filter Pills for 60 Section-Based Blocks */}
                   <div className="space-y-2">
                     <div className="relative">
                       <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -5311,1039 +5317,119 @@ export default function BioPagesScreen({
                         type="text"
                         value={blockLibrarySearch}
                         onChange={(e) => setBlockLibrarySearch(e.target.value)}
-                        placeholder="Search 50+ pro widgets..."
-                        className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-indigo-500/70 focus:bg-white/[0.07] rounded-xl pl-8.5 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-colors"
+                        placeholder="Search 60 section blocks (e.g. Navbar, Bento, Pricing)..."
+                        className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-indigo-500/70 focus:bg-white/[0.07] rounded-xl pl-8.5 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-colors"
                       />
+                      {blockLibrarySearch && (
+                        <button
+                          type="button"
+                          onClick={() => setBlockLibrarySearch("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      )}
                     </div>
 
+                    {/* Section Division Pills (All + 10 Desktop Website Divisions) */}
                     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                      {[
-                        { id: "all", label: "All (50+)" },
-                        { id: "hero", label: "🚀 Hero" },
-                        { id: "commerce", label: "💎 Commerce" },
-                        { id: "social", label: "🌟 Social" },
-                        { id: "media", label: "🎬 Media" },
-                        { id: "forms", label: "📝 Forms" },
-                        { id: "core", label: "⚡ Core" }
-                      ].map((cat) => (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => setBlockLibraryCategory(cat.id)}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
-                            blockLibraryCategory === cat.id
-                              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30"
-                              : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.06]"
-                          }`}
-                        >
-                          {cat.label}
-                        </button>
-                      ))}
+                      {SECTION_DIVISIONS.map((div) => {
+                        const isSelected = blockLibraryCategory === div.id;
+                        return (
+                          <button
+                            key={div.id}
+                            type="button"
+                            onClick={() => setBlockLibraryCategory(div.id)}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                              isSelected
+                                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30"
+                                : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.06]"
+                            }`}
+                            title={div.description}
+                          >
+                            <span>{div.icon}</span>
+                            <span>{div.name}</span>
+                            <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-semibold ${
+                              isSelected ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
+                            }`}>
+                              {div.badge}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  <div className="key-editor-zone__body key-workspace--stack no-scrollbar">
-                    {/* 1. Hero & Headlines */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "hero") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          🚀 Hero & Headers
-                        </span>
-                        <span className="text-[9px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
-                          Hero
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Navbar")}
-                          onClick={() => handleAddBlock("Navbar")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Floating navigation bar"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🧭
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Navbar</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Top menu bar</span>
-                          </div>
-                        </button>
+                  <div className="key-editor-zone__body key-workspace--stack no-scrollbar space-y-4">
+                    {/* Render 60 Modern Section-Based Blocks grouped by division */}
+                    {SECTION_DIVISIONS.filter((div) => div.id !== "all").map((div) => {
+                      if (blockLibraryCategory !== "all" && blockLibraryCategory !== div.id) {
+                        return null;
+                      }
 
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Split Hero")}
-                          onClick={() => handleAddBlock("Split Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Split headline & visual banner"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🚀
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Split Hero</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Headline & media</span>
-                          </div>
-                        </button>
+                      const searchLower = blockLibrarySearch.trim().toLowerCase();
+                      const divisionBlocks = SECTION_BASED_60_BLOCKS.filter((block) => {
+                        if (block.divisionId !== div.id) return false;
+                        if (!searchLower) return true;
+                        return (
+                          block.title.toLowerCase().includes(searchLower) ||
+                          block.description.toLowerCase().includes(searchLower) ||
+                          block.badge.toLowerCase().includes(searchLower) ||
+                          block.type.toLowerCase().includes(searchLower) ||
+                          div.name.toLowerCase().includes(searchLower)
+                        );
+                      });
 
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Main Feature")}
-                          onClick={() => handleAddBlock("Main Feature")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="4-feature highlight grid"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🔥
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Feature Grid</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">4 key benefits</span>
-                          </div>
-                        </button>
+                      if (divisionBlocks.length === 0) return null;
 
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Video Hero")}
-                          onClick={() => handleAddBlock("Video Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Cinematic video hero with CTA"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎬
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Hero</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Cinematic banner</span>
+                      return (
+                        <div key={div.id} className="key-editor-blocks-palette">
+                          {/* Section Division Header */}
+                          <div className="mb-2.5 flex items-center justify-between pb-1.5 border-b border-white/[0.06]">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm">{div.icon}</span>
+                              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-200">
+                                {div.name}
+                              </span>
+                            </div>
+                            <span className="text-[9px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
+                              {divisionBlocks.length} Blocks
+                            </span>
                           </div>
-                        </button>
 
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Glow Badge")}
-                          onClick={() => handleAddBlock("Glow Badge")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Animated glowing pill announcement"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ✨
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Glow Badge</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Notice pill</span>
+                          {/* 2-Column Section Blocks Grid */}
+                          <div className="grid grid-cols-2 gap-2.5">
+                            {divisionBlocks.map((item) => (
+                              <button
+                                key={item.id}
+                                draggable={true}
+                                onDragStart={(e) => handleDragStartBlockType(e, item.type, item.title)}
+                                onClick={() => handleAddBlock(item.type, undefined, item.title)}
+                                className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
+                                title={`${item.title} — ${item.description}`}
+                              >
+                                <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
+                                  {item.icon}
+                                </span>
+                                <div className="min-w-0 flex-1 overflow-hidden">
+                                  <div className="flex items-center justify-between gap-1">
+                                    <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">
+                                      {item.title}
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">
+                                    {item.description}
+                                  </span>
+                                </div>
+                                <span className="absolute top-1 right-1.5 text-[8px] font-semibold text-slate-500 group-hover:text-indigo-400 opacity-60 group-hover:opacity-100 transition-opacity">
+                                  {item.badge}
+                                </span>
+                              </button>
+                            ))}
                           </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Feature Hero")}
-                          onClick={() => handleAddBlock("Feature Hero")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="3-pillar feature hero overview"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-teal-500/20 border border-white/[0.07] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⚡
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Feature Pillars</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">3 core features</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Header")}
-                          onClick={() => handleAddBlock("Header")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Section headline"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-xs text-emerald-400 shrink-0 transition-transform group-hover:scale-105">
-                            H1
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Headline</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Section title</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Banner")}
-                          onClick={() => handleAddBlock("Banner")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Notice & alert banner"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-sky-500/20 border border-white/[0.07] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📢
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Alert Banner</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Notice & promo</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
-
-                    {/* 2. Pricing & Commerce */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "commerce") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          💳 Sales & Commerce
-                        </span>
-                        <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
-                          Sales
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Flash Offer")}
-                          onClick={() => handleAddBlock("Flash Offer")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Flash offer discount sale"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⚡
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Flash Deal</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Timed discount</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Toggle Pricing")}
-                          onClick={() => handleAddBlock("Toggle Pricing")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Monthly vs Yearly toggle pricing table"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⚖️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Plan Toggle</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Monthly & annual</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Product Showcase")}
-                          onClick={() => handleAddBlock("Product Showcase")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Featured product showcase"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📦
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Product Card</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Featured item</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Comparison Table")}
-                          onClick={() => handleAddBlock("Comparison Table")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Plan feature comparison table"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📊
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Compare Table</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Feature matrix</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Payment Button")}
-                          onClick={() => handleAddBlock("Payment Button")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Instant payment checkout button"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💳
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Quick Pay</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Instant checkout</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Pricing")}
-                          onClick={() => handleAddBlock("Pricing")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Pricing plans and tiers"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💰
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Price Cards</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Plan tiers</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Shop")}
-                          onClick={() => handleAddBlock("Shop")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Store product catalogue"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-teal-500/20 border border-white/[0.07] group-hover:border-teal-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🛒
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Store Grid</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Product catalog</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Coupon")}
-                          onClick={() => handleAddBlock("Coupon")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Coupon discount code"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎟️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Coupon Code</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Tap to copy</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
-
-                    {/* 3. Social Proof & Community */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "social") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          🌟 Social Proof & Community
-                        </span>
-                        <span className="text-[9px] text-amber-400 font-bold bg-amber-500/15 border border-amber-500/25 px-2 py-0.5 rounded-full">
-                          Trust
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Community Hub")}
-                          onClick={() => handleAddBlock("Community Hub")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="VIP community hub with chat"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💬
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Community Hub</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">WhatsApp & Discord</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Brand Logos")}
-                          onClick={() => handleAddBlock("Brand Logos")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Animated client and partner logo marquee"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🏢
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Brand Logos</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Partner marquee</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Star Ratings")}
-                          onClick={() => handleAddBlock("Star Ratings")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Star review rating badge"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⭐
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Star Reviews</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">5★ user ratings</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Press Mentions")}
-                          onClick={() => handleAddBlock("Press Mentions")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Press & media review quotes"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📰
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Press Quotes</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Media highlights</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Testimonials")}
-                          onClick={() => handleAddBlock("Testimonials")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Customer testimonial reviews"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💬
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Testimonials</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Client feedback</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Stats")}
-                          onClick={() => handleAddBlock("Stats")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Key achievements and numbers"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📊
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Key Stats</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Milestones & proof</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
-
-                    {/* 4. Interactive Media & Feeds */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "media") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          🎨 Interactive Media & Feeds
-                        </span>
-                        <span className="text-[9px] text-purple-400 font-bold bg-purple-500/15 border border-purple-500/25 px-2 py-0.5 rounded-full">
-                          Visual
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Auto Slider")}
-                          onClick={() => handleAddBlock("Auto Slider")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Autoplay image carousel slider"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎠
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Photo Slider</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Auto carousel</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "YouTube Channel")}
-                          onClick={() => handleAddBlock("YouTube Channel")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="YouTube channel and player"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🔴
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">YouTube Video</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Channel & player</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Instagram Feed")}
-                          onClick={() => handleAddBlock("Instagram Feed")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Instagram photo grid"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📸
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Instagram Grid</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Photo gallery</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Before/After Slider")}
-                          onClick={() => handleAddBlock("Before/After Slider")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Interactive comparison slider"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-cyan-500/20 border border-white/[0.07] group-hover:border-cyan-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ↔️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Compare Slider</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Before & after</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Portfolio Gallery")}
-                          onClick={() => handleAddBlock("Portfolio Gallery")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Portfolio showcase"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💼
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Portfolio</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Filterable work</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Video Showcase")}
-                          onClick={() => handleAddBlock("Video Showcase")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Video player with playlist"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📺
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Playlist</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Chapters & courses</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Audio Player")}
-                          onClick={() => handleAddBlock("Audio Player")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Podcast & music audio player"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎙️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Podcast Player</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Audio tracks</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Gallery")}
-                          onClick={() => handleAddBlock("Gallery")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Image gallery grid"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-sky-500/20 border border-white/[0.07] group-hover:border-sky-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🖼️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Photo Grid</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Image showcase</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Video")}
-                          onClick={() => handleAddBlock("Video")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Stream video embed"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎥
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Video Embed</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Stream player</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Music")}
-                          onClick={() => handleAddBlock("Music")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Music track player"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-violet-500/20 border border-white/[0.07] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎵
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Music Track</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Audio stream</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Image")}
-                          onClick={() => handleAddBlock("Image")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Single image photo"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-fuchsia-500/20 border border-white/[0.07] group-hover:border-fuchsia-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🖼️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Single Image</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">High-res photo</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
-
-                    {/* 5. Conversion & Forms */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "forms") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          ⚡ Conversion & Forms
-                        </span>
-                        <span className="text-[9px] text-rose-400 font-bold bg-rose-500/15 border border-rose-500/25 px-2 py-0.5 rounded-full">
-                          Leads
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Google Form")}
-                          onClick={() => handleAddBlock("Google Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Google Form embed or native survey"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📋
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Google Form</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Embed survey</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Multi-Step Form")}
-                          onClick={() => handleAddBlock("Multi-Step Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Interactive 3-step lead wizard"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🧙‍♂️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Lead Wizard</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Multi-step flow</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Lead Magnet")}
-                          onClick={() => handleAddBlock("Lead Magnet")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Free PDF / eBook download card"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎁
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Free Download</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">PDF & opt-in</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Meeting Booker")}
-                          onClick={() => handleAddBlock("Meeting Booker")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Calendly meeting scheduler card"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🗓️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Meeting Booker</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Calendly sync</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Newsletter Box")}
-                          onClick={() => handleAddBlock("Newsletter Box")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Email capture newsletter subscription"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💌
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Newsletter</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Email capture</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Countdown")}
-                          onClick={() => handleAddBlock("Countdown")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Countdown timer"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-red-500/20 border border-white/[0.07] group-hover:border-red-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⏱️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Timer Clock</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Urgency counter</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Link Spin")}
-                          onClick={() => handleAddBlock("Link Spin")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Prize wheel spinner"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🎡
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Lucky Wheel</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Reward spinner</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Smart Form")}
-                          onClick={() => handleAddBlock("Smart Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Smart lead capture form"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-blue-500/20 border border-white/[0.07] group-hover:border-blue-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📋
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Smart Form</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Lead capture</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Form")}
-                          onClick={() => handleAddBlock("Form")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Custom form fields"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-violet-500/20 border border-white/[0.07] group-hover:border-violet-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📝
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Custom Form</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Contact builder</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "FAQ")}
-                          onClick={() => handleAddBlock("FAQ")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="FAQ accordion dropdown"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ❓
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">FAQ Accordion</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Q&A dropdown</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
-
-                    {/* 6. Core, Connect & Footer */}
-                    {(blockLibraryCategory === "all" || blockLibraryCategory === "core") && (
-                    <div className="key-editor-blocks-palette">
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                          🔗 Core, Connect & Footer
-                        </span>
-                        <span className="text-[9px] text-slate-400 font-bold bg-white/[0.06] border border-white/[0.08] px-2 py-0.5 rounded-full">
-                          Essential
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Footer")}
-                          onClick={() => handleAddBlock("Footer")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Modern clean footer"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🦶
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Page Footer</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Links & copyright</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Button")}
-                          onClick={() => handleAddBlock("Button")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Clickable button"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🔗
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Action Button</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Clickable CTA</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Deep Link")}
-                          onClick={() => handleAddBlock("Deep Link")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="App deep link redirect"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-purple-500/20 border border-white/[0.07] group-hover:border-purple-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ⚡
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Deep Link</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">App launcher</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "WhatsApp")}
-                          onClick={() => handleAddBlock("WhatsApp")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Direct WhatsApp chat"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-green-500/20 border border-white/[0.07] group-hover:border-green-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            💬
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">WhatsApp Chat</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Direct message</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Socials")}
-                          onClick={() => handleAddBlock("Socials")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Social media icon links"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-pink-500/20 border border-white/[0.07] group-hover:border-pink-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🌐
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Social Bar</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Social handles</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Call")}
-                          onClick={() => handleAddBlock("Call")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Click to phone call"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📞
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Call Button</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Tap to call</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Email")}
-                          onClick={() => handleAddBlock("Email")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Click to email"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ✉️
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Email Link</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Mailto button</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "vCard")}
-                          onClick={() => handleAddBlock("vCard")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Save contact vCard file"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-amber-500/20 border border-white/[0.07] group-hover:border-amber-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            🪪
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Save Contact</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Digital vCard</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Events")}
-                          onClick={() => handleAddBlock("Events")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Event RSVP and ticketing"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📅
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">RSVP Event</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Date & booking</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Map")}
-                          onClick={() => handleAddBlock("Map")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Google Maps location pin"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📍
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Google Map</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Location pin</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Tip Jar")}
-                          onClick={() => handleAddBlock("Tip Jar")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Donations & tip jar"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-rose-500/20 border border-white/[0.07] group-hover:border-rose-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            ☕
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Tip / Donate</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Coffee & tips</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "PDF")}
-                          onClick={() => handleAddBlock("PDF")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="PDF document download"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/20 border border-white/[0.07] group-hover:border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📄
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">PDF Document</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">File download</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Text")}
-                          onClick={() => handleAddBlock("Text")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Paragraph rich text"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            📝
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Rich Text</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Paragraph note</span>
-                          </div>
-                        </button>
-
-                        <button
-                          draggable={true}
-                          onDragStart={(e) => handleDragStartBlockType(e, "Divider")}
-                          onClick={() => handleAddBlock("Divider")}
-                          className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                          title="Spacer & divider line"
-                        >
-                          <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-slate-500/20 border border-white/[0.07] group-hover:border-slate-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                            —
-                          </span>
-                          <div className="min-w-0 flex-1 overflow-hidden">
-                            <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">Divider Line</span>
-                            <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">Spacer divider</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                    )}
+                        </div>
+                      );
+                    })}
 
                     {/* Saved Templates & Session Drafts in Editor Sidebar */}
                     {(savedTemplates.length > 0 || savedDrafts.length > 0) && (
@@ -6588,10 +5674,10 @@ export default function BioPagesScreen({
                         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
                       }}
                       onMoveUp={(idx) => {
-                        if (idx > 0) reorderEditorBlocks(idx, idx - 1);
+                        if (idx > 0) reorderEditorBlocks(idx, idx - 1, "before");
                       }}
                       onMoveDown={(idx) => {
-                        if (idx < canvasBlocks.length - 1) reorderEditorBlocks(idx, idx + 1);
+                        if (idx < canvasBlocks.length - 1) reorderEditorBlocks(idx, idx + 1, "after");
                       }}
                       onDuplicate={handleDuplicateBlock}
                       onDelete={handleDeleteBlock}
