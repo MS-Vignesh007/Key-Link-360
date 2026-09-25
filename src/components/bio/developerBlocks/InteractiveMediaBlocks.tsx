@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, ExternalLink, ArrowRight, Music, Volume2, Headphones } from "lucide-react";
 import type { BlockRecord } from "../../../lib/bioBlocks";
 import type { BlockRendererContext, BlockRendererHandlers, BlockRenderMode } from "../blockTypes";
