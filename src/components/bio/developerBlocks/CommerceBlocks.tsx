@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Check, CheckCircle2, X, Star, ShoppingBag, ShieldCheck, ArrowRight, Zap } from "lucide-react";
 import type { BlockRecord } from "../../../lib/bioBlocks";
+import { resolveDestination } from "../../../lib/bioBlocks";
 import type { BlockRendererContext, BlockRendererHandlers, BlockRenderMode } from "../blockTypes";
 
 interface DeveloperBlockProps {
@@ -71,11 +72,7 @@ export function TogglePricingBlockView({ block, mode, handlers }: DeveloperBlock
   const currentPlans = billingCycle === "monthly" ? monthlyPlans : annualPlans;
 
   const handlePlanClick = (plan: any) => {
-    if (mode === "preview") {
-      handlers.onToast?.(`Selected ${plan.name} (${billingCycle}): ${plan.price}`);
-      return;
-    }
-    handlers.onExternalLink?.(plan.url, plan.name);
+    resolveDestination(plan.url, plan.name, handlers, mode);
   };
 
   return (
@@ -197,11 +194,7 @@ export function ProductShowcaseBlockView({ block, mode, handlers }: DeveloperBlo
     : ["40h Battery Life", "Active Noise Cancellation", "Fast USB-C Charging"];
 
   const handleBuy = () => {
-    if (mode === "preview") {
-      handlers.onToast?.(`Simulated buy: ${productName} (${price})`);
-      return;
-    }
-    handlers.onExternalLink?.(buyUrl, productName);
+    resolveDestination(buyUrl, productName, handlers, mode);
   };
 
   return (
@@ -355,11 +348,7 @@ export function PaymentButtonBlockView({ block, mode, handlers }: DeveloperBlock
   const paymentUrl = (block.paymentUrl as string) || (block.value as string) || "https://rzp.io";
 
   const handlePay = () => {
-    if (mode === "preview") {
-      handlers.onToast?.(`Simulated payment gateway checkout`);
-      return;
-    }
-    handlers.onExternalLink?.(paymentUrl, buttonText);
+    resolveDestination(paymentUrl, buttonText, handlers, mode);
   };
 
   return (

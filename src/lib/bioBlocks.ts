@@ -1587,4 +1587,86 @@ export const SECTION_BASED_60_BLOCKS: SectionBlockItem[] = [
   { id: "sec_foot_6", type: "Footer", divisionId: "footers", title: "Mobile Bottom App Dock", description: "Fixed mobile footer with Home, Order & Chat", icon: "📱", badge: "App Dock" }
 ];
 
+export function getSemanticAnchorForBlock(block: { type?: string; label?: string; customAnchor?: string; id?: string }): string | undefined {
+  if (block.customAnchor) return block.customAnchor.replace(/^#/, "");
+  const type = (block.type || "").toLowerCase();
+  const label = (block.label || "").toLowerCase();
+
+  if (type.includes("navbar") || type.includes("navigation")) return "navbar";
+  if (type.includes("feature") || label.includes("feature") || type.includes("bento")) return "features";
+  if (type.includes("pricing") || type.includes("store") || type.includes("shop") || label.includes("pricing")) return "pricing";
+  if (type.includes("rating") || type.includes("testimonial") || type.includes("review") || type.includes("brand logos") || type.includes("press")) return "reviews";
+  if (type.includes("contact") || type.includes("whatsapp") || type.includes("meeting") || type.includes("lead form") || type.includes("multi-step")) return "contact";
+  if (type.includes("hero")) return "hero";
+  if (type.includes("faq")) return "faq";
+  if (type.includes("gallery") || type.includes("slider") || type.includes("portfolio")) return "gallery";
+  if (type.includes("footer")) return "footer";
+  if (type.includes("community") || type.includes("social")) return "community";
+
+  return undefined;
+}
+
+export function resolveDestination(
+  url: string,
+  label: string,
+  handlers?: { onToast?: (msg: string) => void; onExternalLink?: (url: string, label?: string) => void },
+  mode?: string
+) {
+  if (!url || url === "#") {
+    handlers?.onToast?.(`Link: ${label}`);
+    return;
+  }
+  const trimmed = url.trim();
+  if (trimmed.startsWith("#")) {
+    const slug = trimmed.slice(1).toLowerCase().trim();
+    let elem = document.getElementById(slug) ||
+               document.getElementById(`block-${slug}`) ||
+               document.querySelector(`[data-block-id="${slug}"]`) ||
+               document.querySelector(`[data-block-anchor="${slug}"]`) ||
+               document.querySelector(`[data-block-type*="${slug}" i]`) ||
+               document.querySelector(`[data-block-label*="${slug}" i]`);
+
+    if (!elem) {
+      const aliasMap: Record<string, string[]> = {
+        features: ["main feature", "feature", "feature hero", "split hero", "bento"],
+        pricing: ["toggle pricing", "pricing", "store", "shop", "comparison table"],
+        reviews: ["star ratings", "testimonials", "social proof", "brand logos", "press mentions"],
+        contact: ["contact form", "whatsapp", "meeting booker", "multi-step form", "lead form"],
+        about: ["header", "hero", "split hero", "stats"],
+        faq: ["faq", "accordion"],
+        community: ["community hub", "youtube", "instagram", "socials"],
+        footer: ["footer"],
+        gallery: ["gallery", "portfolio gallery", "auto slider"],
+        hero: ["split hero", "video hero", "header", "hero"]
+      };
+      const candidates = aliasMap[slug] || [];
+      for (const cand of candidates) {
+        elem = document.querySelector(`[data-block-type*="${cand}" i]`) ||
+               document.querySelector(`[data-block-label*="${cand}" i]`);
+        if (elem) break;
+      }
+    }
+
+    if (elem) {
+      elem.scrollIntoView({ behavior: "smooth", block: "start" });
+      handlers?.onToast?.(`Navigating to ${label}...`);
+      return;
+    }
+    handlers?.onToast?.(`Section "${label}" (${trimmed})`);
+    return;
+  }
+
+  // External link
+  if (handlers?.onExternalLink) {
+    handlers.onExternalLink(trimmed, label);
+  } else {
+    try {
+      window.open(trimmed, "_blank", "noopener,noreferrer");
+    } catch {
+      handlers?.onToast?.(`Opening: ${trimmed}`);
+    }
+  }
+}
+
+
 

@@ -21,6 +21,7 @@ import {
   Tag
 } from "lucide-react";
 import type { BlockRecord } from "../../../lib/bioBlocks";
+import { resolveDestination } from "../../../lib/bioBlocks";
 import type { BlockRendererContext, BlockRendererHandlers, BlockRenderMode } from "../blockTypes";
 import { CanvaInlineText, CanvaInlineImage } from "../CanvaDirectEditSuite";
 
@@ -56,41 +57,14 @@ export function NavbarBlockView({ block, mode, handlers }: PersonaBlockProps) {
   };
 
   const handleNavLinkClick = (e: React.MouseEvent, link: { id?: string; label: string; url: string }) => {
-    if (mode === "preview") {
-      e.preventDefault();
-      handlers.onToast?.(`Nav link: ${link.label} (${link.url})`);
-      setMobileMenuOpen(false);
-      return;
-    }
-    if (link.url.startsWith("#")) {
-      e.preventDefault();
-      const targetId = link.url.slice(1);
-      const elem = document.getElementById(targetId);
-      if (elem) {
-        elem.scrollIntoView({ behavior: "smooth" });
-      }
-      setMobileMenuOpen(false);
-      return;
-    }
+    e.preventDefault();
     setMobileMenuOpen(false);
-    handlers.onExternalLink?.(link.url, link.label);
+    resolveDestination(link.url, link.label, handlers, mode);
   };
 
   const handleCta = () => {
     setMobileMenuOpen(false);
-    if (mode === "preview") {
-      handlers.onToast?.(`Nav CTA clicked: ${ctaLabel} -> ${ctaUrl}`);
-      return;
-    }
-    if (ctaUrl.startsWith("#")) {
-      const targetId = ctaUrl.slice(1);
-      const elem = document.getElementById(targetId);
-      if (elem) {
-        elem.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
-    handlers.onExternalLink?.(ctaUrl, ctaLabel);
+    resolveDestination(ctaUrl, ctaLabel, handlers, mode);
   };
 
   return (
@@ -262,12 +236,10 @@ export function FooterBlockView({ block, mode, handlers }: PersonaBlockProps) {
             key={fl.id || idx}
             href={fl.url}
             onClick={(e) => {
-              if (mode === "preview") {
-                e.preventDefault();
-                handlers.onToast?.(`Footer Link: ${fl.label}`);
-              }
+              e.preventDefault();
+              resolveDestination(fl.url, fl.label, handlers, mode);
             }}
-            className="hover:text-indigo-400 transition-colors underline-offset-2 hover:underline"
+            className="hover:text-indigo-400 transition-colors underline-offset-2 hover:underline cursor-pointer"
           >
             {fl.label}
           </a>

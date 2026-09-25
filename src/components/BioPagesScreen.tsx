@@ -188,6 +188,7 @@ import {
   Globe,
   Image as ImageIcon,
   LayoutGrid,
+  LayoutList,
   LayoutTemplate,
   ClipboardList,
   HelpCircle,
@@ -817,6 +818,7 @@ export default function BioPagesScreen({
   const [selectedCanvasBlockId, setSelectedCanvasBlockId] = useState<string | null>(null);
   const [blockLibrarySearch, setBlockLibrarySearch] = useState("");
   const [blockLibraryCategory, setBlockLibraryCategory] = useState<string>("all");
+  const [blockLibraryViewMode, setBlockLibraryViewMode] = useState<"list" | "grid">("list");
 
   // Bricks Builder & Blocks Edit Developer States
   const [inspectorTab, setInspectorTab] = useState<"content" | "style">("content");
@@ -5309,43 +5311,85 @@ export default function BioPagesScreen({
               {/* BLOCK LIBRARY PANEL */}
               {studioNavTab === "library" && (
                 <div className="space-y-3.5 key-editor-zone key-editor-zone--blocks w-full">
-                  {/* Search and Category Filter Pills for 60 Section-Based Blocks */}
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={blockLibrarySearch}
-                        onChange={(e) => setBlockLibrarySearch(e.target.value)}
-                        placeholder="Search 60 section blocks (e.g. Navbar, Bento, Pricing)..."
-                        className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-indigo-500/70 focus:bg-white/[0.07] rounded-xl pl-8.5 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-colors"
-                      />
-                      {blockLibrarySearch && (
+                  {/* Search, Layout Toggle & Category Filter Pills for 60 Section-Based Blocks */}
+                  <div className="space-y-2.5">
+                    {/* Search Bar + View Mode Toggle */}
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          value={blockLibrarySearch}
+                          onChange={(e) => setBlockLibrarySearch(e.target.value)}
+                          placeholder="Search 60 section blocks (e.g. Navbar, Bento, Pricing)..."
+                          className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-indigo-500/70 focus:bg-white/[0.07] rounded-xl pl-8.5 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-colors"
+                        />
+                        {blockLibrarySearch && (
+                          <button
+                            type="button"
+                            onClick={() => setBlockLibrarySearch("")}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 hover:text-white"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      {/* View Mode Toggle: List (Roomy) vs Grid (Compact) */}
+                      <div className="flex items-center bg-white/[0.04] border border-white/[0.08] rounded-xl p-0.5 shrink-0">
                         <button
                           type="button"
-                          onClick={() => setBlockLibrarySearch("")}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 hover:text-white"
+                          onClick={() => setBlockLibraryViewMode("list")}
+                          className={`p-1.5 rounded-lg transition-all ${
+                            blockLibraryViewMode === "list"
+                              ? "bg-indigo-600 text-white shadow-xs"
+                              : "text-slate-400 hover:text-white hover:bg-white/5"
+                          }`}
+                          title="List View (Full Details)"
                         >
-                          ✕
+                          <LayoutList className="w-3.5 h-3.5" />
                         </button>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => setBlockLibraryViewMode("grid")}
+                          className={`p-1.5 rounded-lg transition-all ${
+                            blockLibraryViewMode === "grid"
+                              ? "bg-indigo-600 text-white shadow-xs"
+                              : "text-slate-400 hover:text-white hover:bg-white/5"
+                          }`}
+                          title="Grid View (Compact Cards)"
+                        >
+                          <LayoutGrid className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Section Division Pills (All + 10 Desktop Website Divisions) */}
+                    {/* Section Division Pills (All + 10 Divisions with concise labels) */}
                     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                      {SECTION_DIVISIONS.map((div) => {
+                      {[
+                        { id: "all", name: "All (60)", icon: "💎", badge: "60" },
+                        { id: "navbar", name: "Navigation", icon: "🧭", badge: "6" },
+                        { id: "hero", name: "Hero", icon: "🚀", badge: "6" },
+                        { id: "main", name: "Features", icon: "🧩", badge: "6" },
+                        { id: "sliders", name: "Sliders", icon: "🎬", badge: "6" },
+                        { id: "side", name: "Side Panels", icon: "📑", badge: "6" },
+                        { id: "commerce", name: "Store & Pricing", icon: "💎", badge: "6" },
+                        { id: "forms", name: "Forms & Leads", icon: "📝", badge: "6" },
+                        { id: "socialproof", name: "Social Proof", icon: "🌟", badge: "6" },
+                        { id: "community", name: "Community", icon: "💬", badge: "6" },
+                        { id: "footers", name: "Footers", icon: "🔻", badge: "6" }
+                      ].map((div) => {
                         const isSelected = blockLibraryCategory === div.id;
                         return (
                           <button
                             key={div.id}
                             type="button"
                             onClick={() => setBlockLibraryCategory(div.id)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                            className={`px-2.5 py-1 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                               isSelected
-                                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30"
+                                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30 ring-1 ring-indigo-400/40"
                                 : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.06]"
                             }`}
-                            title={div.description}
                           >
                             <span>{div.icon}</span>
                             <span>{div.name}</span>
@@ -5361,7 +5405,7 @@ export default function BioPagesScreen({
                   </div>
 
                   <div className="key-editor-zone__body key-workspace--stack no-scrollbar space-y-4">
-                    {/* Render 60 Modern Section-Based Blocks grouped by division */}
+                    {/* Render 60 Modern Section-Based Blocks */}
                     {SECTION_DIVISIONS.filter((div) => div.id !== "all").map((div) => {
                       if (blockLibraryCategory !== "all" && blockLibraryCategory !== div.id) {
                         return null;
@@ -5385,48 +5429,84 @@ export default function BioPagesScreen({
                       return (
                         <div key={div.id} className="key-editor-blocks-palette">
                           {/* Section Division Header */}
-                          <div className="mb-2.5 flex items-center justify-between pb-1.5 border-b border-white/[0.06]">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm">{div.icon}</span>
-                              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-200">
+                          <div className="mb-2.5 flex items-center justify-between pb-1.5 border-b border-white/[0.08]">
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">{div.icon}</span>
+                              <span className="text-xs font-black uppercase tracking-wider text-slate-200">
                                 {div.name}
                               </span>
                             </div>
-                            <span className="text-[9px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] text-indigo-400 font-bold bg-indigo-500/15 border border-indigo-500/25 px-2 py-0.5 rounded-full">
                               {divisionBlocks.length} Blocks
                             </span>
                           </div>
 
-                          {/* 2-Column Section Blocks Grid */}
-                          <div className="grid grid-cols-2 gap-2.5">
-                            {divisionBlocks.map((item) => (
-                              <button
-                                key={item.id}
-                                draggable={true}
-                                onDragStart={(e) => handleDragStartBlockType(e, item.type, item.title)}
-                                onClick={() => handleAddBlock(item.type, undefined, item.title)}
-                                className="flex items-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-indigo-500/40 px-2.5 py-1.5 rounded-xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/10 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 overflow-hidden h-[54px]"
-                                title={`${item.title} — ${item.description}`}
-                              >
-                                <span className="h-8 w-8 rounded-lg bg-white/[0.05] group-hover:bg-indigo-500/20 border border-white/[0.07] group-hover:border-indigo-500/30 flex items-center justify-center font-bold text-sm shrink-0 transition-transform group-hover:scale-105">
-                                  {item.icon}
-                                </span>
-                                <div className="min-w-0 flex-1 overflow-hidden">
-                                  <div className="flex items-center justify-between gap-1">
-                                    <span className="text-xs font-bold block text-slate-100 group-hover:text-white truncate">
-                                      {item.title}
+                          {/* List View: Clean, spacious, full-width row cards (no cramped collapsing) */}
+                          {blockLibraryViewMode === "list" ? (
+                            <div className="space-y-2">
+                              {divisionBlocks.map((item) => (
+                                <button
+                                  key={item.id}
+                                  draggable={true}
+                                  onDragStart={(e) => handleDragStartBlockType(e, item.type, item.title)}
+                                  onClick={() => handleAddBlock(item.type, undefined, item.title)}
+                                  className="w-full flex items-center gap-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/50 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/20 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0"
+                                  title={`${item.title} — ${item.description}`}
+                                >
+                                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500/15 via-white/[0.05] to-purple-500/15 group-hover:from-indigo-500/30 group-hover:to-purple-500/30 border border-white/[0.1] group-hover:border-indigo-400/50 flex items-center justify-center font-bold text-lg shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                                    {item.icon}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center justify-between gap-1.5">
+                                      <span className="text-xs font-bold text-slate-100 group-hover:text-white truncate">
+                                        {item.title}
+                                      </span>
+                                      <span className="text-[9px] font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-1.5 py-0.5 rounded-full shrink-0">
+                                        {item.badge}
+                                      </span>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate mt-0.5">
+                                      {item.description}
+                                    </p>
+                                  </div>
+                                  <span className="h-6 w-6 rounded-lg bg-white/5 group-hover:bg-indigo-600 text-slate-400 group-hover:text-white flex items-center justify-center text-xs font-bold transition-all shrink-0 opacity-0 group-hover:opacity-100">
+                                    +
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            /* Grid View: 2-column cards designed with vertical stacking to avoid overlap */
+                            <div className="grid grid-cols-2 gap-2">
+                              {divisionBlocks.map((item) => (
+                                <button
+                                  key={item.id}
+                                  draggable={true}
+                                  onDragStart={(e) => handleDragStartBlockType(e, item.type, item.title)}
+                                  onClick={() => handleAddBlock(item.type, undefined, item.title)}
+                                  className="flex flex-col justify-between bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-indigo-500/50 p-2.5 rounded-2xl text-left transition-all group relative shadow-xs hover:shadow-indigo-500/20 cursor-grab active:cursor-grabbing hover:scale-[1.01] backdrop-blur-md min-w-0 min-h-[76px]"
+                                  title={`${item.title} — ${item.description}`}
+                                >
+                                  <div className="flex items-center justify-between w-full mb-1.5">
+                                    <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center font-bold text-base shrink-0">
+                                      {item.icon}
+                                    </span>
+                                    <span className="text-[8px] font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/25 px-1.5 py-0.2 rounded-full">
+                                      {item.badge}
                                     </span>
                                   </div>
-                                  <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">
-                                    {item.description}
-                                  </span>
-                                </div>
-                                <span className="absolute top-1 right-1.5 text-[8px] font-semibold text-slate-500 group-hover:text-indigo-400 opacity-60 group-hover:opacity-100 transition-opacity">
-                                  {item.badge}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
+                                  <div className="w-full min-w-0">
+                                    <span className="text-[11px] font-bold block text-slate-100 group-hover:text-white truncate">
+                                      {item.title}
+                                    </span>
+                                    <span className="text-[9px] text-slate-400 group-hover:text-slate-300 block truncate mt-0.5">
+                                      {item.description}
+                                    </span>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -8253,7 +8333,127 @@ export default function BioPagesScreen({
                                               className="rounded border-slate-300 accent-indigo-600 h-4 w-4"
                                             />
                                           </div>
-                                       </div>
+                                       
+
+                                           {/* Navigation Menu Links & Destinations Editor */}
+                                           <div className="space-y-2 pt-2 border-t border-slate-100">
+                                             <div className="flex items-center justify-between">
+                                               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                                 Menu Links & Destinations
+                                               </label>
+                                               <button
+                                                 type="button"
+                                                 onClick={() => {
+                                                   const currentLinks = Array.isArray((block as any).navLinks)
+                                                     ? [...(block as any).navLinks]
+                                                     : [
+                                                         { id: "nl_1", label: "Features", url: "#features" },
+                                                         { id: "nl_2", label: "Pricing", url: "#pricing" },
+                                                         { id: "nl_3", label: "Reviews", url: "#reviews" }
+                                                       ];
+                                                   const newLink = {
+                                                     id: "nl_" + Date.now(),
+                                                     label: "New Link",
+                                                     url: "#features"
+                                                   };
+                                                   handleUpdateBlockField(block.id, "navLinks", [...currentLinks, newLink]);
+                                                 }}
+                                                 className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors cursor-pointer"
+                                               >
+                                                 + Add Nav Link
+                                               </button>
+                                             </div>
+
+                                             <div className="space-y-2">
+                                               {(Array.isArray((block as any).navLinks)
+                                                 ? (block as any).navLinks
+                                                 : [
+                                                     { id: "nl_1", label: "Features", url: "#features" },
+                                                     { id: "nl_2", label: "Pricing", url: "#pricing" },
+                                                     { id: "nl_3", label: "Reviews", url: "#reviews" }
+                                                   ]
+                                               ).map((link: any, lIdx: number, allLinks: any[]) => (
+                                                 <div
+                                                   key={link.id || lIdx}
+                                                   className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5"
+                                                 >
+                                                   <div className="flex items-center justify-between gap-2">
+                                                     <span className="text-[10px] font-bold text-slate-600 uppercase">
+                                                       Link #{lIdx + 1}
+                                                     </span>
+                                                     {allLinks.length > 1 && (
+                                                       <button
+                                                         type="button"
+                                                         onClick={() => {
+                                                           const updated = allLinks.filter((_, i) => i !== lIdx);
+                                                           handleUpdateBlockField(block.id, "navLinks", updated);
+                                                         }}
+                                                         className="p-1 rounded text-red-500 hover:bg-red-50 transition-colors"
+                                                         title="Delete link"
+                                                       >
+                                                         <Trash2 className="w-3 h-3" />
+                                                       </button>
+                                                     )}
+                                                   </div>
+                                                   <div className="grid grid-cols-2 gap-2">
+                                                     <div>
+                                                       <label className="block text-[9px] font-medium text-slate-500 mb-0.5">Label</label>
+                                                       <input
+                                                         type="text"
+                                                         value={link.label || ""}
+                                                         onChange={(e) => {
+                                                           const updated = [...allLinks];
+                                                           updated[lIdx] = { ...updated[lIdx], label: e.target.value };
+                                                           handleUpdateBlockField(block.id, "navLinks", updated);
+                                                         }}
+                                                         className="w-full bg-white border border-slate-200 rounded-lg py-1 px-2 text-xs"
+                                                         placeholder="Link name..."
+                                                       />
+                                                     </div>
+                                                     <div>
+                                                       <label className="block text-[9px] font-medium text-slate-500 mb-0.5">Destination</label>
+                                                       <input
+                                                         type="text"
+                                                         value={link.url || ""}
+                                                         onChange={(e) => {
+                                                           const updated = [...allLinks];
+                                                           updated[lIdx] = { ...updated[lIdx], url: e.target.value };
+                                                           handleUpdateBlockField(block.id, "navLinks", updated);
+                                                         }}
+                                                         className="w-full bg-white border border-slate-200 rounded-lg py-1 px-2 text-xs font-mono"
+                                                         placeholder="#features or https://..."
+                                                       />
+                                                     </div>
+                                                   </div>
+                                                   <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
+                                                     <span className="text-[8px] text-slate-400 font-semibold shrink-0">Presets:</span>
+                                                     {[
+                                                       { l: "Features", u: "#features" },
+                                                       { l: "Pricing", u: "#pricing" },
+                                                       { l: "Reviews", u: "#reviews" },
+                                                       { l: "Contact", u: "#contact" },
+                                                       { l: "FAQ", u: "#faq" },
+                                                       { l: "Footer", u: "#footer" }
+                                                     ].map((preset) => (
+                                                       <button
+                                                         key={preset.u}
+                                                         type="button"
+                                                         onClick={() => {
+                                                           const updated = [...allLinks];
+                                                           updated[lIdx] = { ...updated[lIdx], label: preset.l, url: preset.u };
+                                                           handleUpdateBlockField(block.id, "navLinks", updated);
+                                                         }}
+                                                         className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-white hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 border border-slate-200 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                                                       >
+                                                         {preset.l}
+                                                       </button>
+                                                     ))}
+                                                   </div>
+                                                 </div>
+                                               ))}
+                                             </div>
+                                           </div>
+</div>
                                      )}
 
                                      {/* 21. Footer Block */}

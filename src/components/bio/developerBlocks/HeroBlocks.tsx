@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowRight, Play, Sparkles, CheckCircle2 } from "lucide-react";
 import type { BlockRecord } from "../../../lib/bioBlocks";
+import { resolveDestination } from "../../../lib/bioBlocks";
 import type { BlockRendererContext, BlockRendererHandlers, BlockRenderMode } from "../blockTypes";
 import { CanvaInlineText, CanvaInlineImage } from "../CanvaDirectEditSuite";
 
@@ -26,11 +27,7 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
   const badgeText = (block.badgeText as string) || "🚀 Next-Gen Micro-Site Builder";
 
   const handleCta = (url: string, label: string) => {
-    if (mode === "preview") {
-      handlers.onToast?.(`Simulated action: ${label} -> ${url}`);
-      return;
-    }
-    handlers.onExternalLink?.(url, label);
+    resolveDestination(url, label, handlers, mode);
   };
 
   const handleUpdate = (field: string, val: any) => {
@@ -145,11 +142,7 @@ export function VideoHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
   const badgeText = (block.badgeText as string) || "🎬 Featured Reel 2026";
 
   const handleCta = () => {
-    if (mode === "preview") {
-      handlers.onToast?.(`Simulated action: ${ctaLabel} -> ${ctaUrl}`);
-      return;
-    }
-    handlers.onExternalLink?.(ctaUrl, ctaLabel);
+    resolveDestination(ctaUrl, ctaLabel, handlers, mode);
   };
 
   const handleUpdate = (field: string, val: any) => {
@@ -244,11 +237,7 @@ export function GlowBadgeBlockView({ block, mode, handlers }: DeveloperBlockProp
       <button
         type="button"
         onClick={() => {
-          if (mode === "preview") {
-            handlers.onToast?.(`Glow badge clicked: ${badgeLink}`);
-            return;
-          }
-          handlers.onExternalLink?.(badgeLink, badgeText);
+          resolveDestination(badgeLink, badgeText, handlers, mode);
         }}
         className={`group relative inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-gradient-to-r ${colorClasses} shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer max-w-full`}
       >
