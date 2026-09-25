@@ -171,9 +171,9 @@ export function LeadMagnetBlockView({ block, mode, handlers }: DeveloperBlockPro
   };
 
   return (
-    <div className="w-full min-w-0 bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-xl text-white box-border">
-      <div className="flex flex-col sm:grid sm:grid-cols-3 gap-4 sm:gap-5 items-center w-full min-w-0">
-        <div className="w-full max-w-[180px] sm:max-w-none mx-auto aspect-[3/4] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-md shrink-0">
+    <div className="w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl text-white">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
+        <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-md">
           <img
             src={coverImage}
             alt={title}
@@ -182,46 +182,46 @@ export function LeadMagnetBlockView({ block, mode, handlers }: DeveloperBlockPro
           />
         </div>
 
-        <div className="w-full sm:col-span-2 min-w-0 space-y-2.5 sm:space-y-3 text-left flex flex-col justify-center">
-          <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full inline-block self-start">
+        <div className="sm:col-span-2 space-y-3 text-left">
+          <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full inline-block">
             {badgeText}
           </span>
-          <h4 className="font-display font-black text-base sm:text-lg text-white leading-snug break-words">
+          <h4 className="font-display font-black text-base sm:text-lg text-white leading-snug">
             {title}
           </h4>
-          <p className="text-xs text-slate-400 leading-relaxed break-words">
+          <p className="text-xs text-slate-400 leading-relaxed">
             {description}
           </p>
           <div className="flex items-center gap-2 text-[11px] text-slate-500">
-            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <FileText className="h-3.5 w-3.5" />
             <span>Format: {fileSize}</span>
           </div>
 
           {!unlocked ? (
-            <form onSubmit={handleDownload} className="pt-2 flex flex-col sm:flex-row gap-2 w-full">
+            <form onSubmit={handleDownload} className="pt-2 flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 required
                 placeholder="Enter your email to unlock..."
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white placeholder:text-slate-600"
+                className="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:outline-none rounded-xl py-2 px-3 text-xs text-white placeholder:text-slate-600"
               />
               <button
                 type="submit"
-                className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all shrink-0 cursor-pointer"
+                className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all shrink-0"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>{buttonText}</span>
               </button>
             </form>
           ) : (
-            <div className="pt-2 w-full">
+            <div className="pt-2">
               <a
                 href={downloadUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg"
               >
                 <Download className="h-4 w-4" />
                 <span>Click here to download {fileSize}</span>

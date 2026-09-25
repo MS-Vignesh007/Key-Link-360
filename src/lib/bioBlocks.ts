@@ -1459,47 +1459,23 @@ export function createDefaultInstagramFeedFields() {
   };
 }
 
-/**
- * Check if a block type should span full width in multi-column responsive grid views (tablet, laptop, desktop, 4K TV).
- */
-export function isWideBlock(type: string): boolean {
+export function isWideBlock(type?: string): boolean {
   if (!type) return false;
   const t = type.toLowerCase();
   return (
-    t.includes("navbar") ||
-    t.includes("footer") ||
     t.includes("hero") ||
-    t.includes("pricing") ||
-    t.includes("table") ||
-    t.includes("product") ||
-    t.includes("slider") ||
-    t.includes("gallery") ||
-    t.includes("video showcase") ||
-    t.includes("videoshowcase") ||
-    t.includes("multi-step") ||
-    t.includes("multistep") ||
-    t.includes("form") ||
-    t.includes("shop") ||
-    t.includes("header") ||
+    t.includes("split hero") ||
+    t.includes("video hero") ||
     t.includes("banner") ||
-    t.includes("faq") ||
-    t.includes("testimonial") ||
-    t.includes("rating") ||
-    t.includes("brand") ||
+    t.includes("carousel") ||
+    t.includes("gallery") ||
     t.includes("map") ||
-    t.includes("countdown") ||
-    t.includes("lead magnet") ||
-    t.includes("meeting") ||
-    t.includes("audio") ||
-    t.includes("feature") ||
-    t.includes("flash") ||
-    t.includes("community") ||
-    t.includes("youtube") ||
-    t.includes("instagram") ||
-    t.includes("press") ||
-    t.includes("newsletter")
+    t.includes("divider") ||
+    t.includes("faq") ||
+    t.includes("pricing") ||
+    t.includes("testimonials") ||
+    t.includes("grid")
   );
 }
-
 
 

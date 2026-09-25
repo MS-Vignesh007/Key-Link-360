@@ -511,6 +511,20 @@ export default function PublicBioPageView({
     });
   };
 
+  const handleToggleBlockColSpan = (blockId: string) => {
+    setBlocks((prev) => {
+      const updated = prev.map((b) => {
+        if (b.id !== blockId) return b;
+        const nextColSpan = b.colSpan === "half" ? "full" : "half";
+        return { ...b, colSpan: nextColSpan };
+      });
+      writeCachedPage(displayPageId, updated, customDetails, effectiveSlug);
+      onUpdateBlocks?.(updated);
+      return updated;
+    });
+    triggerToast("✨ Updated column width!");
+  };
+
   const handleDuplicateBlock = (blockId: string) => {
     setBlocks((prev) => {
       const idx = prev.findIndex((b) => b.id === blockId);
@@ -1288,7 +1302,7 @@ export default function PublicBioPageView({
               </p>
             )}
             {visibleBlocks
-              .filter((block) => !Boolean((block as any).isHidden || (block as any).styles?.isHidden))
+              .filter((block) => mode === "preview" || !Boolean((block as any).isHidden || (block as any).styles?.isHidden))
               .map((block) => {
                 const visibilityClass =
                   effectiveDevice === "mobile"
@@ -1303,22 +1317,28 @@ export default function PublicBioPageView({
                 const isWide = isWideBlock(block.type);
                 const colSpanClass =
                   effectiveDevice === "mobile"
-                    ? "col-span-1"
+                    ? "col-span-1 w-full"
                     : isWide
                       ? effectiveDevice === "tablet"
-                        ? "col-span-1 sm:col-span-2"
+                        ? "col-span-1 sm:col-span-2 w-full"
                         : effectiveDevice === "laptop"
-                          ? "col-span-1 md:col-span-2 lg:col-span-3"
+                          ? "col-span-1 md:col-span-2 lg:col-span-3 w-full"
                           : effectiveDevice === "desktop"
-                            ? "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
-                            : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 2xl:col-span-5"
+                            ? "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 w-full"
+                            : "col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 2xl:col-span-5 w-full"
                       : block.colSpan === "half"
-                        ? "col-span-1"
+                        ? "col-span-1 w-full"
                         : effectiveDevice === "tablet"
-                          ? "col-span-1 sm:col-span-2"
+                          ? "col-span-1 sm:col-span-2 w-full"
                           : effectiveDevice === "laptop"
-                            ? "col-span-1 sm:col-span-2 md:col-span-2"
-                            : "col-span-1 sm:col-span-2";
+                            ? "col-span-1 sm:col-span-2 md:col-span-2 w-full"
+                            : "col-span-1 sm:col-span-2 w-full";
+
+                const isSelected = mode === "preview" && selectedBlockId === block.id;
+                const isBeingDragged = mode === "preview" && draggingBlockId === block.id;
+                const isDragOver = mode === "preview" && dragOverBlockId === block.id && draggingBlockId !== block.id;
+                const isBlockLocked = Boolean(block.isLocked || (block as any).styles?.isLocked);
+                const isBlockHidden = Boolean(block.isHidden || (block as any).styles?.isHidden);
 
                 const devStyles = computeBlockInlineStyles((block as any).styles);
                 const devMeta = getBlockCustomMeta((block as any).styles);
@@ -1328,19 +1348,375 @@ export default function PublicBioPageView({
                     key={`${block.id}-pay-${paymentRequired ? paymentAmountInr || 0 : 0}`}
                     style={devStyles}
                     aria-label={devMeta.ariaLabel}
-                    className={`${visibilityClass} ${colSpanClass} ${devMeta.className} transition-all`}
+                    draggable={mode === "preview" && !isBlockLocked && !showThanksPage}
+                    onDragStart={(e) => {
+                      if (mode !== "preview" || isBlockLocked || showThanksPage) return;
+                      e.dataTransfer.setData("application/keylink-block-id", block.id);
+                      e.dataTransfer.setData("text/plain", block.id);
+                      e.dataTransfer.effectAllowed = "move";
+                      setDraggingBlockId(block.id);
+                    }}
+                    onDragEnd={() => {
+                      setDraggingBlockId(null);
+                      setDragOverBlockId(null);
+                    }}
+                    onDragOver={(e) => {
+                      if (mode !== "preview") return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.dataTransfer.dropEffect = "move";
+                      if (dragOverBlockId !== block.id) {
+                        setDragOverBlockId(block.id);
+                      }
+                    }}
+                    onDragLeave={(e) => {
+                      if (mode !== "preview") return;
+                      e.stopPropagation();
+                      if (dragOverBlockId === block.id) {
+                        setDragOverBlockId(null);
+                      }
+                    }}
+                    onDrop={(e) => {
+                      if (mode !== "preview") return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const srcId = e.dataTransfer.getData("application/keylink-block-id") || draggingBlockId;
+                      if (srcId && srcId !== block.id) {
+                        handleReorderBlocks(srcId, block.id, "after");
+                      }
+                      setDraggingBlockId(null);
+                      setDragOverBlockId(null);
+                    }}
+                    onClick={(e) => {
+                      if (mode !== "preview") return;
+                      const target = e.target as HTMLElement | null;
+                      if (
+                        target?.closest?.(".key-canva-inline-active") ||
+                        target?.tagName === "INPUT" ||
+                        target?.tagName === "TEXTAREA" ||
+                        target?.closest?.("button")
+                      ) {
+                        return;
+                      }
+                      e.stopPropagation();
+                      setSelectedBlockId(block.id);
+                    }}
+                    className={`${visibilityClass} ${colSpanClass} ${devMeta.className} transition-all duration-200 ${
+                      mode === "preview"
+                        ? `group relative p-2 rounded-2xl border cursor-grab active:cursor-grabbing select-none ${
+                            isBeingDragged
+                              ? "opacity-30 scale-95 border-dashed border-indigo-400 bg-indigo-500/10 ring-2 ring-indigo-400/40"
+                              : isDragOver
+                                ? "ring-2 ring-indigo-500 border-indigo-500 bg-indigo-500/10 shadow-lg scale-[1.01]"
+                                : isSelected
+                                  ? "key-canvas-block-active ring-2 ring-indigo-500 shadow-xl border-indigo-500 bg-indigo-500/5"
+                                  : isBlockHidden
+                                    ? "opacity-35 border-dashed border-slate-400/80 bg-slate-500/5"
+                                    : "border-transparent hover:border-dashed hover:border-[#6366f1]/55 hover:bg-[#6366f1]/5"
+                          }`
+                        : ""
+                    }`}
                   >
-                    <BlockRenderer
-                      block={block as BlockRecord}
-                      mode="live"
-                      context={{
-                        displayTitle,
-                        displayHandle,
-                        paymentEnabled: paymentRequired,
-                        paymentAmountInr
-                      }}
-                      handlers={liveBlockHandlers}
-                    />
+                    {/* Device Hidden Badge in Live Preview */}
+                    {mode === "preview" && isBlockHidden && (
+                      <div className="absolute -top-2 right-2 z-30 flex items-center gap-1 bg-slate-700 text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow">
+                        <span>Hidden Node</span>
+                      </div>
+                    )}
+
+                    {/* Smart Interactive Border Controls & Resize Handles */}
+                    {mode === "preview" && !isBlockLocked && !showThanksPage && (
+                      <>
+                        {/* 1. Top Move Bar Anchor (4-Head Cursor & 5-Finger Grab) */}
+                        <div
+                          draggable
+                          onDragStart={(e) => {
+                            e.stopPropagation();
+                            e.dataTransfer.setData("application/keylink-block-id", block.id);
+                            e.dataTransfer.setData("text/plain", block.id);
+                            e.dataTransfer.effectAllowed = "move";
+                            setDraggingBlockId(block.id);
+                          }}
+                          onDragEnd={() => {
+                            setDraggingBlockId(null);
+                            setDragOverBlockId(null);
+                          }}
+                          className={`absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-950/95 text-white border border-indigo-500/60 shadow-lg backdrop-blur-md transition-all select-none cursor-move cursor-grab active:cursor-grabbing ${
+                            isSelected
+                              ? "opacity-100 scale-100 ring-2 ring-indigo-500/40"
+                              : "opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100"
+                          }`}
+                          title="Drag to move up/down (5-finger hand cursor) or click arrows"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Move className="w-3 h-3 text-indigo-400 shrink-0 pointer-events-none" />
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-indigo-200 pointer-events-none">
+                            {block.type}
+                          </span>
+                          <div className="w-[1px] h-2.5 bg-white/15 mx-0.5" />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveBlock(block.id, "up");
+                            }}
+                            className="p-0.5 hover:bg-white/20 rounded text-slate-300 hover:text-white transition-colors cursor-pointer"
+                            title="Move Up (↑)"
+                          >
+                            <ChevronUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveBlock(block.id, "down");
+                            }}
+                            className="p-0.5 hover:bg-white/20 rounded text-slate-300 hover:text-white transition-colors cursor-pointer"
+                            title="Move Down (↓)"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </div>
+
+                        {/* 2. Top & Bottom Border Handles (↕ Two-Head Vertical Resize) */}
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "top", e)}
+                          onTouchStart={(e) => startResizing(block.id, "top", e)}
+                          className="absolute top-0 left-4 right-4 h-2.5 -translate-y-1/2 cursor-ns-resize z-30 group/tline flex items-center justify-center select-none"
+                          title="↕ Drag up/down to adjust vertical spacing / height"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="w-10 h-1 rounded-full bg-indigo-500/40 group-hover/tline:bg-indigo-400 group-hover/tline:h-1.5 transition-all opacity-0 group-hover:opacity-100" />
+                        </div>
+
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "bottom", e)}
+                          onTouchStart={(e) => startResizing(block.id, "bottom", e)}
+                          className="absolute bottom-0 left-4 right-4 h-2.5 translate-y-1/2 cursor-ns-resize z-30 group/bline flex items-center justify-center select-none"
+                          title="↕ Drag up/down to adjust vertical spacing / height"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="w-10 h-1 rounded-full bg-indigo-500/40 group-hover/bline:bg-indigo-400 group-hover/bline:h-1.5 transition-all opacity-0 group-hover:opacity-100" />
+                        </div>
+
+                        {/* 3. Left & Right Border Handles (↔ Side-Head Horizontal Resize) */}
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "left", e)}
+                          onTouchStart={(e) => startResizing(block.id, "left", e)}
+                          className="absolute left-0 top-4 bottom-4 w-2.5 -translate-x-1/2 cursor-ew-resize z-30 group/lline flex items-center justify-center select-none"
+                          title="↔ Drag left/right to adjust horizontal spacing / width"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="h-10 w-1 rounded-full bg-indigo-500/40 group-hover/lline:bg-indigo-400 group-hover/lline:w-1.5 transition-all opacity-0 group-hover:opacity-100" />
+                        </div>
+
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "right", e)}
+                          onTouchStart={(e) => startResizing(block.id, "right", e)}
+                          className="absolute right-0 top-4 bottom-4 w-2.5 translate-x-1/2 cursor-ew-resize z-30 group/rline flex items-center justify-center select-none"
+                          title="↔ Drag left/right to adjust horizontal spacing / width"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="h-10 w-1 rounded-full bg-indigo-500/40 group-hover/rline:bg-indigo-400 group-hover/rline:w-1.5 transition-all opacity-0 group-hover:opacity-100" />
+                        </div>
+
+                        {/* 4. Four Corner Scale Handles (Small Size to Big Size) */}
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "nw", e)}
+                          onTouchStart={(e) => startResizing(block.id, "nw", e)}
+                          className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-indigo-500 shadow-md cursor-nwse-resize z-40 transition-transform hover:scale-125 opacity-0 group-hover:opacity-100 flex items-center justify-center select-none"
+                          title="⤡ Drag corner to scale block (Small / Big size)"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "ne", e)}
+                          onTouchStart={(e) => startResizing(block.id, "ne", e)}
+                          className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-indigo-500 shadow-md cursor-nesw-resize z-40 transition-transform hover:scale-125 opacity-0 group-hover:opacity-100 flex items-center justify-center select-none"
+                          title="⤢ Drag corner to scale block (Small / Big size)"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "sw", e)}
+                          onTouchStart={(e) => startResizing(block.id, "sw", e)}
+                          className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-indigo-500 shadow-md cursor-nesw-resize z-40 transition-transform hover:scale-125 opacity-0 group-hover:opacity-100 flex items-center justify-center select-none"
+                          title="⤢ Drag corner to scale block (Small / Big size)"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div
+                          onMouseDown={(e) => startResizing(block.id, "se", e)}
+                          onTouchStart={(e) => startResizing(block.id, "se", e)}
+                          className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-indigo-500 shadow-md cursor-nwse-resize z-40 transition-transform hover:scale-125 opacity-0 group-hover:opacity-100 flex items-center justify-center select-none"
+                          title="⤡ Drag corner to scale block (Small / Big size)"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </>
+                    )}
+
+                    {/* Live Resizing HUD Indicator */}
+                    {mode === "preview" && resizingBlock?.blockId === block.id && (
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none px-3 py-1.5 rounded-xl bg-slate-950/95 text-white text-xs font-mono font-bold shadow-2xl border border-indigo-400 backdrop-blur-xl flex items-center gap-1.5 animate-in fade-in zoom-in-95 select-none ring-2 ring-indigo-500/50">
+                        {resizingBlock.handle === "se" || resizingBlock.handle === "sw" || resizingBlock.handle === "ne" || resizingBlock.handle === "nw" ? (
+                          <>
+                            <Move className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                            <span>Size: {Math.round((resizingBlock.currentScale || resizingBlock.initialScale) * 100)}%</span>
+                          </>
+                        ) : resizingBlock.handle === "top" || resizingBlock.handle === "bottom" ? (
+                          <span>↕ Height: {resizingBlock.currentPaddingY ?? resizingBlock.initialPaddingY}px</span>
+                        ) : (
+                          <span>↔ Width: {resizingBlock.currentPaddingX ?? resizingBlock.initialPaddingX}px</span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Floating Action Pill over selected canvas block */}
+                    {mode === "preview" && isSelected && (
+                      <div
+                        className="key-canvas-block-actions-pill"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold bg-indigo-950 text-cyan-300 uppercase tracking-widest mr-1">
+                          {block.type}
+                        </span>
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleMoveBlock(block.id, "up")}
+                          title="Move Block Up (↑)"
+                        >
+                          <ChevronUp className="w-3 h-3 text-cyan-300" />
+                        </button>
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleMoveBlock(block.id, "down")}
+                          title="Move Block Down (↓)"
+                        >
+                          <ChevronDown className="w-3 h-3 text-cyan-300" />
+                        </button>
+
+                        {/* Quick Size Presets: S, M, L, XL */}
+                        <div className="flex items-center gap-0.5 px-1 py-0.5 rounded-md bg-white/[0.06] border border-white/10 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleSetBlockScale(block.id, 0.85)}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold transition-all ${
+                              (block as any).styles?.scale === 0.85
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-400 hover:text-white hover:bg-white/10"
+                            }`}
+                            title="Small Size (85%)"
+                          >
+                            S
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetBlockScale(block.id, 1)}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold transition-all ${
+                              !(block as any).styles?.scale || (block as any).styles?.scale === 1
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-400 hover:text-white hover:bg-white/10"
+                            }`}
+                            title="Normal Size (100%)"
+                          >
+                            M
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetBlockScale(block.id, 1.15)}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold transition-all ${
+                              (block as any).styles?.scale === 1.15
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-400 hover:text-white hover:bg-white/10"
+                            }`}
+                            title="Large Size (115%)"
+                          >
+                            L
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetBlockScale(block.id, 1.3)}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold transition-all ${
+                              (block as any).styles?.scale === 1.3
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-400 hover:text-white hover:bg-white/10"
+                            }`}
+                            title="Extra Large Size (130%)"
+                          >
+                            XL
+                          </button>
+                          {(block as any).styles?.scale && (block as any).styles?.scale !== 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetBlockScale(block.id, 1)}
+                              className="p-1 hover:bg-white/15 rounded text-amber-300 transition-colors ml-0.5"
+                              title="Reset Size to 100%"
+                            >
+                              <RotateCcw className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Toggle ColSpan: Half / Full */}
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleToggleBlockColSpan(block.id)}
+                          title={block.colSpan === "half" ? "Make Full Width" : "Make Half Width"}
+                        >
+                          <span className="text-[9px] font-bold text-indigo-300">
+                            {block.colSpan === "half" ? "½" : "1/1"}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleToggleBlockLock(block.id)}
+                          title={isBlockLocked ? "Unlock Component" : "Lock Component"}
+                        >
+                          {isBlockLocked ? <Lock className="w-3 h-3 text-amber-400" /> : <Unlock className="w-3 h-3" />}
+                        </button>
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleToggleBlockHidden(block.id)}
+                          title={isBlockHidden ? "Show Component" : "Hide Component"}
+                        >
+                          {isBlockHidden ? <EyeOff className="w-3 h-3 text-amber-400" /> : <Eye className="w-3 h-3" />}
+                        </button>
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn"
+                          onClick={() => handleDuplicateBlock(block.id)}
+                          title="Duplicate block"
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>Copy</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="key-canvas-block-actions-pill__btn key-canvas-block-actions-pill__btn--danger"
+                          onClick={() => handleDeleteBlock(block.id)}
+                          title="Delete block"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="relative z-10">
+                      <BlockRenderer
+                        block={block as BlockRecord}
+                        mode={mode === "preview" ? "preview" : "live"}
+                        context={{
+                          displayTitle,
+                          displayHandle,
+                          paymentEnabled: paymentRequired,
+                          paymentAmountInr
+                        }}
+                        handlers={liveBlockHandlers}
+                      />
+                    </div>
                   </div>
                 );
               })}

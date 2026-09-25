@@ -1772,11 +1772,11 @@ export function StatsBlockView({ block, context, handlers }: BlockViewProps) {
         />
       ) : null}
       <div
-        className={`grid gap-2 w-full min-w-0 ${
+        className={`grid gap-2 ${
           items.length >= 4
             ? "grid-cols-2 sm:grid-cols-4"
             : items.length === 3
-              ? "grid-cols-1 sm:grid-cols-3"
+              ? "grid-cols-3"
               : items.length === 2
                 ? "grid-cols-2"
                 : "grid-cols-1"
@@ -2039,7 +2039,7 @@ export function GalleryBlockView({ block, mode, context, handlers }: BlockViewPr
         }`}
       />
       {items.length > 0 ? (
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 w-full min-w-0 ${compact ? "gap-1.5" : "gap-2"}`}>
+        <div className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 ${compact ? "gap-1.5" : "gap-2"}`}>
           {items.map((item, index) => {
             const targetUrl = item.linkUrl.trim() || item.url;
             return (

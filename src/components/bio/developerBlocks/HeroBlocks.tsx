@@ -38,45 +38,45 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
   };
 
   return (
-    <div className="w-full min-w-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-4 sm:p-7 shadow-xl border border-indigo-500/20 overflow-hidden relative box-border">
+    <div className="w-full bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-indigo-500/20 overflow-hidden relative">
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="flex flex-col md:flex-row md:items-center gap-5 sm:gap-6 items-stretch relative z-10 w-full min-w-0">
-        <div className="space-y-3 sm:space-y-3.5 text-left flex-1 min-w-0 flex flex-col items-start justify-center">
+      <div className="flex flex-col gap-5 items-stretch relative z-10">
+        <div className="space-y-3.5 text-left">
           {badgeText && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 shadow-inner max-w-full">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 shadow-inner">
               <Sparkles className="h-3 w-3 shrink-0" />
               <CanvaInlineText
                 value={badgeText}
                 onChange={(val) => handleUpdate("badgeText", val)}
                 enabled={Boolean(handlers.isInlineEditingAllowed)}
                 placeholder="Badge text..."
-                className="font-extrabold truncate"
+                className="font-extrabold"
               />
             </span>
           )}
-          <h2 className="font-display font-black text-lg sm:text-2xl leading-snug sm:leading-tight tracking-tight text-white w-full">
+          <h2 className="font-display font-black text-xl sm:text-2xl leading-tight tracking-tight text-white">
             <CanvaInlineText
               value={headline}
               onChange={(val) => handleUpdate("headline", val)}
               enabled={Boolean(handlers.isInlineEditingAllowed)}
               placeholder="Headline..."
-              className="font-black text-white break-words"
+              className="font-black text-white"
             />
           </h2>
-          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed w-full">
+          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
             <CanvaInlineText
               value={subheadline}
               onChange={(val) => handleUpdate("subheadline", val)}
               enabled={Boolean(handlers.isInlineEditingAllowed)}
               placeholder="Subheadline..."
-              className="text-slate-300 break-words"
+              className="text-slate-300"
             />
           </p>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-1 w-full">
+          <div className="flex flex-wrap items-center gap-2.5 pt-1">
             <button
               type="button"
               onClick={() => handleCta(primaryCtaUrl, primaryCtaLabel)}
-              className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
             >
               <CanvaInlineText
                 value={primaryCtaLabel}
@@ -91,7 +91,7 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
               <button
                 type="button"
                 onClick={() => handleCta(secondaryCtaUrl, secondaryCtaLabel)}
-                className="inline-flex items-center justify-center px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 text-slate-200 text-xs font-bold border border-white/10 transition-all cursor-pointer shrink-0"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 text-slate-200 text-xs font-bold border border-white/10 transition-all cursor-pointer"
               >
                 <CanvaInlineText
                   value={secondaryCtaLabel}
@@ -106,7 +106,7 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
         </div>
 
         {/* High-Tech Glowing Showcase Image */}
-        <div className="relative w-full md:w-1/2 aspect-[16/9] min-h-[160px] sm:min-h-[220px] rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-slate-950/80 group shrink-0">
+        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-slate-950/80 aspect-[16/9] group">
           {handlers.isInlineEditingAllowed ? (
             <CanvaInlineImage
               src={imageUrl}
