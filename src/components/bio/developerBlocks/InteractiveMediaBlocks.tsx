@@ -17,12 +17,26 @@ interface DeveloperBlockProps {
 export function BeforeAfterSliderBlockView({ block }: DeveloperBlockProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(600);
 
   const beforeImage = (block.beforeImage as string) || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600";
   const afterImage = (block.afterImage as string) || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600";
   const beforeLabel = (block.beforeLabel as string) || "Before";
   const afterLabel = (block.afterLabel as string) || "After";
   const caption = (block.caption as string) || block.label || "Dramatic Transformation in 30 Days";
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -43,7 +57,7 @@ export function BeforeAfterSliderBlockView({ block }: DeveloperBlockProps) {
   };
 
   return (
-    <div className="w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-3">
+    <div className="w-full max-w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-3">
       {caption && (
         <h4 className="font-display font-bold text-base sm:text-lg text-white text-center">
           {caption}
@@ -64,20 +78,20 @@ export function BeforeAfterSliderBlockView({ block }: DeveloperBlockProps) {
           alt={afterLabel}
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
-        <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider pointer-events-none">
+        <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider pointer-events-none z-10">
           {afterLabel}
         </span>
 
         {/* Before Image (Clipped Overlay) */}
         <div
-          className="absolute inset-y-0 left-0 overflow-hidden pointer-events-none"
+          className="absolute inset-y-0 left-0 overflow-hidden pointer-events-none z-10"
           style={{ width: `${sliderPosition}%` }}
         >
           <img
             src={beforeImage}
             alt={beforeLabel}
-            className="absolute inset-0 w-full h-full object-cover max-w-none"
-            style={{ width: containerRef.current?.offsetWidth || "100%" }}
+            className="absolute top-0 left-0 h-full object-cover max-w-none"
+            style={{ width: containerWidth ? `${containerWidth}px` : "100%" }}
           />
           <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
             {beforeLabel}
@@ -86,7 +100,7 @@ export function BeforeAfterSliderBlockView({ block }: DeveloperBlockProps) {
 
         {/* Divider Handle */}
         <div
-          className="absolute inset-y-0 w-0.5 bg-white shadow-2xl pointer-events-none"
+          className="absolute inset-y-0 w-0.5 bg-white shadow-2xl pointer-events-none z-20"
           style={{ left: `${sliderPosition}%` }}
         >
           <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-white text-slate-900 shadow-xl flex items-center justify-center font-bold text-xs pointer-events-auto">

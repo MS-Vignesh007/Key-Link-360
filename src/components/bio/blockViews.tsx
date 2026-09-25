@@ -2318,46 +2318,72 @@ export function renderBlockView(props: BlockViewProps): React.ReactNode {
     case "Press Mentions":
       return <PressMentionsBlockView {...props} />;
     case "Before/After":
+    case "Before/After Slider":
+    case "Before After":
       return <BeforeAfterSliderBlockView {...props} />;
     case "Portfolio":
+    case "Portfolio Gallery":
+    case "Projects":
       return <PortfolioGalleryBlockView {...props} />;
     case "Video Showcase":
+    case "Video Playlist":
       return <VideoShowcaseBlockView {...props} />;
     case "Podcast Player":
+    case "Audio Player":
+    case "Podcast":
       return <AudioPlayerBlockView {...props} />;
     case "Multi-Step Form":
+    case "Multistep Form":
+    case "Lead Funnel":
       return <MultiStepFormBlockView {...props} />;
     case "Lead Magnet":
+    case "Ebook Download":
+    case "PDF Download":
       return <LeadMagnetBlockView {...props} />;
     case "Meeting Booker":
+    case "Book Call":
+    case "Calendly":
       return <MeetingBookerBlockView {...props} />;
     case "Newsletter":
     case "Newsletter Box":
+    case "Email Subscribe":
       return <NewsletterBlockView {...props} />;
     // Persona & Pro Blocks
     case "Navbar":
+    case "Navigation Bar":
+    case "Header Nav":
       return <NavbarBlockView {...props} />;
     case "Footer":
+    case "Footer Bar":
       return <FooterBlockView {...props} />;
     case "Main Feature":
+    case "Features Grid":
+    case "Feature Pillars":
       return <MainFeatureBlockView {...props} />;
     case "Auto Slider":
     case "Slider":
     case "Image Slider":
+    case "Carousel":
       return <AutoSliderBlockView {...props} />;
     case "Google Form":
+    case "Embed Form":
       return <GoogleFormBlockView {...props} />;
     case "Flash Offer":
     case "Promotion":
+    case "Special Offer":
+    case "Promo Banner":
       return <FlashOfferBlockView {...props} />;
     case "Community Hub":
     case "Community":
+    case "VIP Group":
       return <CommunityHubBlockView {...props} />;
     case "YouTube Channel":
     case "YouTube":
+    case "Video Stream":
       return <YouTubeChannelBlockView {...props} />;
     case "Instagram Feed":
     case "Instagram":
+    case "Social Feed":
       return <InstagramFeedBlockView {...props} />;
     default:
       return <DefaultBlockView {...props} />;

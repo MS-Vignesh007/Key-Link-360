@@ -33,9 +33,10 @@ interface PersonaBlockProps {
 
 /**
  * 20. Navbar Block:
- * Modern floating glass navigation bar with brand logo, links, and action CTA.
+ * Modern floating glass navigation bar with brand logo, links, mobile hamburger drawer, and action CTA.
  */
 export function NavbarBlockView({ block, mode, handlers }: PersonaBlockProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const brandName = (block.brandName as string) || block.label || "KEYLINKS 360";
   const tagline = (block.tagline as string) || "Micro Site";
   const brandLogo = (block.brandLogo as string) || "";
@@ -54,87 +55,158 @@ export function NavbarBlockView({ block, mode, handlers }: PersonaBlockProps) {
     handlers.onInlineTextChange?.(block.id, field, val);
   };
 
+  const handleNavLinkClick = (e: React.MouseEvent, link: { id?: string; label: string; url: string }) => {
+    if (mode === "preview") {
+      e.preventDefault();
+      handlers.onToast?.(`Nav link: ${link.label} (${link.url})`);
+      setMobileMenuOpen(false);
+      return;
+    }
+    if (link.url.startsWith("#")) {
+      e.preventDefault();
+      const targetId = link.url.slice(1);
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+      }
+      setMobileMenuOpen(false);
+      return;
+    }
+    setMobileMenuOpen(false);
+    handlers.onExternalLink?.(link.url, link.label);
+  };
+
   const handleCta = () => {
+    setMobileMenuOpen(false);
     if (mode === "preview") {
       handlers.onToast?.(`Nav CTA clicked: ${ctaLabel} -> ${ctaUrl}`);
       return;
+    }
+    if (ctaUrl.startsWith("#")) {
+      const targetId = ctaUrl.slice(1);
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
     }
     handlers.onExternalLink?.(ctaUrl, ctaLabel);
   };
 
   return (
     <header
-      className={`w-full rounded-2xl px-4 py-3 flex items-center justify-between gap-3 transition-all ${
+      className={`w-full max-w-full rounded-2xl sm:rounded-3xl px-3.5 sm:px-5 py-2.5 sm:py-3 transition-all relative ${
         isGlassmorphic
-          ? "bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-lg text-white"
-          : "bg-slate-900 border border-slate-800 text-white shadow-md"
+          ? "bg-slate-900/90 backdrop-blur-xl border border-white/15 shadow-xl text-white"
+          : "bg-slate-900 border border-slate-800 text-white shadow-lg"
       }`}
     >
-      <div className="flex items-center gap-2.5 min-w-0">
-        {brandLogo ? (
-          <img src={brandLogo} alt={brandName} className="h-7 w-7 rounded-lg object-contain bg-white/10 p-0.5" />
-        ) : (
-          <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center font-black text-xs text-white shadow-inner">
-            ⚡
-          </div>
-        )}
-        <div className="min-w-0 text-left">
-          <div className="font-display font-black text-xs sm:text-sm tracking-tight text-white truncate">
-            <CanvaInlineText
-              value={brandName}
-              onChange={(val) => handleUpdate("brandName", val)}
-              enabled={Boolean(handlers.isInlineEditingAllowed)}
-              placeholder="Brand..."
-              className="font-black text-white"
+      <div className="w-full flex items-center justify-between gap-2.5 sm:gap-4">
+        {/* Brand Identity */}
+        <div className="flex items-center gap-2.5 min-w-0 flex-1 sm:flex-initial">
+          {brandLogo ? (
+            <img
+              src={brandLogo}
+              alt={brandName}
+              className="h-8 w-8 rounded-xl object-contain bg-white/10 p-0.5 shrink-0"
             />
-          </div>
-          {tagline && (
-            <p className="text-[9px] text-slate-400 font-medium truncate">
+          ) : (
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-black text-xs text-white shadow-inner shrink-0">
+              ⚡
+            </div>
+          )}
+          <div className="min-w-0 text-left">
+            <div className="font-display font-black text-xs sm:text-sm tracking-tight text-white truncate">
               <CanvaInlineText
-                value={tagline}
-                onChange={(val) => handleUpdate("tagline", val)}
+                value={brandName}
+                onChange={(val) => handleUpdate("brandName", val)}
                 enabled={Boolean(handlers.isInlineEditingAllowed)}
-                placeholder="Tagline..."
-                className="text-slate-400"
+                placeholder="Brand..."
+                className="font-black text-white truncate"
               />
-            </p>
+            </div>
+            {tagline && (
+              <p className="text-[9px] sm:text-[10px] text-slate-400 font-medium truncate">
+                <CanvaInlineText
+                  value={tagline}
+                  onChange={(val) => handleUpdate("tagline", val)}
+                  enabled={Boolean(handlers.isInlineEditingAllowed)}
+                  placeholder="Tagline..."
+                  className="text-slate-400 truncate"
+                />
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop & Tablet Navigation Links */}
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-xs font-semibold text-slate-300">
+          {navLinks.map((link, idx) => (
+            <a
+              key={link.id || idx}
+              href={link.url}
+              onClick={(e) => handleNavLinkClick(e, link)}
+              className="hover:text-white transition-colors py-1 cursor-pointer"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* CTA & Mobile Hamburger Controls */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Action CTA Button */}
+          <button
+            type="button"
+            onClick={handleCta}
+            className="px-3 sm:px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all cursor-pointer whitespace-nowrap"
+          >
+            <CanvaInlineText
+              value={ctaLabel}
+              onChange={(val) => handleUpdate("ctaLabel", val)}
+              enabled={Boolean(handlers.isInlineEditingAllowed)}
+              placeholder="CTA..."
+              className="font-bold text-white"
+            />
+          </button>
+
+          {/* Mobile Menu Toggle (Visible on md:hidden) */}
+          {navLinks.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition-colors cursor-pointer"
+              aria-label="Toggle Navigation Menu"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           )}
         </div>
       </div>
 
-      {/* Nav Links (Desktop & Tablet) */}
-      <nav className="hidden sm:flex items-center gap-3 text-xs font-semibold text-slate-300">
-        {navLinks.map((link, idx) => (
-          <a
-            key={link.id || idx}
-            href={link.url}
-            onClick={(e) => {
-              if (mode === "preview") {
-                e.preventDefault();
-                handlers.onToast?.(`Nav link: ${link.label}`);
-              }
-            }}
-            className="hover:text-white transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
-
-      {/* Action CTA Button */}
-      <button
-        type="button"
-        onClick={handleCta}
-        className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all shrink-0 cursor-pointer"
-      >
-        <CanvaInlineText
-          value={ctaLabel}
-          onChange={(val) => handleUpdate("ctaLabel", val)}
-          enabled={Boolean(handlers.isInlineEditingAllowed)}
-          placeholder="CTA..."
-          className="font-bold text-white"
-        />
-      </button>
+      {/* Mobile Dropdown Drawer */}
+      {mobileMenuOpen && navLinks.length > 0 && (
+        <div className="md:hidden mt-3 pt-3 border-t border-white/10 space-y-2 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col space-y-1">
+            {navLinks.map((link, idx) => (
+              <a
+                key={link.id || idx}
+                href={link.url}
+                onClick={(e) => handleNavLinkClick(e, link)}
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

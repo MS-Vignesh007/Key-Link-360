@@ -38,9 +38,9 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-indigo-500/20 overflow-hidden relative">
+    <div className="w-full max-w-full bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-indigo-500/20 overflow-hidden relative">
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="flex flex-col gap-5 items-stretch relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center relative z-10">
         <div className="space-y-3.5 text-left">
           {badgeText && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 shadow-inner">
@@ -54,7 +54,7 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
               />
             </span>
           )}
-          <h2 className="font-display font-black text-xl sm:text-2xl leading-tight tracking-tight text-white">
+          <h2 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-tight tracking-tight text-white">
             <CanvaInlineText
               value={headline}
               onChange={(val) => handleUpdate("headline", val)}
@@ -106,7 +106,7 @@ export function SplitHeroBlockView({ block, mode, handlers }: DeveloperBlockProp
         </div>
 
         {/* High-Tech Glowing Showcase Image */}
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-slate-950/80 aspect-[16/9] group">
+        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-slate-950/80 aspect-[16/10] group">
           {handlers.isInlineEditingAllowed ? (
             <CanvaInlineImage
               src={imageUrl}
