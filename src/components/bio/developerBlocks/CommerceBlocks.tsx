@@ -205,9 +205,9 @@ export function ProductShowcaseBlockView({ block, mode, handlers }: DeveloperBlo
   };
 
   return (
-    <div className="w-full rounded-3xl p-5 sm:p-6 bg-slate-900 text-white border border-slate-800 shadow-xl overflow-hidden">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 group">
+    <div className="w-full min-w-0 rounded-3xl p-4 sm:p-6 bg-slate-900 text-white border border-slate-800 shadow-xl overflow-hidden box-border">
+      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 sm:gap-5 items-center w-full min-w-0">
+        <div className="relative aspect-square w-full max-w-[280px] sm:max-w-none mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 group shrink-0">
           <img
             src={imageUrl}
             alt={productName}
@@ -221,45 +221,45 @@ export function ProductShowcaseBlockView({ block, mode, handlers }: DeveloperBlo
           )}
         </div>
 
-        <div className="space-y-3 text-left">
+        <div className="space-y-3 text-left w-full min-w-0 flex flex-col justify-center">
           <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             <span>{rating}</span>
             <span className="text-slate-400 font-normal">({reviewCount} reviews)</span>
           </div>
 
-          <h3 className="font-display font-black text-lg sm:text-xl text-white leading-snug">
+          <h3 className="font-display font-black text-base sm:text-xl text-white leading-snug break-words">
             {productName}
           </h3>
 
           <div className="flex items-baseline gap-2">
-            <span className="font-display font-black text-2xl text-emerald-400">{price}</span>
+            <span className="font-display font-black text-xl sm:text-2xl text-emerald-400">{price}</span>
             {originalPrice && (
               <span className="text-xs text-slate-500 line-through font-semibold">{originalPrice}</span>
             )}
           </div>
 
           {stockUrgency && (
-            <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1.5 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-              <Zap className="h-3 w-3" />
-              <span>{stockUrgency}</span>
+            <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1.5 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 max-w-full">
+              <Zap className="h-3 w-3 shrink-0" />
+              <span className="truncate">{stockUrgency}</span>
             </div>
           )}
 
-          <div className="space-y-1.5 pt-1">
+          <div className="space-y-1.5 pt-1 w-full">
             {features.map((feat, idx) => (
               <div key={idx} className="flex items-center gap-2 text-xs text-slate-300">
                 <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>{feat}</span>
+                <span className="break-words">{feat}</span>
               </div>
             ))}
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 w-full">
             <button
               type="button"
               onClick={handleBuy}
-              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all"
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
             >
               <ShoppingBag className="h-4 w-4" />
               <span>Buy Now · Instant Dispatch</span>

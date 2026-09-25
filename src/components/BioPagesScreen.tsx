@@ -10251,7 +10251,8 @@ export default function BioPagesScreen({
                             const isMobileMockup =
                               !isLandscape &&
                               (editorDeviceScope === "mobile_only" ||
-                                (isMobileCategory && editorDeviceScope !== "all_devices"));
+                                (isMobileCategory && editorDeviceScope !== "all_devices") ||
+                                viewportMode === "mobile");
 
                             const gridLayoutClass = isLandscape
                               ? (isTabletCategory || editorDeviceScope === "mobile_tablet"
@@ -10264,7 +10265,7 @@ export default function BioPagesScreen({
                                     : "grid-cols-1 md:grid-cols-2 gap-4");
 
                             return (
-                              <div className={`key-phone-preview__blocks grid ${gridLayoutClass} w-full`}>
+                              <div className={`key-phone-preview__blocks grid ${gridLayoutClass} w-full min-w-0`}>
                                 {filterVisibleBioBlocks(editorBlocks).map((block) => {
                                   const isDesktopPreview =
                                     isLandscape ||
@@ -10276,12 +10277,12 @@ export default function BioPagesScreen({
                                   const isBlockLocked = Boolean(block.isLocked || (block as any).styles?.isLocked);
                                   const isWide = isWideBlock(block.type);
                                   const colSpanClass = isMobileMockup
-                                    ? "col-span-1 w-full"
+                                    ? "col-span-1 w-full min-w-0"
                                     : isWide
-                                      ? "col-span-1 sm:col-span-2 md:col-span-2 col-span-full w-full"
+                                      ? "col-span-1 sm:col-span-2 md:col-span-2 col-span-full w-full min-w-0"
                                       : block.colSpan === "half"
-                                        ? "col-span-1 w-full"
-                                        : "col-span-1 sm:col-span-2 md:col-span-2 w-full";
+                                        ? "col-span-1 w-full min-w-0"
+                                        : "col-span-1 sm:col-span-2 md:col-span-2 w-full min-w-0";
                                   const isSelected = selectedCanvasBlockId === block.id;
 
                                   const devStyles = computeBlockInlineStyles((block as any).styles);
@@ -10339,7 +10340,7 @@ export default function BioPagesScreen({
                             setDragOverCanvasBlockId(null);
                             setIsDraggingOutsidePreview(false);
                           }}
-                          className={`group relative p-2 rounded-2xl border transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${colSpanClass} ${devMeta.className} ${
+                          className={`group relative p-2 rounded-2xl border transition-all duration-200 cursor-grab active:cursor-grabbing select-none flex flex-col w-full min-w-0 ${colSpanClass} ${devMeta.className} ${
                             isBeingDragged
                               ? "opacity-30 scale-95 border-dashed border-indigo-400 bg-indigo-500/10 ring-2 ring-indigo-400/40"
                               : isDragOver

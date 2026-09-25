@@ -4460,9 +4460,13 @@ html.key-public-scroll #root {
   font-size: 0.875rem;
 }
 
-.key-public-bio-page__screen .key-phone-preview__blocks > * {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 3rem;
+.key-public-bio-page__screen .key-phone-preview__blocks > *,
+.key-phone-preview__screen .key-phone-preview__blocks > * {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .key-public-bio-page__skeleton {
