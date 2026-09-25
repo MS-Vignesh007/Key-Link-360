@@ -85,6 +85,7 @@ import {
   DEFAULT_SHOP_PRODUCTS,
   toDatetimeLocalValue,
   filterVisibleBioBlocks,
+  isWideBlock,
   createDefaultSplitHeroFields,
   createDefaultVideoHeroFields,
   createDefaultGlowBadgeFields,
@@ -10158,13 +10159,14 @@ export default function BioPagesScreen({
                                     (block.deviceVisibility === "desktop_only" && !isDesktopPreview);
                                   const isBlockHidden = Boolean(block.isHidden || (block as any).styles?.isHidden);
                                   const isBlockLocked = Boolean(block.isLocked || (block as any).styles?.isLocked);
+                                  const isWide = isWideBlock(block.type);
                                   const colSpanClass = isMobileMockup
-                                    ? "col-span-1"
-                                    : isLandscape && block.colSpan === "half"
-                                      ? "col-span-1"
-                                      : isDesktopPreview && block.colSpan === "half"
-                                        ? "col-span-1"
-                                        : "col-span-1 sm:col-span-2 md:col-span-2";
+                                    ? "col-span-1 w-full"
+                                    : isWide
+                                      ? "col-span-1 sm:col-span-2 md:col-span-2 col-span-full w-full"
+                                      : block.colSpan === "half"
+                                        ? "col-span-1 w-full"
+                                        : "col-span-1 sm:col-span-2 md:col-span-2 w-full";
                                   const isSelected = selectedCanvasBlockId === block.id;
 
                                   const devStyles = computeBlockInlineStyles((block as any).styles);

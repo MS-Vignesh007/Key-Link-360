@@ -29,7 +29,8 @@ import {
   getLinkSpinCouponCode,
   getLinkSpinPrizes,
   normalizeExternalUrl,
-  filterVisibleBioBlocks
+  filterVisibleBioBlocks,
+  isWideBlock
 } from "../lib/bioBlocks";
 import { apiUrl } from "../lib/apiBase";
 import { openRazorpayCheckoutAndVerify, pageRequiresPayment } from "../lib/razorpayCheckout";
@@ -1145,17 +1146,18 @@ export default function PublicBioPageView({
           ? activeDeviceMode
           : targetScopeDevice;
 
-    const isSimulatedBoxed =
-      mode === "preview"
-        ? effectiveDevice === "mobile" || effectiveDevice === "tablet"
-        : isCustomDeviceScopeEnabled && (effectiveDevice === "mobile" || effectiveDevice === "tablet");
-
     const containerMaxWidthClass =
-      isSimulatedBoxed
-        ? effectiveDevice === "mobile"
-          ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 mx-auto"
-          : "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6 mx-auto"
-        : `w-full min-h-screen m-0 p-0 border-0 rounded-none shadow-none key-public-bio-page--${effectiveDevice}`;
+      effectiveDevice === "mobile"
+        ? "w-full max-w-[430px] key-public-bio-page--mobile shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
+        : effectiveDevice === "tablet"
+          ? "w-full max-w-[820px] key-public-bio-page--tablet shadow-2xl rounded-2xl sm:rounded-[2rem] border border-white/10 my-4 sm:my-6"
+          : effectiveDevice === "laptop"
+            ? "w-full max-w-[1280px] key-public-bio-page--laptop shadow-2xl rounded-2xl sm:rounded-[1.75rem] border border-white/10 my-4 sm:my-6"
+            : effectiveDevice === "desktop"
+              ? "w-full max-w-[1536px] key-public-bio-page--desktop shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+              : effectiveDevice === "tv"
+                ? "w-full max-w-[1920px] key-public-bio-page--tv shadow-2xl rounded-none sm:rounded-[2rem] border-0 sm:border sm:border-white/10 my-2 sm:my-6"
+                : "w-full max-w-[1680px] key-public-bio-page--desktop key-public-bio-page--ultrawide my-0 sm:my-2 rounded-none sm:rounded-[2rem] shadow-2xl border-0 sm:border sm:border-white/10";
 
     const isWideBlock = (type: string) => {
       const t = (type || "").toLowerCase();
@@ -1197,37 +1199,21 @@ export default function PublicBioPageView({
               ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
               : effectiveDevice === "tv"
                 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5";
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5";
 
-    const shellClasses = isSimulatedBoxed
-      ? `key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-4 px-2 sm:px-4${
+    return (
+      <div
+        className={`key-public-bio-page-shell key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen mx-auto bg-[#090d16] text-slate-100 py-[5px] px-0 sm:px-4${
           showThanksPage ? " key-public-bio-page--thanks-open" : ""
-        }`
-      : `key-public-bio-page-shell key-public-bio-page--full key-public-bio-page--${effectiveDevice} flex flex-col items-center justify-start font-sans w-full min-h-screen m-0 p-0 border-0 text-slate-100 overflow-x-hidden${
-          showThanksPage ? " key-public-bio-page--thanks-open" : ""
-        }`;
-
-    const shellStyle: React.CSSProperties = isSimulatedBoxed
-      ? {
+        }`}
+        style={{
           backgroundColor: "#090d16",
           backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px)",
           backgroundSize: "24px 24px",
           backgroundAttachment: "fixed",
           backgroundRepeat: "repeat",
           minHeight: "100vh"
-        }
-      : {
-          minHeight: "100vh",
-          width: "100%",
-          margin: 0,
-          padding: 0,
-          ...getBioPageThemeStyle(pageTheme)
-        };
-
-    return (
-      <div
-        className={shellClasses}
-        style={shellStyle}
+        }}
       >
         {/* Global Preview Floating Exit Button - Only Back Icon with Single Styled Tooltip */}
         {onExitPreview && (
@@ -1248,13 +1234,11 @@ export default function PublicBioPageView({
 
         <div
           ref={publicScreenRef}
-          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} ${containerMaxWidthClass} ${
-            isSimulatedBoxed ? "transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px]" : "overflow-x-hidden"
-          } relative`}
+          className={`key-public-bio-page__card key-preview-isolate key-public-bio-page__screen ${getBioPageThemeClass(pageTheme)} w-full ${containerMaxWidthClass} mx-auto transition-all duration-300 overflow-hidden min-h-screen sm:min-h-[750px] relative`}
           style={getBioPageThemeStyle(pageTheme)}
         >
         <div
-          className={`key-phone-preview__bio-layer w-full ${isSimulatedBoxed ? "" : "max-w-full"}`}
+          className="key-phone-preview__bio-layer"
           hidden={showThanksPage}
           aria-hidden={showThanksPage}
         >
@@ -1263,10 +1247,10 @@ export default function PublicBioPageView({
             alt="Hero Cover"
             settings={coverSettings}
             variant="preview"
-            className={`key-phone-preview__cover key-public-bio-page__cover w-full ${isSimulatedBoxed ? "" : "!rounded-none !max-w-full"}`}
+            className="key-phone-preview__cover key-public-bio-page__cover"
           />
 
-          <div className={`key-phone-preview__body key-public-bio-page__body ${isSimulatedBoxed ? "w-full" : "w-full max-w-[1680px] mx-auto px-4 sm:px-6 md:px-10 lg:px-14 xl:px-20 py-4 sm:py-6"}`}>
+          <div className="key-phone-preview__body key-public-bio-page__body">
             <div className="key-public-bio-page__profile">
               <h1 className="key-public-bio-page__title font-display">
                 {mode === "preview" ? (

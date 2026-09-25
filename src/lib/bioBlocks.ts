@@ -1459,4 +1459,50 @@ export function createDefaultInstagramFeedFields() {
   };
 }
 
-
+/**
+ * Returns true if a block type should span full width in multi-column responsive grid layouts.
+ * Supports all 50+ bio block types across desktop, laptop, tablet, and mobile views.
+ */
+export function isWideBlock(type?: string): boolean {
+  if (!type) return false;
+  const t = type.toLowerCase();
+  return (
+    t.includes("hero") ||
+    t.includes("pricing") ||
+    t.includes("table") ||
+    t.includes("product") ||
+    t.includes("slider") ||
+    t.includes("gallery") ||
+    t.includes("video showcase") ||
+    t.includes("videoshowcase") ||
+    t.includes("multi-step") ||
+    t.includes("multistep") ||
+    t.includes("form") ||
+    t.includes("shop") ||
+    t.includes("header") ||
+    t.includes("banner") ||
+    t.includes("faq") ||
+    t.includes("testimonial") ||
+    t.includes("rating") ||
+    t.includes("brand") ||
+    t.includes("press") ||
+    t.includes("before") ||
+    t.includes("portfolio") ||
+    t.includes("podcast") ||
+    t.includes("lead magnet") ||
+    t.includes("meeting") ||
+    t.includes("newsletter") ||
+    t.includes("navbar") ||
+    t.includes("footer") ||
+    t.includes("main feature") ||
+    t.includes("flash offer") ||
+    t.includes("promotion") ||
+    t.includes("community") ||
+    t.includes("youtube") ||
+    t.includes("instagram") ||
+    t.includes("divider") ||
+    t.includes("map") ||
+    t.includes("events") ||
+    t.includes("pdf")
+  );
+}

@@ -12917,3 +12917,149 @@ body.key-editor-open header.key-glass-header {
     gap: 1.25rem !important;
   }
 }
+
+/* ==========================================================================
+   🌐 UNIVERSAL RESPONSIVE BLOCKS ENGINE (50+ Blocks Flex & Grid System)
+   - Guarantees 100% responsive fluid scaling across all devices
+   - Flex-wrap on all rows & action bars (no horizontal overflow or collapse)
+   - Adaptive Grid column & row wrapping on all multi-item widgets
+   - Zero side-spill, zero clipping, zero layout breaking on mobile/tablet/desktop/TV
+   ========================================================================== */
+
+.key-phone-preview__blocks,
+.key-public-bio-page__blocks,
+.key-preview-isolate .key-phone-preview__blocks {
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  align-items: stretch !important;
+}
+
+/* 1. All Child Block Outer Shells */
+.key-phone-preview__blocks > *,
+.key-public-bio-page__blocks > *,
+.key-preview-isolate .key-phone-preview__blocks > * {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 2. Responsive Flex Containers Inside All Blocks (Buttons, Chips, Socials, Actions, Badges) */
+.key-phone-preview__blocks .flex,
+.key-public-bio-page__screen .flex,
+.key-public-bio-page__blocks .flex,
+.key-preview-isolate .flex {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Auto Flex-Wrap for tags, pills, chips, buttons, social links, headers */
+.key-phone-preview__blocks .flex-wrap,
+.key-public-bio-page__screen .flex-wrap,
+.key-preview-isolate .flex-wrap,
+.key-phone-preview__blocks [class*="flex-row"],
+.key-public-bio-page__screen [class*="flex-row"] {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 3. Responsive Inner Grids (Products, Logos, Stats, Testimonials, Ratings, FAQs, Features) */
+.key-phone-preview__blocks .grid,
+.key-public-bio-page__screen .grid,
+.key-public-bio-page__blocks .grid,
+.key-preview-isolate .grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. Text & Typography Overflow Defense */
+.key-phone-preview__blocks h1,
+.key-phone-preview__blocks h2,
+.key-phone-preview__blocks h3,
+.key-phone-preview__blocks h4,
+.key-phone-preview__blocks h5,
+.key-phone-preview__blocks h6,
+.key-phone-preview__blocks p,
+.key-phone-preview__blocks span,
+.key-phone-preview__blocks a,
+.key-phone-preview__blocks button,
+.key-public-bio-page__screen h1,
+.key-public-bio-page__screen h2,
+.key-public-bio-page__screen h3,
+.key-public-bio-page__screen h4,
+.key-public-bio-page__screen p,
+.key-public-bio-page__screen span,
+.key-preview-isolate h1,
+.key-preview-isolate h2,
+.key-preview-isolate h3,
+.key-preview-isolate h4,
+.key-preview-isolate p,
+.key-preview-isolate span {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  min-width: 0;
+}
+
+/* 5. Inputs, Buttons, Textareas, Forms, Selects */
+.key-phone-preview__blocks input,
+.key-phone-preview__blocks textarea,
+.key-phone-preview__blocks select,
+.key-phone-preview__blocks button,
+.key-public-bio-page__screen input,
+.key-public-bio-page__screen textarea,
+.key-public-bio-page__screen select,
+.key-public-bio-page__screen button,
+.key-preview-isolate input,
+.key-preview-isolate textarea,
+.key-preview-isolate select,
+.key-preview-isolate button {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 6. Media, Images, Videos, Iframes, Embeds */
+.key-phone-preview__blocks img,
+.key-phone-preview__blocks video,
+.key-phone-preview__blocks iframe,
+.key-phone-preview__blocks svg,
+.key-public-bio-page__screen img,
+.key-public-bio-page__screen video,
+.key-public-bio-page__screen iframe,
+.key-preview-isolate img,
+.key-preview-isolate video,
+.key-preview-isolate iframe {
+  max-width: 100% !important;
+  height: auto;
+  box-sizing: border-box !important;
+}
+
+/* 7. Tables, Comparison Tables & Horizontal Scroll Zones */
+.key-phone-preview__blocks table,
+.key-public-bio-page__screen table,
+.key-preview-isolate table {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse;
+}
+
+.key-phone-preview__blocks .overflow-x-auto,
+.key-public-bio-page__screen .overflow-x-auto,
+.key-preview-isolate .overflow-x-auto {
+  width: 100% !important;
+  max-width: 100% !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 8. Full-Width Wide Components Span Grid */
+.col-span-full {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
