@@ -203,28 +203,28 @@ export function LinkButtonBlockView({ block, mode, context, handlers }: BlockVie
         }
       }}
       style={getLinkButtonStyle(block as Parameters<typeof getLinkButtonStyle>[0])}
-      className={`w-full font-bold flex items-center justify-between transition-all active:scale-98 cursor-pointer key-bio-link-btn ${
-        compact ? "py-3 px-4 rounded-xl text-xs" : "py-3.5 px-4 rounded-2xl text-sm"
+      className={`w-full max-w-full font-bold flex items-center justify-between transition-all active:scale-98 cursor-pointer key-bio-link-btn box-border ${
+        compact ? "py-3 px-3.5 rounded-xl text-xs" : "py-3.5 px-4 rounded-2xl text-sm"
       } ${
         isDefaultBrightLink(block as Parameters<typeof isDefaultBrightLink>[0])
           ? "shadow-md shadow-violet-500/30 border-0"
           : "shadow-sm border border-slate-200/85"
       }`}
     >
-      <div className={`flex items-center truncate text-left min-w-0 flex-1 ${compact ? "gap-1.5" : "gap-2"}`}>
+      <div className={`flex items-center text-left min-w-0 flex-1 ${compact ? "gap-2" : "gap-2.5"}`}>
         {block.iconEmoji ? (
           <CanvaInlineIcon
             value={String(block.iconEmoji)}
             onChange={(newIcon) => handlers.onInlineTextChange?.(block.id, "iconEmoji", newIcon)}
             isEditingAllowed={handlers.isInlineEditingAllowed}
-            className={compact ? "text-sm" : "text-base"}
+            className={`shrink-0 ${compact ? "text-sm" : "text-base"}`}
           />
         ) : handlers.isInlineEditingAllowed ? (
           <CanvaInlineIcon
             value="✨"
             onChange={(newIcon) => handlers.onInlineTextChange?.(block.id, "iconEmoji", newIcon)}
             isEditingAllowed={handlers.isInlineEditingAllowed}
-            className="opacity-40 hover:opacity-100 text-xs mr-0.5"
+            className="opacity-40 hover:opacity-100 text-xs mr-0.5 shrink-0"
           />
         ) : null}
         <div className="min-w-0 flex-1">
@@ -232,21 +232,21 @@ export function LinkButtonBlockView({ block, mode, context, handlers }: BlockVie
             value={block.label}
             onChange={(newText) => handlers.onInlineTextChange?.(block.id, "label", newText)}
             isEditingAllowed={handlers.isInlineEditingAllowed}
-            className="key-bio-link-label block font-bold leading-tight"
+            className="key-bio-link-label block font-bold leading-tight truncate"
           />
           {block.subtext && (
             <InlineEditableText
               value={String(block.subtext)}
               onChange={(newText) => handlers.onInlineTextChange?.(block.id, "subtext", newText)}
               isEditingAllowed={handlers.isInlineEditingAllowed}
-              className="key-bio-link-subtext block font-medium opacity-70 mt-0.5"
+              className="key-bio-link-subtext block font-medium opacity-70 mt-0.5 truncate"
             />
           )}
         </div>
       </div>
       {block.showArrow !== "No" && (
         <ArrowRight
-          className={`shrink-0 ${compact ? "h-3.5 w-3.5" : "h-4 w-4"}`}
+          className={`shrink-0 ml-2 ${compact ? "h-3.5 w-3.5" : "h-4 w-4"}`}
           style={{ color: getLinkArrowColor(block as Parameters<typeof getLinkArrowColor>[0]) }}
         />
       )}
@@ -509,20 +509,22 @@ export function CouponBlockView({ block, mode, context, handlers }: BlockViewPro
           style={{ backgroundColor: textColor, color: bgColor }}
         />
       </div>
-      <div className="flex items-center gap-2">
-        <InlineEditableText
-          value={code}
-          onChange={(newCode) => handlers.onInlineTextChange?.(block.id, "value", newCode)}
-          isEditingAllowed={handlers.isInlineEditingAllowed}
-          className={`font-mono font-extrabold tracking-widest bg-white/40 rounded-lg border border-dashed text-center ${
-            compact ? "text-xs py-0.5 px-2" : "text-sm py-1 px-3"
-          }`}
-          style={{ color: textColor, borderColor: textColor }}
-        />
+      <div className="flex items-center flex-wrap gap-2 max-w-full">
+        <div className="min-w-0 flex-1">
+          <InlineEditableText
+            value={code}
+            onChange={(newCode) => handlers.onInlineTextChange?.(block.id, "value", newCode)}
+            isEditingAllowed={handlers.isInlineEditingAllowed}
+            className={`font-mono font-extrabold tracking-widest bg-white/40 rounded-lg border border-dashed text-center block truncate w-full ${
+              compact ? "text-xs py-0.5 px-2" : "text-sm py-1 px-3"
+            }`}
+            style={{ color: textColor, borderColor: textColor }}
+          />
+        </div>
         <button
           type="button"
           onClick={copyCode}
-          className="p-1.5 bg-white/50 hover:bg-white/80 rounded-lg transition-colors cursor-pointer"
+          className="p-1.5 bg-white/50 hover:bg-white/80 rounded-lg transition-colors cursor-pointer shrink-0"
           style={{ color: textColor }}
           title="Copy Coupon"
         >
@@ -533,7 +535,7 @@ export function CouponBlockView({ block, mode, context, handlers }: BlockViewPro
         value={block.label}
         onChange={(newLabel) => handlers.onInlineTextChange?.(block.id, "label", newLabel)}
         isEditingAllowed={handlers.isInlineEditingAllowed}
-        className={`opacity-90 leading-tight block ${compact ? "text-[9px]" : "text-[10px]"}`}
+        className={`opacity-90 leading-tight block break-words ${compact ? "text-[9px]" : "text-[10px]"}`}
       />
     </div>
   );
@@ -1785,8 +1787,8 @@ export function StatsBlockView({ block, context, handlers }: BlockViewProps) {
         {items.map((item, idx) => (
           <div
             key={item.id}
-            className={`text-center rounded-xl bg-slate-50 border border-slate-100 relative group/statitem ${
-              compact ? "px-2 py-2" : "px-3 py-2.5"
+            className={`text-center rounded-xl bg-slate-50 border border-slate-100 relative group/statitem min-w-0 overflow-hidden ${
+              compact ? "px-1.5 py-2" : "px-2.5 py-2.5"
             }`}
           >
             {handlers.isInlineEditingAllowed && (
@@ -1802,13 +1804,13 @@ export function StatsBlockView({ block, context, handlers }: BlockViewProps) {
               value={item.value}
               onChange={(newVal) => handleUpdateStat(item.id, "value", newVal)}
               isEditingAllowed={handlers.isInlineEditingAllowed}
-              className={`font-display font-black text-[#6366f1] block ${compact ? "text-sm" : "text-base"}`}
+              className={`font-display font-black text-[#6366f1] block break-words ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}
             />
             <InlineEditableText
               value={item.label}
               onChange={(newVal) => handleUpdateStat(item.id, "label", newVal)}
               isEditingAllowed={handlers.isInlineEditingAllowed}
-              className={`text-slate-500 font-semibold block ${compact ? "text-[9px] mt-0.5" : "text-[10px] mt-1"}`}
+              className={`text-slate-500 font-semibold block break-words ${compact ? "text-[8px] sm:text-[9px] mt-0.5" : "text-[9px] sm:text-[10px] mt-1"}`}
             />
           </div>
         ))}
